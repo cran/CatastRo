@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Ángel Delgado Panadero" />
+<meta name="author" content="Diego Hernangómez" />
+
+
+<title>OVCCoordenadas Web Service</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">OVCCoordenadas Web Service</h1>
+<h4 class="author">Ángel Delgado Panadero</h4>
+<h4 class="author">Diego Hernangómez</h4>
+
+
+
+<p><strong>CatastRo</strong> allows to query the OVCCoordenadas Web
+Service provided on <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">Sede
+electrónica del Catastro</a> API directly through a R IDE.</p>
+<p>This API is used to retrieve the spatial coordinates of a urban
+property, moreover it is not needed to be the owner to get the
+information, actually it is enough to know the cadastral reference (RC)
+of the property and its address (in fact, it is only completely
+compulsory to know the RC, however, to ensure a good result from the
+response and to avoid mistakes in the RC, the address can be passed to
+the query too).</p>
+<p>Secondly, the API can be used to obtain a RC of a urban property, for
+this information, the API asks for the longitude and the latitude.
+Furthermore, it allows to choose the spacial reference system (SRS, also
+known as CRS) between a list of them to express the coordinates.</p>
+<p>Finally, the API tackles the issue of not knowing the exact point
+which the urban property has been registered. In this case, it will
+return all the properties located in a square 50-meters-side around the
+given point.</p>
+<p>The documentation of this API can be found <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">here</a>.</p>
+<p>These functions are named <code>catr_ovc_*</code> and returns a
+tibble, as provided by the package <strong>tibble</strong>.</p>
+<div id="catastro-api" class="section level2">
+<h2>CatastRo API</h2>
+<p>The OVCCoordenadas Web Service can be reached using the following
+functions:</p>
+<ul>
+<li><code>catr_ovc_get_rccoor()</code></li>
+<li><code>catr_ovc_get_rccoor_distancia()</code></li>
+<li><code>catr_ovc_get_cpmrc()</code></li>
+</ul>
+</div>
+<div id="reverse-geocoding-cadastral-references" class="section level2">
+<h2>Reverse Geocoding Cadastral References</h2>
+<p>The function <code>catr_ovc_get_rccoor()</code> receives the
+coordinates (<em>lat</em> and <em>lon</em>) and the spatial reference
+system (SRS) used to express them. The return is a tibble with the
+cadastral reference of the property in that spatial point, including
+also other information as the address (town street and number).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">catr_ovc_get_rccoor</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fl">38.6196566583596</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon =</span> <span class="sc">-</span><span class="fl">3.45624183836806</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="5%" />
+<col width="38%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="38%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">refcat</th>
+<th align="left">address</th>
+<th align="left">pc.pc1</th>
+<th align="left">pc.pc2</th>
+<th align="right">geo.xcen</th>
+<th align="right">geo.ycen</th>
+<th align="left">geo.srs</th>
+<th align="left">ldt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">13077A01800039</td>
+<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
+TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+<td align="left">13077A0</td>
+<td align="left">1800039</td>
+<td align="right">-3.456242</td>
+<td align="right">38.61966</td>
+<td align="left">EPSG:4230</td>
+<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
+TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+</tr>
+</tbody>
+</table>
+<p>The function accept as a SRS argument the following values:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(catr_srs_values)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># OVC valid codes</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>catr_srs_values <span class="sc">%&gt;%</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ovc_service <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(SRS, Description) <span class="sc">%&gt;%</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">SRS</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">4230</td>
+<td align="left">Geográficas en ED 50</td>
+</tr>
+<tr class="even">
+<td align="right">4258</td>
+<td align="left">Geográficas en ETRS89</td>
+</tr>
+<tr class="odd">
+<td align="right">4326</td>
+<td align="left">Geográficas en WGS 80</td>
+</tr>
+<tr class="even">
+<td align="right">23029</td>
+<td align="left">UTM huso 29N en ED50</td>
+</tr>
+<tr class="odd">
+<td align="right">23030</td>
+<td align="left">UTM huso 30N en ED50</td>
+</tr>
+<tr class="even">
+<td align="right">23031</td>
+<td align="left">UTM huso 31N en ED50</td>
+</tr>
+<tr class="odd">
+<td align="right">25829</td>
+<td align="left">UTM huso 29N en ETRS89</td>
+</tr>
+<tr class="even">
+<td align="right">25830</td>
+<td align="left">UTM huso 30N en ETRS89</td>
+</tr>
+<tr class="odd">
+<td align="right">25831</td>
+<td align="left">UTM huso 31N en ETRS89</td>
+</tr>
+<tr class="even">
+<td align="right">32627</td>
+<td align="left">UTM huso 27N en WGS 84</td>
+</tr>
+<tr class="odd">
+<td align="right">32628</td>
+<td align="left">UTM huso 28N en WGS 84</td>
+</tr>
+<tr class="even">
+<td align="right">32629</td>
+<td align="left">UTM huso 29N en WGS 84</td>
+</tr>
+<tr class="odd">
+<td align="right">32630</td>
+<td align="left">UTM huso 30N en WGS 84</td>
+</tr>
+<tr class="even">
+<td align="right">32631</td>
+<td align="left">UTM huso 31N en WGS 84</td>
+</tr>
+</tbody>
+</table>
+<p>It is also possible to get all the cadastral references in a square
+of 50-meters’ side centered in the coordinates <em>lat</em> and
+<em>lon</em> through the function
+<code>catr_ovc_get_rccoor_distancia()</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_rccoor_distancia</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fl">40.96002</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon =</span> <span class="sc">-</span><span class="fl">5.663408</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="4%" />
+<col width="3%" />
+<col width="4%" />
+<col width="6%" />
+<col width="21%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="5%" />
+<col width="5%" />
+<col width="7%" />
+<col width="7%" />
+<col width="21%" />
+<col width="2%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">geo.xcen</th>
+<th align="right">geo.ycen</th>
+<th align="left">geo.srs</th>
+<th align="left">refcat</th>
+<th align="left">address</th>
+<th align="left">cmun_ine</th>
+<th align="left">pc.pc1</th>
+<th align="left">pc.pc2</th>
+<th align="left">dt.loine.cp</th>
+<th align="left">dt.loine.cm</th>
+<th align="left">dt.lourb.dir.cv</th>
+<th align="left">dt.lourb.dir.pnp</th>
+<th align="left">ldt</th>
+<th align="left">dis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-5.663408</td>
+<td align="right">40.96002</td>
+<td align="left">EPSG:4230</td>
+<td align="left">5877501TL7357F</td>
+<td align="left">AV REYES DE ESPAÑA 1 SALAMANCA (SALAMANCA)</td>
+<td align="left">37274</td>
+<td align="left">5877501</td>
+<td align="left">TL7357F</td>
+<td align="left">37</td>
+<td align="left">274</td>
+<td align="left">643</td>
+<td align="left">1</td>
+<td align="left">AV REYES DE ESPAÑA 1 SALAMANCA (SALAMANCA)</td>
+<td align="left">21.81</td>
+</tr>
+<tr class="even">
+<td align="right">-5.663408</td>
+<td align="right">40.96002</td>
+<td align="left">EPSG:4230</td>
+<td align="left">5778706TL7357H</td>
+<td align="left">AV REYES DE ESPAÑA 2 N2-4 SALAMANCA (SALAMANCA)</td>
+<td align="left">37274</td>
+<td align="left">5778706</td>
+<td align="left">TL7357H</td>
+<td align="left">37</td>
+<td align="left">274</td>
+<td align="left">643</td>
+<td align="left">2</td>
+<td align="left">AV REYES DE ESPAÑA 2 N2-4 SALAMANCA (SALAMANCA)</td>
+<td align="left">23.18</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="geocoding-a-cadastral-reference" class="section level2">
+<h2>Geocoding a Cadastral Reference</h2>
+<p>The opposite query is possible as well. Being given to the function
+<code>catr_ovc_get_cpmrc()</code> a cadastral reference
+(<code>rc</code>), the province (<code>province</code>) and the town
+(<code>municipality</code>), <code>catr_ovc_get_cpmrc()</code> returns
+its coordinates <em>lat</em> and <em>lon</em> in a particular
+<em>SRS</em> besides the address (town, street and number).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">province =</span> <span class="st">&quot;CIUDAD REAL&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">municipality =</span> <span class="st">&quot;SANTA CRUZ DE MUDELA&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="3%" />
+<col width="3%" />
+<col width="5%" />
+<col width="34%" />
+<col width="2%" />
+<col width="2%" />
+<col width="6%" />
+<col width="5%" />
+<col width="3%" />
+<col width="34%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">xcoord</th>
+<th align="right">ycoord</th>
+<th align="left">refcat</th>
+<th align="left">address</th>
+<th align="left">pc.pc1</th>
+<th align="left">pc.pc2</th>
+<th align="left">geo.xcen</th>
+<th align="left">geo.ycen</th>
+<th align="left">geo.srs</th>
+<th align="left">ldt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-3.456242</td>
+<td align="right">38.61966</td>
+<td align="left">13077A01800039</td>
+<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
+TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+<td align="left">13077A0</td>
+<td align="left">1800039</td>
+<td align="left">-3.45624183836806</td>
+<td align="left">38.6196566583596</td>
+<td align="left">EPSG:4230</td>
+<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
+TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+</tr>
+</tbody>
+</table>
+<p>Neither the <code>province</code> nor <code>municipality</code> are
+required to be passed to the function, unless the argument
+<code>municipality</code> is not <code>NULL</code>, in that case the
+argument <code>province</code> is needed to be passed. If it is passed a
+value to the <code>province</code> argument while the
+<code>municipality</code> argument is <code>NULL</code>, the function
+<code>catr_ovc_get_cpmrc()</code> will throw a message and would return
+a tibble with no data.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">municipality =</span> <span class="st">&quot;SANTA CRUZ DE MUDELA&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error code: 11. LA PROVINCIA ES OBLIGATORIA</span></span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">refcat</th>
+<th align="left">geo.srs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">13077A01800039</td>
+<td align="left">EPSG:4326</td>
+</tr>
+</tbody>
+</table>
+<p>When using only <code>rc</code> the result is provided as
+expected:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># No warning, get the result</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(<span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="3%" />
+<col width="3%" />
+<col width="5%" />
+<col width="34%" />
+<col width="2%" />
+<col width="2%" />
+<col width="6%" />
+<col width="5%" />
+<col width="3%" />
+<col width="34%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">xcoord</th>
+<th align="right">ycoord</th>
+<th align="left">refcat</th>
+<th align="left">address</th>
+<th align="left">pc.pc1</th>
+<th align="left">pc.pc2</th>
+<th align="left">geo.xcen</th>
+<th align="left">geo.ycen</th>
+<th align="left">geo.srs</th>
+<th align="left">ldt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-3.457532</td>
+<td align="right">38.61843</td>
+<td align="left">13077A01800039</td>
+<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
+TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+<td align="left">13077A0</td>
+<td align="left">1800039</td>
+<td align="left">-3.45753233627867</td>
+<td align="left">38.6184314024661</td>
+<td align="left">EPSG:4326</td>
+<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
+TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
