@@ -1,8 +1,10 @@
 test_that("ATOM Cadastral Parcels", {
+  skip_on_cran()
+  skip_if_offline()
+
   expect_message(catr_atom_get_parcels("xyxghx"))
   expect_error(catr_atom_get_parcels("Melque", what = "aa"))
 
-  skip_on_cran()
   s <- catr_atom_get_parcels("Melque",
     to = "Segovia",
     verbose = TRUE
@@ -18,6 +20,7 @@ test_that("ATOM Cadastral Parcels", {
 
 test_that("ATOM Encoding issue", {
   skip_on_cran()
+  skip_if_offline()
 
   s <- catr_atom_get_parcels("12028")
   expect_s3_class(s, "sf")

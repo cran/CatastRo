@@ -1,7 +1,10 @@
 test_that("ATOM Addresses", {
+  skip_on_cran()
+  skip_if_offline()
   expect_message(catr_atom_get_address("xyxghx"))
 
-  skip_on_cran()
+
+  expect_message(catr_atom_get_address("xyxghx"))
 
   s <- catr_atom_get_address("Melque",
     to = "Segovia",
@@ -18,6 +21,7 @@ test_that("ATOM Addresses", {
 
 test_that("ATOM Encoding issue", {
   skip_on_cran()
+  skip_if_offline()
 
   s <- catr_atom_get_address("12028")
   expect_s3_class(s, "sf")

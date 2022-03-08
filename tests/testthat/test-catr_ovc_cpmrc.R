@@ -1,4 +1,5 @@
 test_that("Expect error on bad SRS", {
+  skip_on_cran()
   expect_error(catr_ovc_get_cpmrc(
     rc = "s",
     srs = "abcd"
@@ -38,6 +39,9 @@ test_that("giving only the cadastral reference", {
   expect_message(catr_ovc_get_cpmrc("9872023VH5797S",
     verbose = TRUE
   ))
+
+  result <- catr_ovc_get_cpmrc(rc = "13077A01800039")
+  expect_s3_class(result, "tbl")
 })
 
 
