@@ -46,8 +46,8 @@ A \code{sf} object.
 Get the spatial data of addresses The WFS Service allows to perform
 several types of queries:
 \itemize{
-\item By bounding box: Implemented on \code{catr_wfs_get_address_bbox()}. Extract objects
-included on the bounding box provided. See \strong{Details}.
+\item By bounding box: Implemented on \code{catr_wfs_get_address_bbox()}.
+Extract objects included on the bounding box provided. See \strong{Details}.
 }
 
 \itemize{
@@ -61,8 +61,8 @@ objects of specific cadastral references
 }
 
 \itemize{
-\item By postal codes: Implemented on \code{catr_wfs_get_address_postalcode()}. Extract
-objects of specific cadastral references
+\item By postal codes: Implemented on \code{catr_wfs_get_address_postalcode()}.
+Extract objects of specific cadastral references
 }
 
 Check the
@@ -89,10 +89,11 @@ elements.
 \examples{
 \dontshow{if (tolower(Sys.info()[["sysname"]]) != "linux") (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \donttest{
-ad <- catr_wfs_get_address_bbox(c(
-  233673, 4015968, 233761, 4016008
-),
-srs = 25830
+ad <- catr_wfs_get_address_bbox(
+  c(
+    233673, 4015968, 233761, 4016008
+  ),
+  srs = 25830
 )
 
 library(ggplot2)

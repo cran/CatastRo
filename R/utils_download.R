@@ -1,6 +1,5 @@
 catr_hlp_dwnload <- function(api_entry, filename, cache_dir,
                              verbose, update_cache, cache) {
-
   # Use secure http
   api_entry <- gsub("^http:", "https:", api_entry)
 
@@ -23,7 +22,7 @@ catr_hlp_dwnload <- function(api_entry, filename, cache_dir,
       message("Try loading from ", filepath)
     }
     return(filepath)
-  } else if (update_cache | isFALSE(localfile)) {
+  } else if (update_cache || isFALSE(localfile)) {
     dwnload <- TRUE
     if (verbose) {
       message(
@@ -31,12 +30,12 @@ catr_hlp_dwnload <- function(api_entry, filename, cache_dir,
         url
       )
     }
-    if (verbose & update_cache) {
+    if (verbose && update_cache) {
       message("\nUpdating cache")
     }
   } else if (localfile) {
     dwnload <- FALSE
-    if (verbose & isFALSE(update_cache)) {
+    if (verbose && isFALSE(update_cache)) {
       message("File already cached")
     }
   }
@@ -78,7 +77,7 @@ catr_hlp_dwnload <- function(api_entry, filename, cache_dir,
   }
 
 
-  if (verbose & isTRUE(cache)) {
+  if (verbose && isTRUE(cache)) {
     message("Reading from local file ", filepath)
     size <- file.size(filepath)
     class(size) <- "object_size"

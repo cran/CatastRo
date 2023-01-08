@@ -36,13 +36,13 @@ A \code{sf} object.
 Get the spatial data of buildings. The WFS Service allows to perform
 two types of queries:
 \itemize{
-\item By bounding box: Implemented on \code{catr_wfs_get_buildings_bbox()}. Extract objects
-included on the bounding box provided. See \strong{Details}.
+\item By bounding box: Implemented on \code{catr_wfs_get_buildings_bbox()}.
+Extract objects included on the bounding box provided. See \strong{Details}.
 }
 
 \itemize{
-\item By cadastral reference: Implemented on \code{catr_wfs_get_buildings_rc()}. Extract
-objects of specific cadastral references.
+\item By cadastral reference: Implemented on \code{catr_wfs_get_buildings_rc()}.
+Extract objects of specific cadastral references.
 }
 
 Check the
@@ -69,13 +69,14 @@ elements.
 \dontshow{if (tolower(Sys.info()[["sysname"]]) != "linux") (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \donttest{
 # Using bbox
-building <- catr_wfs_get_buildings_bbox(c(
-  376550,
-  4545424,
-  376600,
-  4545474
-),
-srs = 25830
+building <- catr_wfs_get_buildings_bbox(
+  c(
+    376550,
+    4545424,
+    376600,
+    4545474
+  ),
+  srs = 25830
 )
 library(ggplot2)
 ggplot(building) +

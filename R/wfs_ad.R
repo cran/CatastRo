@@ -3,8 +3,8 @@
 #' @description
 #' Get the spatial data of addresses The WFS Service allows to perform
 #' several types of queries:
-#' - By bounding box: Implemented on `catr_wfs_get_address_bbox()`. Extract objects
-#'   included on the bounding box provided. See **Details**.
+#' - By bounding box: Implemented on `catr_wfs_get_address_bbox()`.
+#'   Extract objects included on the bounding box provided. See **Details**.
 #'
 #' @inheritParams catr_wfs_get_buildings_bbox
 #'
@@ -126,8 +126,8 @@ catr_wfs_get_address_rc <- function(rc, srs = NULL, verbose = FALSE) {
   return(out)
 }
 #' @description
-#' - By postal codes: Implemented on `catr_wfs_get_address_postalcode()`. Extract
-#'   objects of specific cadastral references
+#' - By postal codes: Implemented on `catr_wfs_get_address_postalcode()`.
+#'   Extract objects of specific cadastral references
 #'
 #' Check the
 #' [API Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-ad-WFS.pdf).
@@ -138,10 +138,11 @@ catr_wfs_get_address_rc <- function(rc, srs = NULL, verbose = FALSE) {
 #' @export
 #' @examplesIf tolower(Sys.info()[["sysname"]]) != "linux"
 #' \donttest{
-#' ad <- catr_wfs_get_address_bbox(c(
-#'   233673, 4015968, 233761, 4016008
-#' ),
-#' srs = 25830
+#' ad <- catr_wfs_get_address_bbox(
+#'   c(
+#'     233673, 4015968, 233761, 4016008
+#'   ),
+#'   srs = 25830
 #' )
 #'
 #' library(ggplot2)
@@ -149,7 +150,8 @@ catr_wfs_get_address_rc <- function(rc, srs = NULL, verbose = FALSE) {
 #' ggplot(ad) +
 #'   geom_sf()
 #' }
-catr_wfs_get_address_postalcode <- function(postalcode, srs = NULL, verbose = FALSE) {
+catr_wfs_get_address_postalcode <- function(postalcode, srs = NULL,
+                                            verbose = FALSE) {
   res <- wfs_api_query(
     entry = "wfsAD.aspx?",
     verbose = verbose,
