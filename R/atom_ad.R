@@ -2,12 +2,16 @@
 #'
 #'
 #' Get the spatial data of all the addresses belonging to a single
-#' municipality using the INSPIRE ATOM service.
+#' municipality using the INSPIRE ATOM service. Additionally, the function also
+#' returns the corresponding street information on the fields with the
+#' prefix `tfname_*`.
 #'
 #' @references
-#' [API Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-ATOM.pdf)
+#' [API
+#' Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-ATOM.pdf)
 #'
-#' [INSPIRE Services for Cadastral Cartography](https://www.catastro.minhap.es/webinspire/index.html)
+#' [INSPIRE Services for Cadastral
+#' Cartography](https://www.catastro.minhap.es/webinspire/index.html)
 #'
 #'
 #' @family INSPIRE
@@ -16,7 +20,7 @@
 #' @family spatial
 #'
 #' @export
-#' @return A `sf` object.
+#' @return A \CRANpkg{sf} object.
 #'
 #' @inheritParams catr_atom_get_parcels
 #' @examples
@@ -59,10 +63,7 @@ catr_atom_get_address <- function(munic,
       all <- all[linesto, ]
     } else {
       if (verbose) {
-        message(
-          "Ignoring 'to' parameter. No results for ",
-          to
-        )
+        message("Ignoring 'to' parameter. No results for ", to)
       }
     }
   }
@@ -85,7 +86,8 @@ catr_atom_get_address <- function(munic,
     )
   }
 
-  municurls <- catr_atom_get_address_db_to(as.character(m$territorial_office),
+  municurls <- catr_atom_get_address_db_to(
+    as.character(m$territorial_office),
     cache = cache,
     update_cache = update_cache,
     cache_dir = cache_dir,
@@ -95,9 +97,9 @@ catr_atom_get_address <- function(munic,
   ref <- unlist(strsplit(m$munic, "-"))[1]
 
   # Download from url
-  api_entry <- municurls[grepl(ref, municurls$munic,
-    ignore.case = TRUE
-  ), ]$url
+  api_entry <- municurls[
+    grepl(ref, municurls$munic, ignore.case = TRUE),
+  ]$url
 
   filename <- basename(api_entry)
 
@@ -123,6 +125,35 @@ catr_atom_get_address <- function(munic,
   files <- list.files(exdir, full.names = TRUE, pattern = ".gml$")[1]
 
   sfobj <- st_read_layers_encoding(files, verbose)
+
+  # See if we can add street names
+  whatlay <- sf::st_layers(files)
+  if ("ThoroughfareName" %in% whatlay$name) {
+    if (verbose) message("Adding ThoroughfareName to Address")
+
+    str_names <- st_read_layers_encoding(files,
+      verbose = FALSE,
+      layer = "ThoroughfareName"
+    )
+
+    # Rename and prepare for left join
+    names(str_names) <- paste0("tfname_", names(str_names))
+
+    sfobj$gml_id
+
+    sfobj$tfname_gml_id <- vapply(
+      sfobj$gml_id,
+      FUN = function(x) {
+        ids <- paste0(unlist(strsplit(x, ".", fixed = TRUE))[seq(1, 6)],
+          collapse = "."
+        )
+        ids <- gsub("AD", "TN", ids)
+        ids
+      }, FUN.VALUE = character(1), USE.NAMES = FALSE
+    )
+
+    sfobj <- dplyr::left_join(sfobj, str_names, by = "tfname_gml_id")
+  }
 
   return(sfobj)
 }

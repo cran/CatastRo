@@ -9,7 +9,7 @@
 [![CRAN-status](https://www.r-pkg.org/badges/version/CatastRo)](https://CRAN.R-project.org/package=CatastRo)
 [![CRAN-results](https://badges.cranchecks.info/worst/CatastRo.svg)](https://cran.r-project.org/web/checks/check_results_CatastRo.html)
 [![Downloads](https://cranlogs.r-pkg.org/badges/CatastRo)](https://CRAN.R-project.org/package=CatastRo)
-[![r-universe](https://ropenspain.r-universe.dev/badges/CatastRo)](https://ropenspain.r-universe.dev/)
+[![r-universe](https://ropenspain.r-universe.dev/badges/CatastRo)](https://ropenspain.r-universe.dev/CatastRo)
 [![R-CMD-check](https://github.com/rOpenSpain/CatastRo/workflows/R-CMD-check/badge.svg)](https://github.com/rOpenSpain/CatastRo/actions?query=workflow%3AR-CMD-check)
 [![codecov](https://codecov.io/gh/rOpenSpain/CatastRo/branch/master/graph/badge.svg?token=6L01BKLL85)](https://app.codecov.io/gh/rOpenSpain/CatastRo)
 [![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.6044091-blue)](https://doi.org/10.5281/zenodo.6044091)
@@ -34,15 +34,16 @@ install.packages("CatastRo")
 ```
 
 You can install the developing version of **CatastRo** using the
-[r-universe](https://ropenspain.r-universe.dev/ui#builds):
+[r-universe](https://ropenspain.r-universe.dev/CatastRo):
 
 ``` r
-# Enable this universe
-options(repos = c(
-  ropenspain = "https://ropenspain.r-universe.dev",
-  CRAN = "https://cloud.r-project.org"
-))
-install.packages("CatastRo")
+# Install CatastRo in R:
+install.packages("CatastRo",
+  repos = c(
+    "https://ropenspain.r-universe.dev",
+    "https://cloud.r-project.org"
+  )
+)
 ```
 
 Alternatively, you can install the developing version of **CatastRo**
@@ -122,15 +123,13 @@ This script highlights some features of **CatastRo** :
 ### Geocode a cadastral reference
 
 ``` r
-
 library(CatastRo)
 
 catr_ovc_get_cpmrc(rc = "13077A01800039")
 #> # A tibble: 1 × 10
-#>   xcoord ycoord refcat       address pc.pc1 pc.pc2 geo.x…¹ geo.y…² geo.srs ldt  
-#>    <dbl>  <dbl> <chr>        <chr>   <chr>  <chr>  <chr>   <chr>   <chr>   <chr>
-#> 1  -3.46   38.6 13077A01800… DS DIS… 13077… 18000… -3.457… 38.618… EPSG:4… DS D…
-#> # … with abbreviated variable names ¹​geo.xcen, ²​geo.ycen
+#>   xcoord ycoord refcat     address pc.pc1 pc.pc2 geo.xcen geo.ycen geo.srs ldt  
+#>    <dbl>  <dbl> <chr>      <chr>   <chr>  <chr>  <chr>    <chr>    <chr>   <chr>
+#> 1  -3.46   38.6 13077A018… DS DIS… 13077… 18000… -3.4575… 38.6184… EPSG:4… DS D…
 ```
 
 ### Extract a cadastral reference from a given set of coordinates
@@ -142,16 +141,14 @@ catr_ovc_get_rccoor(
   srs = "4230"
 )
 #> # A tibble: 1 × 8
-#>   refcat         address             pc.pc1 pc.pc2 geo.x…¹ geo.y…² geo.srs ldt  
-#>   <chr>          <chr>               <chr>  <chr>    <dbl>   <dbl> <chr>   <chr>
-#> 1 13077A01800039 DS DISEMINADO  Pol… 13077… 18000…   -3.46    38.6 EPSG:4… DS D…
-#> # … with abbreviated variable names ¹​geo.xcen, ²​geo.ycen
+#>   refcat         address           pc.pc1 pc.pc2 geo.xcen geo.ycen geo.srs ldt  
+#>   <chr>          <chr>             <chr>  <chr>     <dbl>    <dbl> <chr>   <chr>
+#> 1 13077A01800039 DS DISEMINADO  P… 13077… 18000…    -3.46     38.6 EPSG:4… DS D…
 ```
 
 ### Extract geometries using the ATOM service
 
 ``` r
-
 bu <- catr_atom_get_buildings("Nava de la Asuncion", to = "Segovia")
 
 
@@ -190,7 +187,6 @@ ggplot(wfs_get_buildings) +
 ### Extract maps using the WMS service
 
 ``` r
-
 # For tiles better project
 
 wfs_get_buildings_pr <- sf::st_transform(wfs_get_buildings, 25830)
@@ -225,20 +221,20 @@ it will load it, speeding up the process.
 
 ## Citation
 
-To cite ‘CatastRo’ in publications use:
-
-Delgado Panadero A, Hernangomez D (2023). *CatastRo: Interface to the
-API Sede Electrónica Del Catastro*.
-<https://doi.org/10.5281/zenodo.6044091>,
-<https://ropenspain.github.io/CatastRo/>
+<p>
+Delgado Panadero Á, Hernangómez D (2024). <em>CatastRo: Interface to the
+API Sede Electrónica Del Catastro</em>.
+<a href="https://doi.org/10.5281/zenodo.6044091">doi:10.5281/zenodo.6044091</a>,
+<a href="https://ropenspain.github.io/CatastRo/">https://ropenspain.github.io/CatastRo/</a>.
+</p>
 
 A BibTeX entry for LaTeX users is:
 
     @Manual{R-catastro,
       title = {{CatastRo}: Interface to the {API} Sede Electrónica Del Catastro},
       author = {Ángel {Delgado Panadero} and Diego Hernangómez},
-      year = {2023},
-      version = {0.2.3},
+      year = {2024},
+      version = {0.3.0},
       url = {https://ropenspain.github.io/CatastRo/},
       doi = {10.5281/zenodo.6044091},
       abstract = {Access public spatial data available under the INSPIRE directive. Tools for downloading references and addresses of properties, as well as map images.},

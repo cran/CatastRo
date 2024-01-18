@@ -1,4 +1,4 @@
-#' Set your **CatastRo** cache dir
+#' Set your \CRANpkg{CatastRo} cache dir
 #'
 #' @family cache utilities
 #' @seealso [rappdirs::user_config_dir()]
@@ -128,6 +128,36 @@ catr_set_cache_dir <- function(cache_dir,
 }
 
 
+#' Helper function to detect current `cache_dir`
+#'
+#' @export
+#'
+#' @description
+#' Detect the path to your current `cache_dir`. See [catr_set_cache_dir()]
+#'
+#' @param ... Ignored
+#' @return The path to the `cache_dir` used in this session
+#'
+#' @family cache utilities
+#' @seealso [catr_set_cache_dir()]
+#'
+#' @name catr_detect_cache_dir
+#' @rdname catr_detect_cache_dir
+#' @examples
+#'
+#' catr_detect_cache_dir()
+#'
+catr_detect_cache_dir <- function(...) {
+  # nocov start
+  # This is just a wrapper
+
+  list(...)
+  cache <- catr_hlp_detect_cache_dir()
+
+  cache
+  # nocov end
+}
+
 #' Detect cache dir for CatastRo
 #'
 #' @noRd
@@ -147,8 +177,11 @@ catr_hlp_detect_cache_dir <- function() {
       cached_path <- readLines(cache_config)
 
       # Case on empty cached path - would default
-      if (is.null(cached_path) ||
-        is.na(cached_path) || cached_path == "") {
+      if (any(
+        is.null(cached_path),
+        is.na(cached_path),
+        cached_path == ""
+      )) {
         cache_dir <- catr_set_cache_dir(
           overwrite = TRUE,
           verbose = FALSE

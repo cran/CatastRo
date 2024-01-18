@@ -20,21 +20,25 @@
 #' @family WMS
 #' @family spatial
 #'
-#' @seealso [mapSpain::esp_getTiles()], [tidyterra::geom_spatraster_rgb()],
+#' @seealso [mapSpain::esp_getTiles()]
+#' [tidyterra::geom_spatraster_rgb()],
 #' [terra::plotRGB()].
 #'
 #' @export
 #'
 #' @references
-#' [API Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf)
+#' [API
+#' Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf)
 #'
-#' [INSPIRE Services for Cadastral Cartography](https://www.catastro.minhap.es/webinspire/index.html)
+#' [INSPIRE Services for Cadastral
+#' Cartography](https://www.catastro.minhap.es/webinspire/index.html)
 #'
 #'
 #' @details
 #'
 #' When `x` is a numeric vector, make sure that the `srs` matches the
-#' coordinate values. When `x` is a `sf` object, the value `srs` is ignored.
+#' coordinate values. When `x` is a \CRANpkg{sf} object, the value `srs` is
+#' ignored.
 #'
 #' The query is performed using [EPSG:3857](https://epsg.io/3857) (Web Mercator)
 #' and the tile is projected back to the SRS of `x`. In
@@ -46,7 +50,8 @@
 #'
 #' The parameter `what` defines the layer to be extracted. The equivalence with
 #' the
-#' [API Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf)
+#' [API
+#' Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf)
 #' equivalence is:
 #' - "parcel": CP.CadastralParcel
 #' - "zoning": CP.CadastralZoning
@@ -67,8 +72,8 @@
 #' - "address": `"Number.ELFCadastre"`
 #' - "admboundary" y "admunit": `"ELFCadastre"`
 #'
-#' Check the
-#' [API Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf)
+#' Check the [API
+#' Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf)
 #' for more information.
 #'
 #' @examplesIf tolower(Sys.info()[["sysname"]]) != "linux"
@@ -76,7 +81,8 @@
 #'
 #' # With a bbox
 #'
-#' pict <- catr_wms_get_layer(c(222500, 4019500, 223700, 4020700),
+#' pict <- catr_wms_get_layer(
+#'   c(222500, 4019500, 223700, 4020700),
 #'   srs = 25830,
 #'   what = "parcel"
 #' )

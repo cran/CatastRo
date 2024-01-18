@@ -9,7 +9,7 @@ catr_hlp_dwnload <- function(api_entry, filename, cache_dir,
 
   cache_dir <- catr_hlp_cachedir(cache_dir)
 
-  if (verbose) message("Cache dir is ", cache_dir)
+  catr_hlp_dwn_verbose(verbose, "Cache dir is ", cache_dir)
 
   # Create filepath
   filepath <- file.path(cache_dir, filename)
@@ -18,43 +18,46 @@ catr_hlp_dwnload <- function(api_entry, filename, cache_dir,
   if (isFALSE(cache)) {
     dwnload <- FALSE
     filepath <- url
-    if (verbose) {
-      message("Try loading from ", filepath)
-    }
+
+    catr_hlp_dwn_verbose(verbose, "Try loading from ", filepath)
+
     return(filepath)
-  } else if (update_cache || isFALSE(localfile)) {
+  } else if (any(update_cache, isFALSE(localfile))) {
     dwnload <- TRUE
-    if (verbose) {
-      message(
-        "Downloading file from ",
-        url
-      )
-    }
-    if (verbose && update_cache) {
-      message("\nUpdating cache")
+
+    catr_hlp_dwn_verbose(verbose, "Downloading file from ", url)
+
+    if (update_cache) {
+      catr_hlp_dwn_verbose(verbose, "\nUpdating cache")
     }
   } else if (localfile) {
     dwnload <- FALSE
-    if (verbose && isFALSE(update_cache)) {
-      message("File already cached")
+    if (isFALSE(update_cache)) {
+      catr_hlp_dwn_verbose(verbose, "File already cached")
     }
   }
 
   # Downloading
   if (dwnload) {
-    err_dwnload <- try(download.file(url, filepath,
-      quiet = isFALSE(verbose),
-      mode = "wb"
-    ), silent = TRUE)
+    err_dwnload <- try(
+      download.file(url, filepath,
+        quiet = isFALSE(verbose),
+        mode = "wb"
+      ),
+      silent = TRUE
+    )
 
     # nocov start
     # On error retry
     if (inherits(err_dwnload, "try-error")) {
       if (verbose) message("Retrying query")
-      err_dwnload <- try(download.file(url, filepath,
-        quiet = isFALSE(verbose),
-        mode = "wb"
-      ), silent = TRUE)
+      err_dwnload <- try(
+        download.file(url, filepath,
+          quiet = isFALSE(verbose),
+          mode = "wb"
+        ),
+        silent = TRUE
+      )
     }
     # nocov end
 
@@ -77,7 +80,7 @@ catr_hlp_dwnload <- function(api_entry, filename, cache_dir,
   }
 
 
-  if (verbose && isTRUE(cache)) {
+  if (all(verbose, isTRUE(cache))) {
     message("Reading from local file ", filepath)
     size <- file.size(filepath)
     class(size) <- "object_size"
@@ -85,4 +88,11 @@ catr_hlp_dwnload <- function(api_entry, filename, cache_dir,
   }
 
   return(filepath)
+}
+
+catr_hlp_dwn_verbose <- function(verbose = TRUE, ...) {
+  if (verbose) {
+    message(...)
+  }
+  return(invisible())
 }

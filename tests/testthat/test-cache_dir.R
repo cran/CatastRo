@@ -1,18 +1,23 @@
 test_that("Test cache online", {
+  skip_on_os("windows")
   # Get current cache dir
   current <- catr_hlp_detect_cache_dir()
 
   cat("User cache dir is ", current, "\n")
 
   # Set a temp cache dir
-  expect_message(catr_set_cache_dir(verbose = TRUE))
+  expect_message(
+    catr_set_cache_dir(verbose = TRUE)
+  )
   testdir <- expect_silent(catr_set_cache_dir(
     file.path(current, "testthat"),
     verbose = FALSE
   ))
 
   # Clean
-  expect_silent(catr_clear_cache(config = FALSE, verbose = FALSE))
+  expect_silent(
+    catr_clear_cache(config = FALSE, verbose = FALSE)
+  )
   # Cache dir should be deleted now
   expect_false(dir.exists(testdir))
 

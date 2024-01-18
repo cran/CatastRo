@@ -22,7 +22,7 @@ catr_wms_get_layer(
 \itemize{
 \item A numeric vector of length 4 with the coordinates that defines
 the bounding box: \code{c(xmin, ymin, xmax, ymax)}
-\item A \code{sf/sfc} object, as provided by the \strong{sf} package.
+\item A \code{sf/sfc} object, as provided by the \CRANpkg{sf} package.
 }}
 
 \item{srs}{SRS/CRS to use on the query. To check the admitted values check
@@ -70,7 +70,8 @@ Get geotagged images from the Spanish Cadastre. This function is a wrapper of
 }
 \details{
 When \code{x} is a numeric vector, make sure that the \code{srs} matches the
-coordinate values. When \code{x} is a \code{sf} object, the value \code{srs} is ignored.
+coordinate values. When \code{x} is a \CRANpkg{sf} object, the value \code{srs} is
+ignored.
 
 The query is performed using \href{https://epsg.io/3857}{EPSG:3857} (Web Mercator)
 and the tile is projected back to the SRS of \code{x}. In
@@ -106,8 +107,7 @@ Some of the styles available are:
 \item "admboundary" y "admunit": \code{"ELFCadastre"}
 }
 
-Check the
-\href{https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf}{API Docs}
+Check the \href{https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf}{API Docs}
 for more information.
 }
 
@@ -117,7 +117,8 @@ for more information.
 
 # With a bbox
 
-pict <- catr_wms_get_layer(c(222500, 4019500, 223700, 4020700),
+pict <- catr_wms_get_layer(
+  c(222500, 4019500, 223700, 4020700),
   srs = 25830,
   what = "parcel"
 )
@@ -157,7 +158,8 @@ ggplot() +
 \href{https://www.catastro.minhap.es/webinspire/index.html}{INSPIRE Services for Cadastral Cartography}
 }
 \seealso{
-\code{\link[mapSpain:esp_getTiles]{mapSpain::esp_getTiles()}}, \code{\link[tidyterra:geom_spatraster_rgb]{tidyterra::geom_spatraster_rgb()}},
+\code{\link[mapSpain:esp_getTiles]{mapSpain::esp_getTiles()}}
+\code{\link[tidyterra:geom_spatraster_rgb]{tidyterra::geom_spatraster_rgb()}},
 \code{\link[terra:plotRGB]{terra::plotRGB()}}.
 
 INSPIRE API functions:

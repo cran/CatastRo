@@ -10,7 +10,7 @@
 #' @param x See **Details**. It could be:
 #'   - A numeric vector of length 4 with the coordinates that defines
 #'     the bounding box: `c(xmin, ymin, xmax, ymax)`
-#'   - A `sf/sfc` object, as provided by the **sf** package.
+#'   - A `sf/sfc` object, as provided by the \CRANpkg{sf} package.
 #' @param srs SRS/CRS to use on the query. To check the admitted values check
 #'   [catr_srs_values], specifically the `wfs_service` column. See **Details**.
 #'
@@ -20,12 +20,14 @@
 #' @family buildings
 #' @family spatial
 #'
-#' @return A `sf` object.
+#' @return A \CRANpkg{sf} object.
 #'
 #' @references
-#' [API Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-bu-WFS.pdf)
+#' [API
+#' Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-bu-WFS.pdf)
 #'
-#' [INSPIRE Services for Cadastral Cartography](https://www.catastro.minhap.es/webinspire/index.html)
+#' [INSPIRE Services for Cadastral
+#' Cartography](https://www.catastro.minhap.es/webinspire/index.html)
 #'
 #' @details
 #'
@@ -36,7 +38,7 @@
 #' a potential bug on the API side. The result is provided always in the SRS
 #' provided in `srs`.
 #'
-#' When `x` is a `sf` object, the value `srs` is ignored. The query is
+#' When `x` is a \CRANpkg{sf} object, the value `srs` is ignored. The query is
 #' performed using [EPSG:3857](https://epsg.io/3857) (Web Mercator) and the
 #' spatial object is projected back to the SRS of the initial object.
 #'
@@ -92,8 +94,8 @@ catr_wfs_get_buildings_bbox <- function(x, what = "building", srs,
 #' - By cadastral reference: Implemented on `catr_wfs_get_buildings_rc()`.
 #'   Extract objects of specific cadastral references.
 #'
-#' Check the
-#' [API Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-bu-WFS.pdf).
+#' Check the [API
+#' Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-bu-WFS.pdf).
 #'
 #' @param rc The cadastral reference to be extracted.
 #'

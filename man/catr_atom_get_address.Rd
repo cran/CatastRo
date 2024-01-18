@@ -34,11 +34,13 @@ would store the cached files on a temporary dir (See \code{\link[base:tempfile]{
 default is \code{FALSE}.}
 }
 \value{
-A \code{sf} object.
+A \CRANpkg{sf} object.
 }
 \description{
 Get the spatial data of all the addresses belonging to a single
-municipality using the INSPIRE ATOM service.
+municipality using the INSPIRE ATOM service. Additionally, the function also
+returns the corresponding street information on the fields with the
+prefix \verb{tfname_*}.
 }
 \examples{
 \donttest{
