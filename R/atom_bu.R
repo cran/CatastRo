@@ -1,28 +1,27 @@
-#' ATOM INSPIRE: Download all the Buildings of a Municipality
+#' ATOM INSPIRE: Download all the buildings of a municipality
 #'
 #'
 #' Get the spatial data of all the buildings belonging to a single municipality
 #' using the INSPIRE ATOM service.
 #'
 #' @references
-#' [API
-#' Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-ATOM.pdf)
 #'
-#' [INSPIRE Services for Cadastral
-#' Cartography](https://www.catastro.minhap.es/webinspire/index.html)
-#'
+#' ```{r child = "man/chunks/atompdf.Rmd"}
+#' ```
+
 #' @family INSPIRE
 #' @family ATOM
 #' @family buildings
 #' @family spatial
 #'
 #' @export
-#' @return A \CRANpkg{sf} object.
+#' @return A [`sf`][sf::st_sf] object.
 #'
 #' @inheritParams catr_atom_get_parcels
-#' @param what Information to load. It could be `"building"` for buildings,
-#'   `"buildingpart"` for parts of a building or `"other"` for others (
-#'   swimming pools, etc.).
+#' @param what Information to load. It could be:
+#'   - `"building"` for buildings.
+#'   - `"buildingpart"` for parts of a building.
+#'   - `"other"` for others elements, as swimming pools, etc.
 #' @examples
 #' \donttest{
 #' s <- catr_atom_get_buildings("Nava de la Asuncion",
@@ -43,17 +42,17 @@
 #'   )
 #' }
 #'
-catr_atom_get_buildings <- function(munic,
-                                    to = NULL,
-                                    what = "building",
-                                    cache = TRUE,
-                                    update_cache = FALSE,
-                                    cache_dir = NULL,
-                                    verbose = FALSE) {
+catr_atom_get_buildings <- function(munic, to = NULL,
+                                    what = c(
+                                      "building", "buildingpart",
+                                      "other"
+                                    ),
+                                    cache = TRUE, update_cache = FALSE,
+                                    cache_dir = NULL, verbose = FALSE) {
   # Sanity checks
-  if (!(what %in% c("building", "buildingpart", "other"))) {
-    stop("'what' should be 'building', 'buildingpart', 'other'")
-  }
+
+  what <- match.arg(what)
+
 
   # Transform
   what <- switch(what,

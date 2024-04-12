@@ -9,36 +9,33 @@
 #' @inheritParams mapSpain::esp_getTiles
 #' @inheritDotParams mapSpain::esp_getTiles res:mask
 #'
-#' @param what Layer to be extracted. Possible values are `"building"`,
-#'   `"parcel"`, `"zoning"`, `"address"`. See **Details**.
+#' @param what Layer to be extracted, see **Details**.
 #' @param styles Style of the WMS layer. See **Details**.
 #'
-#' @return A `SpatRaster` is returned, with 3 (RGB) or 4 (RGBA) layers. See
-#' [terra::rast()].
+#' @return
+#' A [`SpatRaster`][terra::rast] is returned, with 3 (RGB) or 4 (RGBA) layers,
+#' see [terra::RGB()].
 #'
 #' @family INSPIRE
 #' @family WMS
 #' @family spatial
 #'
-#' @seealso [mapSpain::esp_getTiles()]
-#' [tidyterra::geom_spatraster_rgb()],
-#' [terra::plotRGB()].
+#' @seealso
+#' [mapSpain::esp_getTiles()] and [terra::RGB()]. For plotting see
+#' [terra::plotRGB()] and [tidyterra::geom_spatraster_rgb()].
 #'
 #' @export
 #'
 #' @references
-#' [API
-#' Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf)
 #'
-#' [INSPIRE Services for Cadastral
-#' Cartography](https://www.catastro.minhap.es/webinspire/index.html)
-#'
+#' ```{r child = "man/chunks/wmspdf.Rmd"}
+#' ```
 #'
 #' @details
 #'
 #' When `x` is a numeric vector, make sure that the `srs` matches the
-#' coordinate values. When `x` is a \CRANpkg{sf} object, the value `srs` is
-#' ignored.
+#' coordinate values. When `x` is a [`sf`][sf::st_sf] object, the value
+#' `srs` is ignored.
 #'
 #' The query is performed using [EPSG:3857](https://epsg.io/3857) (Web Mercator)
 #' and the tile is projected back to the SRS of `x`. In
@@ -53,24 +50,24 @@
 #' [API
 #' Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf)
 #' equivalence is:
-#' - "parcel": CP.CadastralParcel
-#' - "zoning": CP.CadastralZoning
-#' - "building": BU.Building
-#' - "buildingpart": BU.BuildingPart
-#' - "address": AD.Address
-#' - "admboundary": AU.AdministrativeBoundary
-#' - "admunit": AU.AdministrativeUnit
+#' - `"parcel"`: CP.CadastralParcel
+#' - `"zoning"`: CP.CadastralZoning
+#' - `"building"`: BU.Building
+#' - `"buildingpart"`: BU.BuildingPart
+#' - `"address"`: AD.Address
+#' - `"admboundary"`: AU.AdministrativeBoundary
+#' - `"admunit"`: AU.AdministrativeUnit
 #'
 #' # Styles
 #'
 #' The WMS service provide different styles on each layer (`what` parameter).
 #' Some of the styles available are:
-#' - "parcel": styles : `"BoundariesOnly"`, `"ReferencePointOnly"`,
+#' - `"parcel"`: styles : `"BoundariesOnly"`, `"ReferencePointOnly"`,
 #'   `"ELFCadastre"`.
-#' - "zoning": styles : `"BoundariesOnly"`, `"ELFCadastre"`.
-#' - "building" and "buildingpart": `"ELFCadastre"`
-#' - "address": `"Number.ELFCadastre"`
-#' - "admboundary" y "admunit": `"ELFCadastre"`
+#' - `"zoning"`: styles : `"BoundariesOnly"`, `"ELFCadastre"`.
+#' - `"building"`, `"buildingpart"`: `"ELFCadastre"`
+#' - `"address"`: `"Number.ELFCadastre"`
+#' - `"admboundary"`, `"admunit"`: `"ELFCadastre"`
 #'
 #' Check the [API
 #' Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-WMS.pdf)
@@ -116,7 +113,10 @@
 #' }
 catr_wms_get_layer <- function(x,
                                srs,
-                               what = "building",
+                               what = c(
+                                 "building", "buildingpart", "parcel",
+                                 "zoning", "address", "admboundary", "admunit"
+                               ),
                                styles = "default",
                                update_cache = FALSE,
                                cache_dir = NULL,
@@ -129,19 +129,7 @@ catr_wms_get_layer <- function(x,
 
   # Manage layer
 
-  valid_values <- c(
-    "building", "parcel", "zoning", "address",
-    "buildingpart",
-    "admboundary",
-    "admunit"
-  )
-
-  if (!(what %in% valid_values)) {
-    stop(
-      "'what' should be one of ",
-      paste0("'", valid_values, "'", collapse = ", ")
-    )
-  }
+  what <- match.arg(what)
 
   layer <- switch(what,
     "building" = "Catastro.Building",

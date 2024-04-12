@@ -3,7 +3,7 @@
 \name{catr_wfs_get_buildings_bbox}
 \alias{catr_wfs_get_buildings_bbox}
 \alias{catr_wfs_get_buildings_rc}
-\title{WFS INSPIRE: Download Buildings}
+\title{WFS INSPIRE: Download buildings}
 \usage{
 catr_wfs_get_buildings_bbox(x, what = "building", srs, verbose = FALSE)
 
@@ -17,9 +17,12 @@ the bounding box: \code{c(xmin, ymin, xmax, ymax)}
 \item A \code{sf/sfc} object, as provided by the \CRANpkg{sf} package.
 }}
 
-\item{what}{Information to load. It could be \code{"building"} for buildings,
-\code{"buildingpart"} for parts of a building or \code{"other"} for others (
-swimming pools, etc.).}
+\item{what}{Information to load. It could be:
+\itemize{
+\item \code{"building"} for buildings.
+\item \code{"buildingpart"} for parts of a building.
+\item \code{"other"} for others elements, as swimming pools, etc.
+}}
 
 \item{srs}{SRS/CRS to use on the query. To check the admitted values check
 \link{catr_srs_values}, specifically the \code{wfs_service} column. See \strong{Details}.}
@@ -30,7 +33,7 @@ default is \code{FALSE}.}
 \item{rc}{The cadastral reference to be extracted.}
 }
 \value{
-A \CRANpkg{sf} object.
+A \code{\link[sf:sf]{sf}} object.
 }
 \description{
 Get the spatial data of buildings. The WFS Service allows to perform
@@ -44,8 +47,6 @@ Extract objects included on the bounding box provided. See \strong{Details}.
 \item By cadastral reference: Implemented on \code{catr_wfs_get_buildings_rc()}.
 Extract objects of specific cadastral references.
 }
-
-Check the \href{https://www.catastro.minhap.es/webinspire/documentos/inspire-bu-WFS.pdf}{API Docs}.
 }
 \details{
 When \code{x} is a numeric vector, make sure that the \code{srs} matches the
@@ -92,20 +93,20 @@ ggplot(rc) +
 \dontshow{\}) # examplesIf}
 }
 \references{
-\href{https://www.catastro.minhap.es/webinspire/documentos/inspire-bu-WFS.pdf}{API Documentation}
+\href{https://www.catastro.minhap.es/webinspire/documentos/inspire-ad-WFS.pdf}{API Documentation}.
 
-\href{https://www.catastro.minhap.es/webinspire/index.html}{INSPIRE Services for Cadastral Cartography}
+\href{https://www.catastro.minhap.es/webinspire/index.html}{INSPIRE Services for Cadastral Cartography}.
 }
 \seealso{
 \code{\link[sf:st_bbox]{sf::st_bbox()}}
 
 INSPIRE API functions:
-\code{\link{catr_atom_get_address_db_all}()},
 \code{\link{catr_atom_get_address}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
+\code{\link{catr_atom_get_address_db_all}()},
 \code{\link{catr_atom_get_buildings}()},
-\code{\link{catr_atom_get_parcels_db_all}()},
+\code{\link{catr_atom_get_buildings_db_all}()},
 \code{\link{catr_atom_get_parcels}()},
+\code{\link{catr_atom_get_parcels_db_all}()},
 \code{\link{catr_wfs_get_address_bbox}()},
 \code{\link{catr_wfs_get_parcels_bbox}()},
 \code{\link{catr_wms_get_layer}()}
@@ -116,8 +117,8 @@ Other INSPIRE WFS services:
 \code{\link{catr_wfs_get_parcels_bbox}()}
 
 Other buildings: 
-\code{\link{catr_atom_get_buildings_db_all}()},
-\code{\link{catr_atom_get_buildings}()}
+\code{\link{catr_atom_get_buildings}()},
+\code{\link{catr_atom_get_buildings_db_all}()}
 
 Other spatial: 
 \code{\link{catr_atom_get_address}()},

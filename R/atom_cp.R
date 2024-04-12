@@ -1,15 +1,13 @@
-#' ATOM INSPIRE: Download all the Cadastral Parcels of a Municipality
+#' ATOM INSPIRE: Download all the cadastral parcels of a municipality
 #'
 #'
 #' Get the spatial data of all the cadastral parcels belonging to a single
 #' municipality using the INSPIRE ATOM service.
 #'
 #' @references
-#' [API
-#' Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-ATOM.pdf)
 #'
-#' [INSPIRE Services for Cadastral
-#' Cartography](https://www.catastro.minhap.es/webinspire/index.html)
+#' ```{r child = "man/chunks/atompdf.Rmd"}
+#' ```
 #'
 #' @family INSPIRE
 #' @family ATOM
@@ -17,7 +15,7 @@
 #' @family spatial
 #'
 #' @export
-#' @return A \CRANpkg{sf} object.
+#' @return A [`sf`][sf::st_sf] object.
 #'
 #' @inheritParams catr_atom_get_parcels_db_all
 #' @param munic Municipality to extract, It can be a part of a string or the

@@ -4,7 +4,7 @@
 \alias{catr_atom_get_parcels_db_all}
 \alias{catr_atom_get_parcels_to}
 \alias{catr_atom_get_parcels_db_to}
-\title{ATOM INSPIRE: Reference Database for ATOM Cadastral Parcels}
+\title{ATOM INSPIRE: Reference database for ATOM cadastral parcels}
 \source{
 \url{https://www.catastro.minhap.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml}
 }
@@ -31,8 +31,9 @@ catr_atom_get_parcels_db_to(
 \item{update_cache}{A logical whether to update cache. Default is \code{FALSE}.
 When set to \code{TRUE} it would force a fresh download of the source file.}
 
-\item{cache_dir}{A path to a cache directory. On missing value the function
-would store the cached files on a temporary dir (See \code{\link[base:tempfile]{base::tempdir()}}).}
+\item{cache_dir}{A path to a cache directory. On \code{NULL} value (the default)
+the function would store the cached files on the
+\code{\link[base:tempfile]{tempdir}}.}
 
 \item{verbose}{Logical, displays information. Useful for debugging,
 default is \code{FALSE}.}
@@ -41,7 +42,7 @@ default is \code{FALSE}.}
 would perform a search using \code{\link[base:grep]{base::grep()}}.}
 }
 \value{
-A \CRANpkg{tibble} with the information requested.
+A \code{\link[tibble:tibble]{tibble}} with the information requested.
 \itemize{
 \item \code{catr_atom_get_parcels_db_all()} includes the following fields:
 \itemize{
@@ -63,7 +64,7 @@ this service is updated twice a year}.
 }
 \description{
 Create a database containing the urls provided in the INSPIRE ATOM service
-of the Spanish Cadastre for extracting Cadastral Parcels.
+of the Spanish Cadastre for extracting cadastral parcels.
 \itemize{
 \item \code{catr_atom_get_parcels_db_all()} provides a top-level table including
 information of all the territorial offices (except Basque Country and
@@ -80,10 +81,10 @@ catr_atom_get_parcels_db_all()
 }
 \seealso{
 INSPIRE API functions:
-\code{\link{catr_atom_get_address_db_all}()},
 \code{\link{catr_atom_get_address}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
+\code{\link{catr_atom_get_address_db_all}()},
 \code{\link{catr_atom_get_buildings}()},
+\code{\link{catr_atom_get_buildings_db_all}()},
 \code{\link{catr_atom_get_parcels}()},
 \code{\link{catr_wfs_get_address_bbox}()},
 \code{\link{catr_wfs_get_buildings_bbox}()},
@@ -91,10 +92,10 @@ INSPIRE API functions:
 \code{\link{catr_wms_get_layer}()}
 
 Other INSPIRE ATOM services:
-\code{\link{catr_atom_get_address_db_all}()},
 \code{\link{catr_atom_get_address}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
+\code{\link{catr_atom_get_address_db_all}()},
 \code{\link{catr_atom_get_buildings}()},
+\code{\link{catr_atom_get_buildings_db_all}()},
 \code{\link{catr_atom_get_parcels}()},
 \code{\link{catr_atom_search_munic}()}
 

@@ -51,7 +51,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -62,7 +62,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -347,14 +347,15 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <!-- ovcservice.Rmd is generated from ovcservice.Rmd.orig. Please edit that file -->
 <p><strong>CatastRo</strong> allows to query the OVCCoordenadas Web
 Service provided on <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">Sede
-electrónica del Catastro</a> API directly through a R IDE.</p>
+electrónica del Catastro</a> API directly through a <strong>R</strong>
+IDE.</p>
 <p>This API is used to retrieve the spatial coordinates of a urban
 property, moreover it is not needed to be the owner to get the
-information, actually it is enough to know the cadastral reference (RC)
-of the property and its address (in fact, it is only completely
-compulsory to know the RC, however, to ensure a good result from the
-response and to avoid mistakes in the RC, the address can be passed to
-the query too).</p>
+information, actually it is enough to know the cadastral reference
+(<em>RC</em>) of the property and its address (in fact, it is only
+completely compulsory to know the RC, however, to ensure a good result
+from the response and to avoid mistakes in the RC, the address can be
+passed to the query too).</p>
 <p>Secondly, the API can be used to obtain a RC of a urban property, for
 this information, the API asks for the longitude and the latitude.
 Furthermore, it allows to choose the spacial reference system (SRS, also
@@ -365,7 +366,8 @@ return all the properties located in a square 50-meters-side around the
 given point.</p>
 <p>The documentation of this API can be found <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">here</a>.</p>
 <p>These functions are named <code>catr_ovc_*</code> and returns a
-tibble, as provided by the package <strong>tibble</strong>.</p>
+<code>tibble</code>, as provided by the package
+<strong>tibble</strong>.</p>
 <div id="catastro-api" class="section level2">
 <h2>CatastRo API</h2>
 <p>The OVCCoordenadas Web Service can be reached using the following
@@ -379,10 +381,11 @@ functions:</p>
 <div id="reverse-geocoding-cadastral-references" class="section level2">
 <h2>Reverse Geocoding Cadastral References</h2>
 <p>The function <code>catr_ovc_get_rccoor()</code> receives the
-coordinates (<em>lat</em> and <em>lon</em>) and the spatial reference
-system (SRS) used to express them. The return is a tibble with the
-cadastral reference of the property in that spatial point, including
-also other information as the address (town street and number).</p>
+coordinates (<code>lat</code> and <code>lon</code>) and the spatial
+reference system (<code>srs</code>) used to express them. The return is
+a <code>tibble</code> with the cadastral reference of the property in
+that spatial point, including also other information as the address
+(town street and number).</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">catr_ovc_get_rccoor</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fl">38.6196566583596</span>,</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">lon =</span> <span class="sc">-</span><span class="fl">3.45624183836806</span>,</span>
@@ -426,7 +429,8 @@ TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
 </tr>
 </tbody>
 </table>
-<p>The function accept as a SRS argument the following values:</p>
+<p>The function accept as a <code>srs</code> argument the following
+values:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">data</span>(catr_srs_values)</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># OVC valid codes</span></span>
@@ -503,8 +507,8 @@ TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
 </tbody>
 </table>
 <p>It is also possible to get all the cadastral references in a square
-of 50-meters’ side centered in the coordinates <em>lat</em> and
-<em>lon</em> through the function
+of 50-meters’ side centered in the coordinates <code>lat</code> and
+<code>lon</code> through the function
 <code>catr_ovc_get_rccoor_distancia()</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">catr_ovc_get_rccoor_distancia</span>(</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fl">40.96002</span>,</span>
@@ -589,8 +593,8 @@ of 50-meters’ side centered in the coordinates <em>lat</em> and
 <code>catr_ovc_get_cpmrc()</code> a cadastral reference
 (<code>rc</code>), the province (<code>province</code>) and the town
 (<code>municipality</code>), <code>catr_ovc_get_cpmrc()</code> returns
-its coordinates <em>lat</em> and <em>lon</em> in a particular
-<em>SRS</em> besides the address (town, street and number).</p>
+its coordinates <code>lat</code> and <code>lon</code> in a particular
+<code>srs</code> besides the address (town, street and number).</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span>,</span>
@@ -649,7 +653,7 @@ argument <code>province</code> is needed to be passed. If it is passed a
 value to the <code>province</code> argument while the
 <code>municipality</code> argument is <code>NULL</code>, the function
 <code>catr_ovc_get_cpmrc()</code> will throw a message and would return
-a tibble with no data.</p>
+a <code>tibble</code> with no data.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">municipality =</span> <span class="st">&quot;SANTA CRUZ DE MUDELA&quot;</span></span>

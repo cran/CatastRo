@@ -2,7 +2,7 @@
 % Please edit documentation in R/atom_cp.R
 \name{catr_atom_get_parcels}
 \alias{catr_atom_get_parcels}
-\title{ATOM INSPIRE: Download all the Cadastral Parcels of a Municipality}
+\title{ATOM INSPIRE: Download all the cadastral parcels of a municipality}
 \usage{
 catr_atom_get_parcels(
   munic,
@@ -31,14 +31,15 @@ or \code{"zoning"} for cadastral zoning.}
 \item{update_cache}{A logical whether to update cache. Default is \code{FALSE}.
 When set to \code{TRUE} it would force a fresh download of the source file.}
 
-\item{cache_dir}{A path to a cache directory. On missing value the function
-would store the cached files on a temporary dir (See \code{\link[base:tempfile]{base::tempdir()}}).}
+\item{cache_dir}{A path to a cache directory. On \code{NULL} value (the default)
+the function would store the cached files on the
+\code{\link[base:tempfile]{tempdir}}.}
 
 \item{verbose}{Logical, displays information. Useful for debugging,
 default is \code{FALSE}.}
 }
 \value{
-A \CRANpkg{sf} object.
+A \code{\link[sf:sf]{sf}} object.
 }
 \description{
 Get the spatial data of all the cadastral parcels belonging to a single
@@ -63,16 +64,16 @@ ggplot(s) +
 
 }
 \references{
-\href{https://www.catastro.minhap.es/webinspire/documentos/inspire-ATOM.pdf}{API Documentation}
+\href{https://www.catastro.minhap.es/webinspire/documentos/inspire-ATOM.pdf}{API Documentation}.
 
-\href{https://www.catastro.minhap.es/webinspire/index.html}{INSPIRE Services for Cadastral Cartography}
+\href{https://www.catastro.minhap.es/webinspire/index.html}{INSPIRE Services for Cadastral Cartography}.
 }
 \seealso{
 INSPIRE API functions:
-\code{\link{catr_atom_get_address_db_all}()},
 \code{\link{catr_atom_get_address}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
+\code{\link{catr_atom_get_address_db_all}()},
 \code{\link{catr_atom_get_buildings}()},
+\code{\link{catr_atom_get_buildings_db_all}()},
 \code{\link{catr_atom_get_parcels_db_all}()},
 \code{\link{catr_wfs_get_address_bbox}()},
 \code{\link{catr_wfs_get_buildings_bbox}()},
@@ -80,10 +81,10 @@ INSPIRE API functions:
 \code{\link{catr_wms_get_layer}()}
 
 Other INSPIRE ATOM services:
-\code{\link{catr_atom_get_address_db_all}()},
 \code{\link{catr_atom_get_address}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
+\code{\link{catr_atom_get_address_db_all}()},
 \code{\link{catr_atom_get_buildings}()},
+\code{\link{catr_atom_get_buildings_db_all}()},
 \code{\link{catr_atom_get_parcels_db_all}()},
 \code{\link{catr_atom_search_munic}()}
 

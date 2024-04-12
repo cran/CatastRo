@@ -1,4 +1,4 @@
-#' WFS INSPIRE: Download Cadastral Parcels
+#' WFS INSPIRE: Download cadastral parcels
 #'
 #' @description
 #' Get the spatial data of cadastral parcels and zones. The WFS Service allows
@@ -15,14 +15,13 @@
 #' @family parcels
 #' @family spatial
 #'
-#' @return A \CRANpkg{sf} object.
+#' @return A [`sf`][sf::st_sf] object.
 #'
 #' @references
-#' [API
-#' Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-cp-WFS.pdf)
 #'
-#' [INSPIRE Services for Cadastral
-#' Cartography](https://www.catastro.minhap.es/webinspire/index.html)
+#' ```{r child = "man/chunks/wfspdf.Rmd"}
+#' ```
+#'
 #'
 #' @details
 #'
@@ -33,9 +32,9 @@
 #' a potential bug on the API side. The result is provided always in the SRS
 #' provided in `srs`.
 #'
-#' When `x` is a \CRANpkg{sf} object, the value `srs` is ignored. The query is
-#' performed using [EPSG:3857](https://epsg.io/3857) (Web Mercator) and the
-#' spatial object is projected back to the SRS of the initial object.
+#' When `x` is a [`sf`][sf::st_sf] object, the value `srs` is ignored. The
+#' query is performed using [EPSG:3857](https://epsg.io/3857) (Web Mercator)
+#' and the spatial object is projected back to the SRS of the initial object.
 #'
 #' # API Limits
 #' The API service is limited to the following constrains:
@@ -163,9 +162,6 @@ catr_wfs_get_parcels_neigh_parcel <- function(rc, srs = NULL, verbose = FALSE) {
 #'  `catr_wfs_get_parcels_parcel_zoning()`. Extract cadastral parcels of a
 #'  specific cadastral zone.
 #'
-#' Check the
-#' [API
-#' Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-cp-WFS.pdf).
 #'
 #' @rdname catr_wfs_get_parcels
 #' @export

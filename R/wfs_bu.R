@@ -1,4 +1,4 @@
-#' WFS INSPIRE: Download Buildings
+#' WFS INSPIRE: Download buildings
 #'
 #' @description
 #' Get the spatial data of buildings. The WFS Service allows to perform
@@ -20,14 +20,12 @@
 #' @family buildings
 #' @family spatial
 #'
-#' @return A \CRANpkg{sf} object.
+#' @return A [`sf`][sf::st_sf] object.
 #'
 #' @references
-#' [API
-#' Documentation](https://www.catastro.minhap.es/webinspire/documentos/inspire-bu-WFS.pdf)
 #'
-#' [INSPIRE Services for Cadastral
-#' Cartography](https://www.catastro.minhap.es/webinspire/index.html)
+#' ```{r child = "man/chunks/wfspdf.Rmd"}
+#' ```
 #'
 #' @details
 #'
@@ -94,8 +92,6 @@ catr_wfs_get_buildings_bbox <- function(x, what = "building", srs,
 #' - By cadastral reference: Implemented on `catr_wfs_get_buildings_rc()`.
 #'   Extract objects of specific cadastral references.
 #'
-#' Check the [API
-#' Docs](https://www.catastro.minhap.es/webinspire/documentos/inspire-bu-WFS.pdf).
 #'
 #' @param rc The cadastral reference to be extracted.
 #'

@@ -2,39 +2,36 @@
 #'
 #' @description
 #' Implementation of the OVCCoordenadas service
-#' [Consulta
-#' CPMRC](https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx?op=Consulta_CPMRC).
+#' [Consulta CPMRC](`r ovcurl("CPMRC")`).
+#'
 #' Return the coordinates for a specific cadastral reference.
 #'
 #' @references
-#' [Consulta
-#' CPMRC](https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx?op=Consulta_CPMRC)
+#' [Consulta CPMRC](`r ovcurl("CPMRC")`).
 #'
 #' @family OVCCoordenadas
 #' @family cadastral references
-#' @seealso [catr_srs_values], `vignette("ovcservice")`
+#' @seealso [catr_srs_values], `vignette("ovcservice", package = "CatastRo")`
 #' @inheritParams catr_ovc_get_rccoor
 #'
 #' @param rc The cadastral reference to be geocoded.
 #' @param province,municipality Optional, used for narrowing the search.
 #'
-#' @return A \CRANpkg{tibble}. See **Details**
+#' @return A [`tibble`][tibble::tibble]. See **Details**
 #'
 #' @export
 #'
 #' @details
 #'
 #' When the API does not provide any result, the function returns a
-#' \CRANpkg{tibble} with the input parameters only.
+#' [`tibble`][tibble::tibble] with the input parameters only.
 #'
-#' On a successful query, the function returns a \CRANpkg{tibble} with one row
-#' by cadastral reference, including the following columns:
+#' On a successful query, the function returns a [`tibble`][tibble::tibble]
+#' with one row by cadastral reference, including the following columns:
 #' * `xcoord`, `ycoord`: X and Y coordinates in the specified SRS.
 #' * `refcat`: Cadastral Reference.
 #' * `address`: Address as it is recorded on the Cadastre.
-#' * Rest of fields: Check the API Docs on
-#' [Consulta
-#' CPMRC](https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx?op=Consulta_CPMRC)
+#' * Rest of fields: Check the API Docs.
 #'
 #' @examplesIf tolower(Sys.info()[["sysname"]]) != "linux"
 #' \donttest{
@@ -91,30 +88,24 @@ catr_ovc_get_cpmrc <- function(rc,
     Municipio = municipality
   )
 
-
-
   ## GET
+  url <- httr2::url_parse(api_entry)
+  url$query <- query
+  url <- httr2::url_build(url)
 
   if (verbose) {
-    url <- httr::parse_url(api_entry)
-    url <- httr::modify_url(url, query = query)
-
     message("Querying url:\n\t", url)
   }
 
-
-
-  api_res <- httr::GET(api_entry, query = query)
-
+  api_res <- httr2::request(url)
+  api_res <- httr2::req_perform(api_res)
 
   # Check error on status
-  httr::stop_for_status(api_res)
-
+  httr2::resp_check_status(api_res)
 
   # Extract results
-  content <- httr::content(api_res)
+  content <- httr2::resp_body_xml(api_res)
   content_list <- xml2::as_list(content)
-
 
   # Check API custom error
   err <- content_list[["consulta_coordenadas"]]
@@ -157,4 +148,26 @@ catr_ovc_get_cpmrc <- function(rc,
   )
 
   return(out)
+}
+
+
+# Helper
+ovcurl <- function(x) {
+  # nocov start
+  base <- "https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc"
+
+
+  app <- switch(x,
+    "CPMRC" = "ovccoordenadas.asmx?op=Consulta_CPMRC",
+    "mun" = "ovccallejerocodigos.asmx?op=ConsultaMunicipioCodigos",
+    "prov" = "ovccallejerocodigos.asmx?op=ConsultaProvincia",
+    "RCCOORD" = "ovccoordenadas.asmx?op=Consulta_RCCOOR_Distancia",
+    "RCCOOR" = "ovccoordenadas.asmx?op=Consulta_RCCOOR",
+    NULL
+  )
+
+  if (x == "RCCOORD") base <- gsub("https", "http", base)
+
+  paste0(c(base, app), collapse = "/")
+  # nocov end
 }

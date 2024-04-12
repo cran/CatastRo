@@ -10,8 +10,9 @@
 [![CRAN-results](https://badges.cranchecks.info/worst/CatastRo.svg)](https://cran.r-project.org/web/checks/check_results_CatastRo.html)
 [![Downloads](https://cranlogs.r-pkg.org/badges/CatastRo)](https://CRAN.R-project.org/package=CatastRo)
 [![r-universe](https://ropenspain.r-universe.dev/badges/CatastRo)](https://ropenspain.r-universe.dev/CatastRo)
-[![R-CMD-check](https://github.com/rOpenSpain/CatastRo/workflows/R-CMD-check/badge.svg)](https://github.com/rOpenSpain/CatastRo/actions?query=workflow%3AR-CMD-check)
-[![codecov](https://codecov.io/gh/rOpenSpain/CatastRo/branch/master/graph/badge.svg?token=6L01BKLL85)](https://app.codecov.io/gh/rOpenSpain/CatastRo)
+[![R-CMD-check](https://github.com/rOpenSpain/CatastRo/actions/workflows/roscron-check-standard.yaml/badge.svg)](https://github.com/rOpenSpain/CatastRo/actions/workflows/roscron-check-standard.yaml)
+[![R-hub](https://github.com/rOpenSpain/CatastRo/actions/workflows/rhub.yaml/badge.svg)](https://github.com/rOpenSpain/CatastRo/actions/workflows/rhub.yaml)
+[![codecov](https://codecov.io/gh/rOpenSpain/CatastRo/graph/badge.svg?token=KPPwTkZjW6)](https://app.codecov.io/gh/rOpenSpain/CatastRo)
 [![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.6044091-blue)](https://doi.org/10.5281/zenodo.6044091)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
@@ -50,8 +51,7 @@ Alternatively, you can install the developing version of **CatastRo**
 with:
 
 ``` r
-library(remotes)
-install_github("rOpenSpain/CatastRo", dependencies = TRUE)
+remotes::install_github("rOpenSpain/CatastRo", dependencies = TRUE)
 ```
 
 ## Package API
@@ -67,8 +67,9 @@ references using the
 service.
 
 These functions are named `catr_ovc_get_*` and returns a tibble, as
-provided by the package **tibble**. See `vignette("ovcservice")`, where
-these functions are described.
+provided by the package **tibble**. See
+`vignette("ovcservice", package = "CatastRo")` where these functions are
+described.
 
 ### INSPIRE
 
@@ -77,8 +78,8 @@ These functions return spatial object (on the formats provided by the
 INSPIRE](https://www.catastro.minhap.es/webinspire/index.html) service.
 
 Note that the coverage of this service is 95% of the Spanish territory,
-excluding Basque Country and Navarre that have their own independent
-cadastral offices.
+<u>excluding Basque Country and Navarre</u>[^1] that have their own
+independent cadastral offices.
 
 There are three types of functions, each one querying a different
 service:
@@ -94,10 +95,10 @@ These functions are named `catr_atom_get_xxx`.
 #### WFS service
 
 The WFS service allows to download vector objects of specific cadastral
-elements. The result is provided as `sf` objects (See **sf** package).
-
-Note that there are some limitations on the extension and number of
-elements to query. For batch-downloading the ATOM service is preferred.
+elements. The result is provided as `sf` class objects (see
+[**sf**](https://r-spatial.github.io/sf/) package). Note that there are
+some limitations on the extension and number of elements to query. For
+batch-downloading the ATOM service is preferred.
 
 These functions are named `catr_wms_get_xxx`.
 
@@ -105,7 +106,7 @@ These functions are named `catr_wms_get_xxx`.
 
 This service allows to download georeferenced images of different
 cadastral elements. The result is a raster on the format provides by
-**terra**.
+[**terra**](https://rspatial.github.io/terra/reference/terra-package.html).
 
 There is a single function for querying this service:
 `catr_wms_get_layer()`.
@@ -172,7 +173,7 @@ ggplot(bu) +
 
 ``` r
 wfs_get_buildings <- catr_wfs_get_buildings_bbox(
-  c(-5.567429, 42.598935, -5.565509, 42.600396),
+  c(-5.569, 42.598, -5.564, 42.601),
   srs = 4326
 )
 
@@ -234,7 +235,7 @@ A BibTeX entry for LaTeX users is:
       title = {{CatastRo}: Interface to the {API} Sede Electrónica Del Catastro},
       author = {Ángel {Delgado Panadero} and Diego Hernangómez},
       year = {2024},
-      version = {0.3.0},
+      version = {0.3.1},
       url = {https://ropenspain.github.io/CatastRo/},
       doi = {10.5281/zenodo.6044091},
       abstract = {Access public spatial data available under the INSPIRE directive. Tools for downloading references and addresses of properties, as well as map images.},
@@ -244,3 +245,8 @@ A BibTeX entry for LaTeX users is:
 
 Check the GitHub page for [source
 code](https://github.com/ropenspain/CatastRo/).
+
+[^1]: The package
+    [**CatastRoNav**](https://ropenspain.github.io/CatastRoNav/)
+    provides access to the Cadastre of Navarre, with similar
+    functionalities than **CatastRo**.
