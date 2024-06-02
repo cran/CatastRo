@@ -1,3 +1,7 @@
+# CatastRo 0.4.0
+
+-   Update entry points (#53).
+
 # CatastRo 0.3.1
 
 -   Migrate from **httr** to **httr2** (#44), no visible change for users.
