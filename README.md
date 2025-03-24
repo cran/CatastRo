@@ -13,7 +13,7 @@
 [![R-CMD-check](https://github.com/rOpenSpain/CatastRo/actions/workflows/roscron-check-standard.yaml/badge.svg)](https://github.com/rOpenSpain/CatastRo/actions/workflows/roscron-check-standard.yaml)
 [![R-hub](https://github.com/rOpenSpain/CatastRo/actions/workflows/rhub.yaml/badge.svg)](https://github.com/rOpenSpain/CatastRo/actions/workflows/rhub.yaml)
 [![codecov](https://codecov.io/gh/rOpenSpain/CatastRo/graph/badge.svg?token=KPPwTkZjW6)](https://app.codecov.io/gh/rOpenSpain/CatastRo)
-[![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.6044091-blue)](https://doi.org/10.5281/zenodo.6044091)
+[![DOI](https://img.shields.io/badge/DOI-10.32614/CRAN.package.CatastRo-blue)](https://doi.org/10.32614/CRAN.package.CatastRo)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -54,6 +54,29 @@ with:
 remotes::install_github("rOpenSpain/CatastRo", dependencies = TRUE)
 ```
 
+## Known issues
+
+The SSL certificate of the Spanish Cadastre present some issues that may
+cause an error when using **CatastRo** (specially on Mac OS, see issue
+[\#40](https://github.com/rOpenSpain/CatastRo/issues/40)):
+
+``` r
+#> ...(more lines on error)
+#>
+#> 1: In download.file(url, filepath, quiet = isFALSE(verbose), mode = "wb") :
+#>   URL 'https://www.catastro.minhafp.es/INSPIRE/Addresses/ES.SDGC.AD.atom.xml':
+#>   status was 'SSL peer certificate or SSH remote key was not OK'
+#>
+#> ...
+```
+
+You can try to fix it by running this line on your session right after
+you start using the package:
+
+``` r
+options(download.file.method = "curl", download.file.extra = "-k -L")
+```
+
 ## Package API
 
 The functions of **CatastRo** are organized by API endpoint. The package
@@ -75,7 +98,8 @@ described.
 
 These functions return spatial object (on the formats provided by the
 **sf** or **terra** using the [Catastro
-INSPIRE](https://www.catastro.minhap.es/webinspire/index.html) service.
+INSPIRE](https://www.catastro.hacienda.gob.es/webinspire/index.html)
+service.
 
 Note that the coverage of this service is 95% of the Spanish territory,
 <u>excluding Basque Country and Navarre</u>[^1] that have their own
@@ -114,7 +138,7 @@ There is a single function for querying this service:
 #### Terms and conditions of use
 
 Please check the [downloading
-provisions](https://www.catastro.minhap.es/webinspire/documentos/Licencia.pdf)
+provisions](https://www.catastro.hacienda.gob.es/webinspire/documentos/Licencia.pdf)
 of the service.
 
 ## Examples
@@ -167,7 +191,7 @@ ggplot(bu) +
   ggtitle("Nava de la Asunción, Segovia")
 ```
 
-<img src="man/figures/README-atom-1.png" width="100%" />
+<img src="man/figures/README-atom-1.png" alt="Extracting buildings in Nava de la Asuncion with the ATOM service" width="100%" />
 
 ### Extract geometries using the WFS service
 
@@ -183,29 +207,7 @@ ggplot(wfs_get_buildings) +
   ggtitle("Leon Cathedral, Spain")
 ```
 
-<img src="man/figures/README-wfs-1.png" width="100%" />
-
-### Extract maps using the WMS service
-
-``` r
-# For tiles better project
-
-wfs_get_buildings_pr <- sf::st_transform(wfs_get_buildings, 25830)
-
-wms_bu <- catr_wms_get_layer(wfs_get_buildings_pr,
-  srs = 25830,
-  bbox_expand = 0.2
-)
-
-# Map
-# Load tidyterra
-library(tidyterra)
-ggplot() +
-  geom_spatraster_rgb(data = wms_bu) +
-  geom_sf(data = wfs_get_buildings_pr, fill = "red", alpha = 0.6)
-```
-
-<img src="man/figures/README-wms-1.png" width="100%" />
+<img src="man/figures/README-wfs-1.png" alt="Extract Leon Cathedral with the WFS service" width="100%" />
 
 ## A note on caching
 
@@ -223,21 +225,21 @@ it will load it, speeding up the process.
 ## Citation
 
 <p>
-Delgado Panadero Á, Hernangómez D (2024). <em>CatastRo: Interface to the
+Delgado Panadero Á, Hernangómez D (2025). <em>CatastRo: Interface to the
 API Sede Electrónica Del Catastro</em>.
-<a href="https://doi.org/10.5281/zenodo.6044091">doi:10.5281/zenodo.6044091</a>,
+<a href="https://doi.org/10.32614/CRAN.package.CatastRo">doi:10.32614/CRAN.package.CatastRo</a>,
 <a href="https://ropenspain.github.io/CatastRo/">https://ropenspain.github.io/CatastRo/</a>.
 </p>
 
 A BibTeX entry for LaTeX users is:
 
-    @Manual{R-catastro,
+    @Manual{R-CatastRo,
       title = {{CatastRo}: Interface to the {API} Sede Electrónica Del Catastro},
       author = {Ángel {Delgado Panadero} and Diego Hernangómez},
-      year = {2024},
-      version = {0.4.0},
+      doi = {10.32614/CRAN.package.CatastRo},
+      year = {2025},
+      version = {0.4.1},
       url = {https://ropenspain.github.io/CatastRo/},
-      doi = {10.5281/zenodo.6044091},
       abstract = {Access public spatial data available under the INSPIRE directive. Tools for downloading references and addresses of properties, as well as map images.},
     }
 
@@ -245,6 +247,100 @@ A BibTeX entry for LaTeX users is:
 
 Check the GitHub page for [source
 code](https://github.com/ropenspain/CatastRo/).
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+All contributions to this project are gratefully acknowledged using the
+[`allcontributors` package](https://github.com/ropensci/allcontributors)
+following the [allcontributors](https://allcontributors.org)
+specification. Contributions of any kind are welcome!
+
+### Code
+
+<table class="table allctb-table">
+<tr>
+<td align="center">
+<a href="https://github.com/DelgadoPanadero">
+<img src="https://avatars.githubusercontent.com/u/20685256?v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/commits?author=DelgadoPanadero">DelgadoPanadero</a>
+</td>
+<td align="center">
+<a href="https://github.com/dieghernan">
+<img src="https://avatars.githubusercontent.com/u/25656809?v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/commits?author=dieghernan">dieghernan</a>
+</td>
+<td align="center">
+<a href="https://github.com/ImgBotApp">
+<img src="https://avatars.githubusercontent.com/u/31427850?v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/commits?author=ImgBotApp">ImgBotApp</a>
+</td>
+<td align="center">
+<a href="https://github.com/Enchufa2">
+<img src="https://avatars.githubusercontent.com/u/4542928?v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/commits?author=Enchufa2">Enchufa2</a>
+</td>
+</tr>
+</table>
+
+### Issues
+
+<table class="table allctb-table">
+<tr>
+<td align="center">
+<a href="https://github.com/davidsl83">
+<img src="https://avatars.githubusercontent.com/u/8825826?v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/issues?q=is%3Aissue+author%3Adavidsl83">davidsl83</a>
+</td>
+<td align="center">
+<a href="https://github.com/hdnh2006">
+<img src="https://avatars.githubusercontent.com/u/17271049?u=e49249efc3b6ecf11f9120b5e2b7f92c03797fb0&v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/issues?q=is%3Aissue+author%3Ahdnh2006">hdnh2006</a>
+</td>
+<td align="center">
+<a href="https://github.com/cjgb">
+<img src="https://avatars.githubusercontent.com/u/1321567?u=f0ce1208c79befa4e61b7dd98c52bf5143fe92a5&v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/issues?q=is%3Aissue+author%3Acjgb">cjgb</a>
+</td>
+<td align="center">
+<a href="https://github.com/calejero">
+<img src="https://avatars.githubusercontent.com/u/58038280?v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/issues?q=is%3Aissue+author%3Acalejero">calejero</a>
+</td>
+<td align="center">
+<a href="https://github.com/fjribal">
+<img src="https://avatars.githubusercontent.com/u/8107607?u=42ec5d15592963a1ea1ab524ae76c101a75849c0&v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/issues?q=is%3Aissue+author%3Afjribal">fjribal</a>
+</td>
+<td align="center">
+<a href="https://github.com/jesbrz">
+<img src="https://avatars.githubusercontent.com/u/19475313?v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/issues?q=is%3Aissue+author%3Ajesbrz">jesbrz</a>
+</td>
+<td align="center">
+<a href="https://github.com/jaimecabota">
+<img src="https://avatars.githubusercontent.com/u/50590456?v=4" width="100px;" class="allctb-avatar" alt=""/>
+</a><br>
+<a href="https://github.com/rOpenSpain/CatastRo/issues?q=is%3Aissue+author%3Ajaimecabota">jaimecabota</a>
+</td>
+</tr>
+</table>
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 [^1]: The package
     [**CatastRoNav**](https://ropenspain.github.io/CatastRoNav/)
