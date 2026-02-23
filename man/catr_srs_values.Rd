@@ -6,7 +6,7 @@
 \alias{catr_srs_values}
 \title{Reference SRS codes for \CRANpkg{CatastRo} APIs}
 \format{
-A \code{\link[tibble:tibble]{tibble}} with 16 rows
+A \link[tibble:tbl_df-class]{tibble} with 16 rows
 and columns:
 \describe{
 \item{SRS}{Spatial Reference System (CRS) value, identified by the
@@ -19,7 +19,7 @@ code.}
 }
 }
 \description{
-A \code{\link[tibble:tibble]{tibble}} including the valid SRS (also known as CRS)
+A \link[tibble:tbl_df-class]{tibble} including the valid SRS (also known as CRS)
 values that may be used on each API service. The values are provided
 as \href{https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset}{EPSG codes}.
 }
@@ -50,20 +50,20 @@ data("catr_srs_values")
 # OVC valid codes
 library(dplyr)
 
-catr_srs_values \%>\% filter(ovc_service == TRUE)
+catr_srs_values |> filter(ovc_service == TRUE)
 
 # WFS valid codes
 
-catr_srs_values \%>\% filter(wfs_service == TRUE)
+catr_srs_values |> filter(wfs_service == TRUE)
 
 # Use with sf::st_crs()
 
-catr_srs_values \%>\%
-  filter(wfs_service == TRUE & ovc_service == TRUE) \%>\%
-  print() \%>\%
+catr_srs_values |>
+  filter(wfs_service == TRUE & ovc_service == TRUE) |>
+  print() |>
   # First value
-  slice_head(n = 1) \%>\%
-  pull(SRS) \%>\%
+  slice_head(n = 1) |>
+  pull(SRS) |>
   # As crs
   sf::st_crs(.)
 }
@@ -85,7 +85,8 @@ Other databases:
 Other INSPIRE WFS services:
 \code{\link{catr_wfs_get_address_bbox}()},
 \code{\link{catr_wfs_get_buildings_bbox}()},
-\code{\link{catr_wfs_get_parcels_bbox}()}
+\code{\link{catr_wfs_get_parcels_bbox}()},
+\code{\link{inspire_wfs_get}()}
 
 OVCCoordenadas API:
 \code{\link{catr_ovc_get_cpmrc}()},

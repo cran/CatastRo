@@ -1,57 +1,32 @@
 <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
-<html>
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
 
-<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta charset="utf-8" />
-<meta name="generator" content="pandoc" />
-<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-
-<meta name="author" content="Ángel Delgado Panadero" />
-<meta name="author" content="Diego Hernangómez" />
-
+<meta name="author" content="Ángel Delgado Panadero">
+<meta name="author" content="Diego Hernangómez">
+<meta name="description" content="Retrieve spatial coordinates of urban properties.">
 
 <title>OVCCoordenadas Web Service</title>
-
-<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
-// be compatible with the behavior of Pandoc < 2.8).
-document.addEventListener('DOMContentLoaded', function(e) {
-  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
-  var i, h, a;
-  for (i = 0; i < hs.length; i++) {
-    h = hs[i];
-    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
-    a = h.attributes;
-    while (a.length > 0) h.removeAttribute(a[0].name);
-  }
-});
-</script>
-
-<style type="text/css">
+<style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-span.underline{text-decoration: underline;}
-div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
-</style>
-
-
-
-<style type="text/css">
-code {
-white-space: pre;
+ul.task-list li input[type="checkbox"] {
+width: 0.8em;
+margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
 }
-.sourceCode {
-overflow: visible;
-}
-</style>
-<style type="text/css" data-origin="pandoc">
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -62,7 +37,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -76,72 +51,14 @@ border: none; display: inline-block;
 -khtml-user-select: none; -moz-user-select: none;
 -ms-user-select: none; user-select: none;
 padding: 0 4px; width: 4em;
-color: #aaaaaa;
 }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
 div.sourceCode
 { }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } 
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.at { color: #7d9029; } 
-code span.bn { color: #40a070; } 
-code span.bu { color: #008000; } 
-code span.cf { color: #007020; font-weight: bold; } 
-code span.ch { color: #4070a0; } 
-code span.cn { color: #880000; } 
-code span.co { color: #60a0b0; font-style: italic; } 
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.do { color: #ba2121; font-style: italic; } 
-code span.dt { color: #902000; } 
-code span.dv { color: #40a070; } 
-code span.er { color: #ff0000; font-weight: bold; } 
-code span.ex { } 
-code span.fl { color: #40a070; } 
-code span.fu { color: #06287e; } 
-code span.im { color: #008000; font-weight: bold; } 
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.kw { color: #007020; font-weight: bold; } 
-code span.op { color: #666666; } 
-code span.ot { color: #007020; } 
-code span.pp { color: #bc7a00; } 
-code span.sc { color: #4070a0; } 
-code span.ss { color: #bb6688; } 
-code span.st { color: #4070a0; } 
-code span.va { color: #19177c; } 
-code span.vs { color: #4070a0; } 
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
-<script>
-// apply pandoc div.sourceCode style to pre.sourceCode instead
-(function() {
-  var sheets = document.styleSheets;
-  for (var i = 0; i < sheets.length; i++) {
-    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
-    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    var j = 0;
-    while (j < rules.length) {
-      var rule = rules[j];
-      // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
-        j++;
-        continue;
-      }
-      var style = rule.style.cssText;
-      // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') {
-        j++;
-        continue;
-      }
-      // replace div.sourceCode by a pre.sourceCode rule
-      sheets[i].deleteRule(j);
-      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
-    }
-  }
-})();
-</script>
 
 
 
@@ -156,34 +73,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#TOC {
-clear: both;
-margin: 0 0 10px 10px;
-padding: 4px;
-width: 400px;
-border: 1px solid #CCCCCC;
-border-radius: 5px;
-background-color: #f6f6f6;
-font-size: 13px;
-line-height: 1.3;
-}
-#TOC .toctitle {
-font-weight: bold;
-font-size: 15px;
-margin-left: 5px;
-}
-#TOC ul {
-padding-left: 40px;
-margin-left: -1.5em;
-margin-top: 5px;
-margin-bottom: 5px;
-}
-#TOC ul ul {
-margin-left: -2em;
-}
-#TOC li {
-line-height: 16px;
 }
 table {
 margin: 1em auto;
@@ -313,432 +202,355 @@ a[href^="http:"] {
 text-decoration: underline; }
 a[href^="https:"] {
 text-decoration: underline; }
-
-code > span.kw { color: #555; font-weight: bold; } 
-code > span.dt { color: #902000; } 
-code > span.dv { color: #40a070; } 
-code > span.bn { color: #d14; } 
-code > span.fl { color: #d14; } 
-code > span.ch { color: #d14; } 
-code > span.st { color: #d14; } 
-code > span.co { color: #888888; font-style: italic; } 
-code > span.ot { color: #007020; } 
-code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; } 
-code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
-
-
-
-
 </head>
 
 <body>
 
 
+<header id="title-block-header">
+<h1 class="title">OVCCoordenadas Web Service</h1>
+<p class="author">Ángel Delgado Panadero</p>
+<p class="author">Diego Hernangómez</p>
+
+</header>
 
 
-<h1 class="title toc-ignore">OVCCoordenadas Web Service</h1>
-<h4 class="author">Ángel Delgado Panadero</h4>
-<h4 class="author">Diego Hernangómez</h4>
-
-
-
-<!-- ovcservice.Rmd is generated from ovcservice.Rmd.orig. Please edit that file -->
-<p><strong>CatastRo</strong> allows to query the OVCCoordenadas Web
-Service provided on <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">Sede
-electrónica del Catastro</a> API directly through a <strong>R</strong>
-IDE.</p>
-<p>This API is used to retrieve the spatial coordinates of a urban
-property, moreover it is not needed to be the owner to get the
-information, actually it is enough to know the cadastral reference
-(<em>RC</em>) of the property and its address (in fact, it is only
-completely compulsory to know the RC, however, to ensure a good result
-from the response and to avoid mistakes in the RC, the address can be
-passed to the query too).</p>
-<p>Secondly, the API can be used to obtain a RC of a urban property, for
-this information, the API asks for the longitude and the latitude.
-Furthermore, it allows to choose the spacial reference system (SRS, also
-known as CRS) between a list of them to express the coordinates.</p>
-<p>Finally, the API tackles the issue of not knowing the exact point
-which the urban property has been registered. In this case, it will
-return all the properties located in a square 50-meters-side around the
-given point.</p>
+<!-- ovcservice.qmd is generated from ovcservice.qmd.orig. Please edit that file -->
+<p><strong>CatastRo</strong> allows querying the OVCCoordenadas Web Service provided by the <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">Sede electrónica del Catastro</a> API directly through an <strong>R</strong> IDE.</p>
+<p>This API is used to retrieve the spatial coordinates of an urban property. It is not necessary to be the owner to get the information; you only need to know the cadastral reference (<em>RC</em>) of the property. Although the RC is the only compulsory argument, providing the address can improve results and help avoid errors in the RC.</p>
+<p>Additionally, the API can be used to obtain the RC of an urban property. For this, the API requires the longitude and latitude. It also allows you to choose the spatial reference system (SRS, also known as CRS) from a list to express the coordinates.</p>
+<p>Finally, the API addresses cases where the exact location of the registered urban property is unknown. In such cases, it returns all properties located within a 50-meter square around the given point.</p>
 <p>The documentation of this API can be found <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">here</a>.</p>
-<p>These functions are named <code>catr_ovc_*</code> and returns a
-<code>tibble</code>, as provided by the package
-<strong>tibble</strong>.</p>
-<div id="catastro-api" class="section level2">
-<h2>CatastRo API</h2>
-<p>The OVCCoordenadas Web Service can be reached using the following
-functions:</p>
+<p>These functions are named <code>catr_ovc_*</code> and return a tibble, as provided by the package <strong>tibble</strong>.</p>
+<h2 id="catastro-api">CatastRo API</h2>
+<p>The OVCCoordenadas Web Service can be accessed using the following functions:</p>
 <ul>
 <li><code>catr_ovc_get_rccoor()</code></li>
 <li><code>catr_ovc_get_rccoor_distancia()</code></li>
 <li><code>catr_ovc_get_cpmrc()</code></li>
 </ul>
-</div>
-<div id="reverse-geocoding-cadastral-references" class="section level2">
-<h2>Reverse Geocoding Cadastral References</h2>
-<p>The function <code>catr_ovc_get_rccoor()</code> receives the
-coordinates (<code>lat</code> and <code>lon</code>) and the spatial
-reference system (<code>srs</code>) used to express them. The return is
-a <code>tibble</code> with the cadastral reference of the property in
-that spatial point, including also other information as the address
-(town street and number).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">catr_ovc_get_rccoor</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fl">38.6196566583596</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">lon =</span> <span class="sc">-</span><span class="fl">3.45624183836806</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>)</span></code></pre></div>
+<h2 id="reverse-geocoding-cadastral-references">Reverse geocoding cadastral references</h2>
+<p>The function <code>catr_ovc_get_rccoor()</code> takes the coordinates (<code>lat</code> and <code>lon</code>) and the spatial reference system (<code>srs</code>) used to express them. It returns a tibble with the cadastral reference of the property at that spatial point, including other information such as the address (town, street, and number).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(CatastRo)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">catr_ovc_get_rccoor</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fl">38.6196566583596</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon =</span> <span class="sc">-</span><span class="fl">3.45624183836806</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(result)</span></code></pre></div>
 <table style="width:100%;">
 <colgroup>
-<col width="5%" />
-<col width="38%" />
-<col width="3%" />
-<col width="3%" />
-<col width="3%" />
-<col width="3%" />
-<col width="3%" />
-<col width="38%" />
+<col style="width: 5%">
+<col style="width: 38%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 38%">
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left">refcat</th>
-<th align="left">address</th>
-<th align="left">pc.pc1</th>
-<th align="left">pc.pc2</th>
-<th align="right">geo.xcen</th>
-<th align="right">geo.ycen</th>
-<th align="left">geo.srs</th>
-<th align="left">ldt</th>
+<th style="text-align: left;">refcat</th>
+<th style="text-align: left;">address</th>
+<th style="text-align: left;">pc.pc1</th>
+<th style="text-align: left;">pc.pc2</th>
+<th style="text-align: right;">geo.xcen</th>
+<th style="text-align: right;">geo.ycen</th>
+<th style="text-align: left;">geo.srs</th>
+<th style="text-align: left;">ldt</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">13077A01800039</td>
-<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
-TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
-<td align="left">13077A0</td>
-<td align="left">1800039</td>
-<td align="right">-3.456242</td>
-<td align="right">38.61966</td>
-<td align="left">EPSG:4230</td>
-<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
-TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+<td style="text-align: left;">13077A01800039</td>
+<td style="text-align: left;">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+<td style="text-align: left;">13077A0</td>
+<td style="text-align: left;">1800039</td>
+<td style="text-align: right;">-3.456242</td>
+<td style="text-align: right;">38.61966</td>
+<td style="text-align: left;">EPSG:4230</td>
+<td style="text-align: left;">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
 </tr>
 </tbody>
 </table>
-<p>The function accept as a <code>srs</code> argument the following
-values:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">data</span>(catr_srs_values)</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># OVC valid codes</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>catr_srs_values <span class="sc">%&gt;%</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="fu">filter</span>(ovc_service <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="fu">select</span>(SRS, Description) <span class="sc">%&gt;%</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<p>The function accepts as a <code>srs</code> argument the following values:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(catr_srs_values)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># OVC valid codes</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>catr_srs_values <span class="sc">|&gt;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ovc_service <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(SRS, Description) <span class="sc">|&gt;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
-<th align="right">SRS</th>
-<th align="left">Description</th>
+<th style="text-align: right;">SRS</th>
+<th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">4230</td>
-<td align="left">Geográficas en ED 50</td>
+<td style="text-align: right;">4230</td>
+<td style="text-align: left;">Geográficas en ED 50</td>
 </tr>
 <tr class="even">
-<td align="right">4258</td>
-<td align="left">Geográficas en ETRS89</td>
+<td style="text-align: right;">4258</td>
+<td style="text-align: left;">Geográficas en ETRS89</td>
 </tr>
 <tr class="odd">
-<td align="right">4326</td>
-<td align="left">Geográficas en WGS 80</td>
+<td style="text-align: right;">4326</td>
+<td style="text-align: left;">Geográficas en WGS 80</td>
 </tr>
 <tr class="even">
-<td align="right">23029</td>
-<td align="left">UTM huso 29N en ED50</td>
+<td style="text-align: right;">23029</td>
+<td style="text-align: left;">UTM huso 29N en ED50</td>
 </tr>
 <tr class="odd">
-<td align="right">23030</td>
-<td align="left">UTM huso 30N en ED50</td>
+<td style="text-align: right;">23030</td>
+<td style="text-align: left;">UTM huso 30N en ED50</td>
 </tr>
 <tr class="even">
-<td align="right">23031</td>
-<td align="left">UTM huso 31N en ED50</td>
+<td style="text-align: right;">23031</td>
+<td style="text-align: left;">UTM huso 31N en ED50</td>
 </tr>
 <tr class="odd">
-<td align="right">25829</td>
-<td align="left">UTM huso 29N en ETRS89</td>
+<td style="text-align: right;">25829</td>
+<td style="text-align: left;">UTM huso 29N en ETRS89</td>
 </tr>
 <tr class="even">
-<td align="right">25830</td>
-<td align="left">UTM huso 30N en ETRS89</td>
+<td style="text-align: right;">25830</td>
+<td style="text-align: left;">UTM huso 30N en ETRS89</td>
 </tr>
 <tr class="odd">
-<td align="right">25831</td>
-<td align="left">UTM huso 31N en ETRS89</td>
+<td style="text-align: right;">25831</td>
+<td style="text-align: left;">UTM huso 31N en ETRS89</td>
 </tr>
 <tr class="even">
-<td align="right">32627</td>
-<td align="left">UTM huso 27N en WGS 84</td>
+<td style="text-align: right;">32627</td>
+<td style="text-align: left;">UTM huso 27N en WGS 84</td>
 </tr>
 <tr class="odd">
-<td align="right">32628</td>
-<td align="left">UTM huso 28N en WGS 84</td>
+<td style="text-align: right;">32628</td>
+<td style="text-align: left;">UTM huso 28N en WGS 84</td>
 </tr>
 <tr class="even">
-<td align="right">32629</td>
-<td align="left">UTM huso 29N en WGS 84</td>
+<td style="text-align: right;">32629</td>
+<td style="text-align: left;">UTM huso 29N en WGS 84</td>
 </tr>
 <tr class="odd">
-<td align="right">32630</td>
-<td align="left">UTM huso 30N en WGS 84</td>
+<td style="text-align: right;">32630</td>
+<td style="text-align: left;">UTM huso 30N en WGS 84</td>
 </tr>
 <tr class="even">
-<td align="right">32631</td>
-<td align="left">UTM huso 31N en WGS 84</td>
+<td style="text-align: right;">32631</td>
+<td style="text-align: left;">UTM huso 31N en WGS 84</td>
 </tr>
 </tbody>
 </table>
-<p>It is also possible to get all the cadastral references in a square
-of 50-meters’ side centered in the coordinates <code>lat</code> and
-<code>lon</code> through the function
-<code>catr_ovc_get_rccoor_distancia()</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">catr_ovc_get_rccoor_distancia</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fl">40.96002</span>,</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">lon =</span> <span class="sc">-</span><span class="fl">5.663408</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<p>It is also possible to get all cadastral references within a 50-meter square centered on the coordinates <code>lat</code> and <code>lon</code> using the function <code>catr_ovc_get_rccoor_distancia()</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_rccoor_distancia</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fl">40.96002</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon =</span> <span class="sc">-</span><span class="fl">5.663408</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table style="width:100%;">
 <colgroup>
-<col width="4%" />
-<col width="3%" />
-<col width="4%" />
-<col width="6%" />
-<col width="21%" />
-<col width="3%" />
-<col width="3%" />
-<col width="3%" />
-<col width="5%" />
-<col width="5%" />
-<col width="7%" />
-<col width="7%" />
-<col width="21%" />
-<col width="2%" />
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 21%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 21%">
+<col style="width: 2%">
 </colgroup>
 <thead>
 <tr class="header">
-<th align="right">geo.xcen</th>
-<th align="right">geo.ycen</th>
-<th align="left">geo.srs</th>
-<th align="left">refcat</th>
-<th align="left">address</th>
-<th align="left">cmun_ine</th>
-<th align="left">pc.pc1</th>
-<th align="left">pc.pc2</th>
-<th align="left">dt.loine.cp</th>
-<th align="left">dt.loine.cm</th>
-<th align="left">dt.lourb.dir.cv</th>
-<th align="left">dt.lourb.dir.pnp</th>
-<th align="left">ldt</th>
-<th align="left">dis</th>
+<th style="text-align: right;">geo.xcen</th>
+<th style="text-align: right;">geo.ycen</th>
+<th style="text-align: left;">geo.srs</th>
+<th style="text-align: left;">refcat</th>
+<th style="text-align: left;">address</th>
+<th style="text-align: left;">cmun_ine</th>
+<th style="text-align: left;">pc.pc1</th>
+<th style="text-align: left;">pc.pc2</th>
+<th style="text-align: left;">dt.loine.cp</th>
+<th style="text-align: left;">dt.loine.cm</th>
+<th style="text-align: left;">dt.lourb.dir.cv</th>
+<th style="text-align: left;">dt.lourb.dir.pnp</th>
+<th style="text-align: left;">ldt</th>
+<th style="text-align: left;">dis</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">-5.663408</td>
-<td align="right">40.96002</td>
-<td align="left">EPSG:4230</td>
-<td align="left">5877501TL7357F</td>
-<td align="left">AV REYES DE ESPAÑA 1 SALAMANCA (SALAMANCA)</td>
-<td align="left">37274</td>
-<td align="left">5877501</td>
-<td align="left">TL7357F</td>
-<td align="left">37</td>
-<td align="left">274</td>
-<td align="left">643</td>
-<td align="left">1</td>
-<td align="left">AV REYES DE ESPAÑA 1 SALAMANCA (SALAMANCA)</td>
-<td align="left">21.81</td>
+<td style="text-align: right;">-5.663408</td>
+<td style="text-align: right;">40.96002</td>
+<td style="text-align: left;">EPSG:4230</td>
+<td style="text-align: left;">5877501TL7357F</td>
+<td style="text-align: left;">AV REYES DE ESPAÑA 1 SALAMANCA (SALAMANCA)</td>
+<td style="text-align: left;">37274</td>
+<td style="text-align: left;">5877501</td>
+<td style="text-align: left;">TL7357F</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">274</td>
+<td style="text-align: left;">643</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">AV REYES DE ESPAÑA 1 SALAMANCA (SALAMANCA)</td>
+<td style="text-align: left;">21.81</td>
 </tr>
 <tr class="even">
-<td align="right">-5.663408</td>
-<td align="right">40.96002</td>
-<td align="left">EPSG:4230</td>
-<td align="left">5778706TL7357H</td>
-<td align="left">AV REYES DE ESPAÑA 2 N2-4 SALAMANCA (SALAMANCA)</td>
-<td align="left">37274</td>
-<td align="left">5778706</td>
-<td align="left">TL7357H</td>
-<td align="left">37</td>
-<td align="left">274</td>
-<td align="left">643</td>
-<td align="left">2</td>
-<td align="left">AV REYES DE ESPAÑA 2 N2-4 SALAMANCA (SALAMANCA)</td>
-<td align="left">23.18</td>
+<td style="text-align: right;">-5.663408</td>
+<td style="text-align: right;">40.96002</td>
+<td style="text-align: left;">EPSG:4230</td>
+<td style="text-align: left;">5778706TL7357H</td>
+<td style="text-align: left;">AV REYES DE ESPAÑA 2 N2-4 SALAMANCA (SALAMANCA)</td>
+<td style="text-align: left;">37274</td>
+<td style="text-align: left;">5778706</td>
+<td style="text-align: left;">TL7357H</td>
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">274</td>
+<td style="text-align: left;">643</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">AV REYES DE ESPAÑA 2 N2-4 SALAMANCA (SALAMANCA)</td>
+<td style="text-align: left;">23.18</td>
 </tr>
 </tbody>
 </table>
-</div>
-<div id="geocoding-a-cadastral-reference" class="section level2">
-<h2>Geocoding a Cadastral Reference</h2>
-<p>The opposite query is possible as well. Being given to the function
-<code>catr_ovc_get_cpmrc()</code> a cadastral reference
-(<code>rc</code>), the province (<code>province</code>) and the town
-(<code>municipality</code>), <code>catr_ovc_get_cpmrc()</code> returns
-its coordinates <code>lat</code> and <code>lon</code> in a particular
-<code>srs</code> besides the address (town, street and number).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">province =</span> <span class="st">&quot;CIUDAD REAL&quot;</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">municipality =</span> <span class="st">&quot;SANTA CRUZ DE MUDELA&quot;</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<h2 id="geocoding-a-cadastral-reference">Geocoding a cadastral reference</h2>
+<p>The opposite query is also possible. When provided with a cadastral reference (<code>rc</code>), province (<code>province</code>), and municipality (<code>municipality</code>), the function <code>catr_ovc_get_cpmrc()</code> returns the coordinates (<code>lat</code> and <code>lon</code>) in a specified <code>srs</code>, along with the address (town, street, and number).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">province =</span> <span class="st">&quot;CIUDAD REAL&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">municipality =</span> <span class="st">&quot;SANTA CRUZ DE MUDELA&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table style="width:100%;">
 <colgroup>
-<col width="3%" />
-<col width="3%" />
-<col width="5%" />
-<col width="34%" />
-<col width="2%" />
-<col width="2%" />
-<col width="6%" />
-<col width="5%" />
-<col width="3%" />
-<col width="34%" />
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 34%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 3%">
+<col style="width: 34%">
 </colgroup>
 <thead>
 <tr class="header">
-<th align="right">xcoord</th>
-<th align="right">ycoord</th>
-<th align="left">refcat</th>
-<th align="left">address</th>
-<th align="left">pc.pc1</th>
-<th align="left">pc.pc2</th>
-<th align="left">geo.xcen</th>
-<th align="left">geo.ycen</th>
-<th align="left">geo.srs</th>
-<th align="left">ldt</th>
+<th style="text-align: right;">xcoord</th>
+<th style="text-align: right;">ycoord</th>
+<th style="text-align: left;">refcat</th>
+<th style="text-align: left;">address</th>
+<th style="text-align: left;">pc.pc1</th>
+<th style="text-align: left;">pc.pc2</th>
+<th style="text-align: left;">geo.xcen</th>
+<th style="text-align: left;">geo.ycen</th>
+<th style="text-align: left;">geo.srs</th>
+<th style="text-align: left;">ldt</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">-3.456242</td>
-<td align="right">38.61966</td>
-<td align="left">13077A01800039</td>
-<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
-TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
-<td align="left">13077A0</td>
-<td align="left">1800039</td>
-<td align="left">-3.45624183836806</td>
-<td align="left">38.6196566583596</td>
-<td align="left">EPSG:4230</td>
-<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
-TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+<td style="text-align: right;">-3.456242</td>
+<td style="text-align: right;">38.61966</td>
+<td style="text-align: left;">13077A01800039</td>
+<td style="text-align: left;">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+<td style="text-align: left;">13077A0</td>
+<td style="text-align: left;">1800039</td>
+<td style="text-align: left;">-3.45624183836806</td>
+<td style="text-align: left;">38.6196566583596</td>
+<td style="text-align: left;">EPSG:4230</td>
+<td style="text-align: left;">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
 </tr>
 </tbody>
 </table>
-<p>Neither the <code>province</code> nor <code>municipality</code> are
-required to be passed to the function, unless the argument
-<code>municipality</code> is not <code>NULL</code>, in that case the
-argument <code>province</code> is needed to be passed. If it is passed a
-value to the <code>province</code> argument while the
-<code>municipality</code> argument is <code>NULL</code>, the function
-<code>catr_ovc_get_cpmrc()</code> will throw a message and would return
-a <code>tibble</code> with no data.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">municipality =</span> <span class="st">&quot;SANTA CRUZ DE MUDELA&quot;</span></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; Error code: 11. LA PROVINCIA ES OBLIGATORIA</span></span></code></pre></div>
+<p>The <code>province</code> and <code>municipality</code> arguments are optional, but if <code>municipality</code> is provided, <code>province</code> must also be provided. If a value is passed to the <code>province</code> argument while <code>municipality</code> is <code>NULL</code>, the function <code>catr_ovc_get_cpmrc()</code> will display a message and return an empty tibble.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">municipality =</span> <span class="st">&quot;SANTA CRUZ DE MUDELA&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✖ Error code: 11. LA PROVINCIA ES OBLIGATORIA</span></span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
-<th align="left">refcat</th>
-<th align="left">geo.srs</th>
+<th style="text-align: left;">refcat</th>
+<th style="text-align: left;">geo.srs</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">13077A01800039</td>
-<td align="left">EPSG:4326</td>
+<td style="text-align: left;">13077A01800039</td>
+<td style="text-align: left;">EPSG:4326</td>
 </tr>
 </tbody>
 </table>
-<p>When using only <code>rc</code> the result is provided as
-expected:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># No warning, get the result</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(<span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<p>When using only <code>rc</code> the result is provided as expected:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># No warning, get the result</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(<span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table style="width:100%;">
 <colgroup>
-<col width="3%" />
-<col width="3%" />
-<col width="5%" />
-<col width="34%" />
-<col width="2%" />
-<col width="2%" />
-<col width="6%" />
-<col width="5%" />
-<col width="3%" />
-<col width="34%" />
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 34%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 3%">
+<col style="width: 34%">
 </colgroup>
 <thead>
 <tr class="header">
-<th align="right">xcoord</th>
-<th align="right">ycoord</th>
-<th align="left">refcat</th>
-<th align="left">address</th>
-<th align="left">pc.pc1</th>
-<th align="left">pc.pc2</th>
-<th align="left">geo.xcen</th>
-<th align="left">geo.ycen</th>
-<th align="left">geo.srs</th>
-<th align="left">ldt</th>
+<th style="text-align: right;">xcoord</th>
+<th style="text-align: right;">ycoord</th>
+<th style="text-align: left;">refcat</th>
+<th style="text-align: left;">address</th>
+<th style="text-align: left;">pc.pc1</th>
+<th style="text-align: left;">pc.pc2</th>
+<th style="text-align: left;">geo.xcen</th>
+<th style="text-align: left;">geo.ycen</th>
+<th style="text-align: left;">geo.srs</th>
+<th style="text-align: left;">ldt</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">-3.457532</td>
-<td align="right">38.61843</td>
-<td align="left">13077A01800039</td>
-<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
-TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
-<td align="left">13077A0</td>
-<td align="left">1800039</td>
-<td align="left">-3.45753233627867</td>
-<td align="left">38.6184314024661</td>
-<td align="left">EPSG:4326</td>
-<td align="left">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL
-TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+<td style="text-align: right;">-3.457532</td>
+<td style="text-align: right;">38.61843</td>
+<td style="text-align: left;">13077A01800039</td>
+<td style="text-align: left;">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
+<td style="text-align: left;">13077A0</td>
+<td style="text-align: left;">1800039</td>
+<td style="text-align: left;">-3.45753233627867</td>
+<td style="text-align: left;">38.6184314024661</td>
+<td style="text-align: left;">EPSG:4326</td>
+<td style="text-align: left;">DS DISEMINADO Polígono 18 Parcela 39 000100200VH67C EL TIRADERO. SANTA CRUZ DE MUDELA (CIUDAD REAL)</td>
 </tr>
 </tbody>
 </table>
-</div>
 
 
 
-<!-- code folding -->
 
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
-
-</body>
-</html>
+</body></html>
