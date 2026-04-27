@@ -14,22 +14,22 @@ catr_get_code_from_coords(
 )
 }
 \arguments{
-\item{x}{It can be:
+\item{x}{It may be:
 \itemize{
 \item A pair of coordinates \code{c(x,y)}. In this case the \code{srs} of the coordinates
-should be provided.
-\item A \code{\link[sf:sf]{sf}} object. If the object has several geometries only the
-first value will be used. The function will extract the coordinates
-using \code{sf::st_centroid(x, of_largest_polygon = TRUE)}.
+must be provided.
+\item A \code{\link[sf:st_sf]{sf}} object. If the object has several geometries, only
+the first geometry is used. The function extracts coordinates using
+\code{sf::st_centroid(x, of_largest_polygon = TRUE)}.
 }}
 
-\item{srs}{SRS/CRS to use on the query. To check the admitted values check
+\item{srs}{SRS/CRS to use on the query. To see allowed values, use
 \link{catr_srs_values}, specifically the \code{ovc_service} column.}
 
-\item{verbose}{logical. If \code{TRUE} displays informational messages.}
+\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
 
-\item{cache_dir}{A path to a cache directory. On \code{NULL} the function
-would store the cached files on a temporary dir (See \code{\link[base:tempfile]{base::tempdir()}}).}
+\item{cache_dir}{Path to a cache directory. On \code{NULL}, the function
+stores cached files in a temporary directory (see \code{\link[base:tempdir]{base::tempdir()}}).}
 
 \item{...}{
   Arguments passed on to \code{\link[mapSpain:esp_get_munic_siane]{mapSpain::esp_get_munic_siane}}
@@ -52,15 +52,14 @@ municipalities.}
   }}
 }
 \value{
-A \link[tibble:tbl_df-class]{tibble}. See \strong{Details}
+A \link[tibble:tbl_df]{tibble}. See \strong{Details}
 }
 \description{
-This function takes as input a pair of coordinates of a \code{\link[sf:sf]{sf}}
-object and returns the corresponding municipality code for those coordinates
-using \code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}}.
+Get the municipality code for coordinates using a \code{\link[sf:st_sf]{sf}}
+object or a pair of coordinates via \code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}}.
 }
 \details{
-On a successful query, the function returns a \link[tibble:tbl_df-class]{tibble}
+On a successful query, the function returns a \link[tibble:tbl_df]{tibble}
 with one row including the following columns:
 \itemize{
 \item \code{munic}: Name of the municipality as per the Cadastre.
@@ -68,8 +67,8 @@ with one row including the following columns:
 \item \code{catr_munic}: Municipality code as recorded on the Cadastre.
 \item \code{catrcode}: Full Cadastral code for the municipality.
 \item \code{cpro}: Province code as per the INE.
-\item \code{catr_munic}: Municipality code as per the INE.
-\item \code{catrcode}: Full INE code for the municipality.
+\item \code{cmun}: Municipality code as per the INE.
+\item \code{inecode}: Full INE code for the municipality.
 \item Rest of fields: Check the API Docs.
 }
 }
@@ -87,11 +86,11 @@ catr_get_code_from_coords(prov)
 }
 \seealso{
 \code{\link[mapSpain:esp_get_munic_siane]{mapSpain::esp_get_munic_siane()}}, \code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}},
-\code{\link[sf:geos_unary]{sf::st_centroid()}}.
+\code{\link[sf:st_centroid]{sf::st_centroid()}}.
 
-Other search: 
-\code{\link{catr_atom_search_munic}()},
-\code{\link{catr_ovc_get_cod_munic}()},
-\code{\link{catr_ovc_get_cod_provinces}()}
+Other search:
+\code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}},
+\code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}},
+\code{\link[=catr_ovc_get_cod_provinces]{catr_ovc_get_cod_provinces()}}
 }
 \concept{search}

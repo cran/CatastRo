@@ -1,13 +1,14 @@
 #' Internal function to download and cache a file from a URL
 #'
-#' @param url character string. The URL to download.
-#' @param name character string. The name of the file to save.
-#' @param cache_dir character string. The base cache directory.
-#' @param subdir character string. The subdirectory inside the cache directory.
-#' @param update_cache logical. Whether to update the cached file.
-#' @param verbose logical. Whether to print messages.
+#' @param url Character string. The URL to download.
+#' @param name Character string. The name of the file to save.
+#' @param cache_dir Character string. The base cache directory.
+#' @param subdir Character string. Subdirectory inside the cache directory.
+#' @param update_cache Logical. Whether to update the cached file.
+#' @param verbose Logical. Whether to print messages.
 #'
-#' @return The local file path of the downloaded file.
+#' @return Character string. Path of the downloaded file.
+#' @encoding UTF-8
 #'
 #' @noRd
 download_url <- function(
@@ -103,7 +104,7 @@ download_url <- function(
 
     cli::cli_alert_danger(
       c(
-        "{.strong Error {.num {get_status_code}}} ({get_status_desc}):",
+        "{.strong Error {get_status_code}} ({get_status_desc}):",
         " {.url {url}}."
       )
     )
@@ -125,10 +126,10 @@ download_url <- function(
 
 #' Internal function to get the response body from a URL
 #'
-#' @param url character string. The URL to download.
-#' @param verbose logical. Whether to print messages.
+#' @param url Character string. The URL to download.
+#' @param verbose Logical. Whether to print messages.
 #'
-#' @return The response object from httr2.
+#' @return httr2 response object.
 #'
 #' @noRd
 get_request_body <- function(
@@ -178,7 +179,7 @@ get_request_body <- function(
 
     cli::cli_alert_danger(
       c(
-        "{.strong Error {.num {get_status_code}}} ({get_status_desc}):",
+        "{.strong Error {get_status_code}} ({get_status_desc}):",
         " {.url {url}}."
       )
     )

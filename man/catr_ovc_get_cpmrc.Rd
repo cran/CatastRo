@@ -16,32 +16,31 @@ catr_ovc_get_cpmrc(
 \arguments{
 \item{rc}{The cadastral reference to be geocoded.}
 
-\item{srs}{SRS/CRS to use on the query. To check the admitted values check
+\item{srs}{SRS/CRS to use on the query. To see allowed values, use
 \link{catr_srs_values}, specifically the \code{ovc_service} column.}
 
 \item{province, municipality}{Optional, used for narrowing the search.}
 
-\item{verbose}{logical. If \code{TRUE} displays informational messages.}
+\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
 }
 \value{
-A \link[tibble:tbl_df-class]{tibble}. See \strong{Details}
+A \link[tibble:tbl_df]{tibble}. See \strong{Details}
 }
 \description{
 Implementation of the OVCCoordenadas service
-\href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx?op=Consulta_CPMRC}{Consulta CPMRC}.
-
-Returns the coordinates for a specific cadastral reference.
+\href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx?op=Consulta_CPMRC}{Consulta CPMRC}. Returns coordinates for a
+specific cadastral reference.
 }
 \details{
 When the API does not provide any result, the function returns a
-\link[tibble:tbl_df-class]{tibble} with the input arguments only.
+\link[tibble:tbl_df]{tibble} with the input arguments only.
 
-On a successful query, the function returns a \link[tibble:tbl_df-class]{tibble}
+On a successful query, the function returns a \link[tibble:tbl_df]{tibble}
 with one row per cadastral reference, including the following columns:
 \itemize{
 \item \code{xcoord}, \code{ycoord}: X and Y coordinates in the specified SRS.
 \item \code{refcat}: Cadastral Reference.
-\item \code{address}: Address as it is recorded on the Cadastre.
+\item \code{address}: Address as recorded in the Cadastre.
 \item Rest of fields: Check the API Docs.
 }
 }
@@ -49,14 +48,14 @@ with one row per cadastral reference, including the following columns:
 \dontshow{if (run_example()) withAutoprint(\{ # examplesIf}
 \donttest{
 
-# using all the arguments
+# Using all arguments
 catr_ovc_get_cpmrc("13077A01800039",
   4230,
   province = "CIUDAD REAL",
   municipality = "SANTA CRUZ DE MUDELA"
 )
 
-# only the cadastral reference
+# Only the cadastral reference
 catr_ovc_get_cpmrc("9872023VH5797S")
 }
 \dontshow{\}) # examplesIf}
@@ -68,13 +67,13 @@ catr_ovc_get_cpmrc("9872023VH5797S")
 \link{catr_srs_values}, \code{vignette("ovcservice", package = "CatastRo")}
 
 OVCCoordenadas API:
-\code{\link{catr_ovc_get_rccoor}()},
-\code{\link{catr_ovc_get_rccoor_distancia}()},
+\code{\link[=catr_ovc_get_rccoor]{catr_ovc_get_rccoor()}},
+\code{\link[=catr_ovc_get_rccoor_distancia]{catr_ovc_get_rccoor_distancia()}},
 \code{\link{catr_srs_values}}
 
-Other cadastral references: 
-\code{\link{catr_ovc_get_rccoor}()},
-\code{\link{catr_ovc_get_rccoor_distancia}()}
+Other cadastral references:
+\code{\link[=catr_ovc_get_rccoor]{catr_ovc_get_rccoor()}},
+\code{\link[=catr_ovc_get_rccoor_distancia]{catr_ovc_get_rccoor_distancia()}}
 }
 \concept{OVCCoordenadas}
 \concept{cadastral references}

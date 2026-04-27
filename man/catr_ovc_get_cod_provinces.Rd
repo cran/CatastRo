@@ -8,16 +8,15 @@
 catr_ovc_get_cod_provinces(verbose = FALSE)
 }
 \arguments{
-\item{verbose}{logical. If \code{TRUE} displays informational messages.}
+\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
 }
 \value{
-A \link[tibble:tbl_df-class]{tibble}.
+A \link[tibble:tbl_df]{tibble}.
 }
 \description{
 Implementation of the OVCCallejero service
-\href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccallejerocodigos.asmx?op=ConsultaProvincia}{ConsultaProvincia}.
-
-Returns a list of the provinces included in the Spanish Cadastre.
+\href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccallejerocodigos.asmx?op=ConsultaProvincia}{ConsultaProvincia}. Returns a list of provinces
+included in the Spanish Cadastre.
 }
 \examples{
 \dontshow{if (run_example()) withAutoprint(\{ # examplesIf}
@@ -31,12 +30,12 @@ catr_ovc_get_cod_provinces()
 }
 \seealso{
 OVCCoordenadas API:
-\code{\link{catr_ovc_get_cod_munic}()}
+\code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}}
 
-Other search: 
-\code{\link{catr_atom_search_munic}()},
-\code{\link{catr_get_code_from_coords}()},
-\code{\link{catr_ovc_get_cod_munic}()}
+Other search:
+\code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}},
+\code{\link[=catr_get_code_from_coords]{catr_get_code_from_coords()}},
+\code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}}
 }
 \concept{OVCCallejero}
 \concept{search}

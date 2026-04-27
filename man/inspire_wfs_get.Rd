@@ -14,24 +14,24 @@ inspire_wfs_get(
 )
 }
 \arguments{
-\item{scheme}{Identifies the protocol to be used to access the resource on
-the Internet.}
+\item{scheme}{Character string. Protocol to access the resource on the
+Internet.}
 
-\item{hostname}{Identifies the host that holds the resource.}
+\item{hostname}{Character string. Host that holds the resource.}
 
-\item{path}{Identifies the specific resource in the host that the web client
-wants to access.}
+\item{path}{Character string. Specific resource in the host to access.}
 
-\item{query}{A named list with the name and value of the arguments to query.}
+\item{query}{Named list. Names and values of arguments to query.}
 
-\item{verbose}{logical. If \code{TRUE} displays informational messages.}
+\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
 }
 \value{
-A character string with the path of the resulting file in the \code{\link[=tempfile]{tempfile()}}
-folder.
+Character string. Path of the resulting file in the \code{\link[=tempfile]{tempfile()}} folder.
 }
 \description{
-Client tool for WFS INSPIRE services
+Access WFS INSPIRE services. This function is used internally in WFS calls
+and is exposed for users and developers accessing other cadastral or
+INSPIRE resources.
 }
 \details{
 This function is used internally in all the WFS calls. We expose it to make
@@ -66,22 +66,22 @@ if (!is.null(file_local)) {
 }
 \seealso{
 INSPIRE API functions:
-\code{\link{catr_atom_get_address}()},
-\code{\link{catr_atom_get_address_db_all}()},
-\code{\link{catr_atom_get_buildings}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
-\code{\link{catr_atom_get_parcels}()},
-\code{\link{catr_atom_get_parcels_db_all}()},
-\code{\link{catr_wfs_get_address_bbox}()},
-\code{\link{catr_wfs_get_buildings_bbox}()},
-\code{\link{catr_wfs_get_parcels_bbox}()},
-\code{\link{catr_wms_get_layer}()}
+\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
+\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
+\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
+\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
+\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
+\code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
+\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
+\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
+\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
+\code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}}
 
 Other INSPIRE WFS services:
 \code{\link{catr_srs_values}},
-\code{\link{catr_wfs_get_address_bbox}()},
-\code{\link{catr_wfs_get_buildings_bbox}()},
-\code{\link{catr_wfs_get_parcels_bbox}()}
+\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
+\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
+\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}}
 }
 \concept{INSPIRE}
 \concept{WFS}

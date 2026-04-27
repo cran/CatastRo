@@ -1,6 +1,6 @@
 Package: CatastRo
 Title: Interface to the API 'Sede Electronica Del Catastro'
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person("Ángel", "Delgado Panadero", , "delgadopanadero@gmail.com", role = c("aut", "cph"),
            comment = c(ORCID = "0000-0002-8189-9251")),
@@ -24,18 +24,18 @@ Suggests: ggplot2, knitr, quarto, testthat (>= 3.0.0), tidyterra, withr
 VignetteBuilder: quarto
 Config/Needs/website: ropenspain/rostemplate, devtools, sessioninfo,
         remotes, sfheaders, rapidjsonr, jsonify, geometries, magick
+Config/roxygen2/version: 7.3.3.9000
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 Copyright: © Dirección General del Catastro
         <https://www.catastro.meh.es/>
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.3
 X-schema.org-isPartOf: https://ropenspain.es/
 X-schema.org-keywords: catastro, cran, cran-r, gis, maps, r, r-package,
         ropenspain, rstats, spain, spatial, static-tiles
 NeedsCompilation: no
-Packaged: 2026-02-23 20:06:52 UTC; diego
+Packaged: 2026-04-27 12:43:26 UTC; diego
 Author: Ángel Delgado Panadero [aut, cph] (ORCID:
     <https://orcid.org/0000-0002-8189-9251>),
   Iñaki Ucar [ctb] (ORCID: <https://orcid.org/0000-0001-6403-5550>),
@@ -43,4 +43,4 @@ Author: Ángel Delgado Panadero [aut, cph] (ORCID:
     <https://orcid.org/0000-0001-8457-4658>)
 Maintainer: Diego Hernangómez <diego.hernangomezherrero@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-02-23 20:20:02 UTC
+Date/Publication: 2026-04-27 13:00:02 UTC

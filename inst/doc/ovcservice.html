@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.27">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,6 +12,7 @@
 
 <title>OVCCoordenadas Web Service</title>
 <style>
+
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -218,9 +219,9 @@ text-decoration: underline; }
 
 <!-- ovcservice.qmd is generated from ovcservice.qmd.orig. Please edit that file -->
 <p><strong>CatastRo</strong> allows querying the OVCCoordenadas Web Service provided by the <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">Sede electrónica del Catastro</a> API directly through an <strong>R</strong> IDE.</p>
-<p>This API is used to retrieve the spatial coordinates of an urban property. It is not necessary to be the owner to get the information; you only need to know the cadastral reference (<em>RC</em>) of the property. Although the RC is the only compulsory argument, providing the address can improve results and help avoid errors in the RC.</p>
+<p>This API retrieves the spatial coordinates of an urban property. It is not necessary to be the owner to get the information; you only need to know the cadastral reference (<em>RC</em>) of the property. Although the RC is the only required argument, providing the address can improve results and help avoid errors.</p>
 <p>Additionally, the API can be used to obtain the RC of an urban property. For this, the API requires the longitude and latitude. It also allows you to choose the spatial reference system (SRS, also known as CRS) from a list to express the coordinates.</p>
-<p>Finally, the API addresses cases where the exact location of the registered urban property is unknown. In such cases, it returns all properties located within a 50-meter square around the given point.</p>
+<p>The API also handles cases where the exact location of the registered urban property is unknown. In such cases, it returns all properties located within a 50-meter square around the given point.</p>
 <p>The documentation of this API can be found <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">here</a>.</p>
 <p>These functions are named <code>catr_ovc_*</code> and return a tibble, as provided by the package <strong>tibble</strong>.</p>
 <h2 id="catastro-api">CatastRo API</h2>
@@ -231,7 +232,7 @@ text-decoration: underline; }
 <li><code>catr_ovc_get_cpmrc()</code></li>
 </ul>
 <h2 id="reverse-geocoding-cadastral-references">Reverse geocoding cadastral references</h2>
-<p>The function <code>catr_ovc_get_rccoor()</code> takes the coordinates (<code>lat</code> and <code>lon</code>) and the spatial reference system (<code>srs</code>) used to express them. It returns a tibble with the cadastral reference of the property at that spatial point, including other information such as the address (town, street, and number).</p>
+<p>The function <code>catr_ovc_get_rccoor()</code> takes the coordinates (<code>lat</code> and <code>lon</code>) and the spatial reference system (<code>srs</code>) used to express them. It returns a tibble with the cadastral reference of the property at that spatial point, including other information such as the address (town, street and number).</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(CatastRo)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">catr_ovc_get_rccoor</span>(</span>
@@ -431,7 +432,7 @@ text-decoration: underline; }
 </tbody>
 </table>
 <h2 id="geocoding-a-cadastral-reference">Geocoding a cadastral reference</h2>
-<p>The opposite query is also possible. When provided with a cadastral reference (<code>rc</code>), province (<code>province</code>), and municipality (<code>municipality</code>), the function <code>catr_ovc_get_cpmrc()</code> returns the coordinates (<code>lat</code> and <code>lon</code>) in a specified <code>srs</code>, along with the address (town, street, and number).</p>
+<p>The opposite query is also possible. When provided with a cadastral reference (<code>rc</code>), province (<code>province</code>), and municipality (<code>municipality</code>), the function <code>catr_ovc_get_cpmrc()</code> returns the coordinates (<code>lat</code> and <code>lon</code>) in a specified <code>srs</code>, along with the address (town, street and number).</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span>,</span>
@@ -502,7 +503,7 @@ text-decoration: underline; }
 </tr>
 </tbody>
 </table>
-<p>When using only <code>rc</code> the result is provided as expected:</p>
+<p>When using only <code>rc</code>, the result is provided as expected:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># No warning, get the result</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(<span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>

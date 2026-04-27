@@ -23,11 +23,9 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 **CatastRo** is a package that provides access to different API services
 of the [Spanish Cadastre](https://www.sedecatastro.gob.es/). With
 **CatastRo**, you can download spatial objects such as buildings,
-cadastral parcels, maps, and geocode cadastral references.
+cadastral parcels and maps, and geocode cadastral references.
 
 ## Installation
-
-<div class="pkgdown-release">
 
 Install **CatastRo** from
 [**CRAN**](https://CRAN.R-project.org/package=CatastRo):
@@ -35,10 +33,6 @@ Install **CatastRo** from
 ``` r
 install.packages("CatastRo")
 ```
-
-</div>
-
-<div class="pkgdown-devel">
 
 Check the docs of the developing version in
 <https://ropenspain.github.io/CatastRo/dev/>.
@@ -64,32 +58,31 @@ with:
 pak::pak("rOpenSpain/CatastRo")
 ```
 
-</div>
-
-## SSL issues
-
-The SSL certificate of the Spanish Cadastre presents some issues that
-may cause an error when using **CatastRo** (especially on macOS, see
-issue [\#40](https://github.com/rOpenSpain/CatastRo/issues/40)):
-
-In **CatastRo \>= 1.0.0** you can try to fix it by running this line in
-your session right after you start using the package: \`
-
-``` r
-# Disable SSL verification
-options(catastro_ssl_verify = 0)
-```
-
-If you wish to make this setup persistent, write the same code in your
-[`.Rprofile`](https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html):
-
-``` r
-# Open your .Rprofile with
-usethis::edit_r_profile()
-
-# And write on that file:
-options(catastro_ssl_verify = 0)
-```
+> [!WARNING]
+>
+> ### SSL issues
+>
+> The SSL certificate of the Spanish Cadastre presents some issues that
+> may cause an error when using **CatastRo** (especially on macOS, see
+> issue [\#40](https://github.com/rOpenSpain/CatastRo/issues/40)):
+>
+> In **CatastRo \>= 1.0.0** you can try to fix it by running this line
+> in your session right after you start using the package:
+>
+> ``` r
+> # Disable SSL verification
+> options(catastro_ssl_verify = 0)
+> ```
+>
+> If you wish to make this setup persistent, write the same code in your
+> [`.Rprofile`](https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html):
+>
+> ``` r
+> # ... other options...
+> options(catastro_ssl_verify = 0)
+> ```
+>
+> Modify your `.Rprofile` with `usethis::edit_r_profile()`.
 
 ## Package API
 
@@ -104,7 +97,7 @@ references using the
 service.
 
 These functions are named `catr_ovc_get_*` and return a tibble, as
-provided by the package **tibble**. See
+provided by package **tibble**. See
 `vignette("ovcservice", package = "CatastRo")` where these functions are
 described.
 
@@ -126,17 +119,17 @@ service:
 
 The ATOM service allows batch-downloading vector objects of different
 cadastral elements for a specific municipality. The result is provided
-as `sf` objects (See **sf** package).
+as `sf` objects (see the **sf** package).
 
 These functions are named `catr_atom_get_xxx`.
 
 #### WFS service
 
 The WFS service allows downloading vector objects of specific cadastral
-elements. The results are provided as `sf` class objects (see the
+elements. The results are provided as `sf` objects (see the
 [**sf**](https://r-spatial.github.io/sf/) package). Note that there are
-some limitations on the extent and number of elements to query. For
-batch downloading the ATOM service is preferred.
+restrictions on the extent and number of elements that can be queried.
+For batch downloading, the ATOM service is preferred.
 
 These functions are named `catr_wfs_get_xxx`.
 
@@ -227,16 +220,15 @@ alt="Extract Alcázar of Segovia with the WFS service" />
 
 ## A note on caching
 
-Some datasets and tiles may have a size larger than 50MB. You can use
-**CatastRo** to create your own local repository at a given local
-directory passing the following option:
+Some datasets and tiles may exceed 50MB. You can set a local cache
+directory using the following function:
 
 ``` r
 catr_set_cache_dir("./path/to/location")
 ```
 
-When this option is set, **CatastRo** will look for the cached file and
-load it, speeding up the process.
+When this option is set, **CatastRo** will look for cached files and
+load them, speeding up the process.
 
 ## Citation
 
@@ -244,7 +236,7 @@ load it, speeding up the process.
 
 Delgado Panadero Á, Hernangómez D (2026). <em>CatastRo: Interface to the
 API Sede Electrónica Del Catastro</em>.
-<a href="https://doi.org/10.32614/CRAN.package.CatastRo">doi:10.32614/CRAN.package.CatastRo</a>,
+<a href="https://doi.org/10.32614/CRAN.package.CatastRo">doi:10.32614/CRAN.package.CatastRo</a>.
 <a href="https://ropenspain.github.io/CatastRo/">https://ropenspain.github.io/CatastRo/</a>.
 </p>
 
@@ -255,7 +247,7 @@ A BibTeX entry for LaTeX users is:
       author = {Ángel {Delgado Panadero} and Diego Hernangómez},
       doi = {10.32614/CRAN.package.CatastRo},
       year = {2026},
-      version = {1.0.0},
+      version = {1.0.1},
       url = {https://ropenspain.github.io/CatastRo/},
       abstract = {Access public spatial data available under the INSPIRE directive. Tools for downloading references and addresses of properties, as well as map images.},
     }

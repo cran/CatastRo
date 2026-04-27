@@ -6,7 +6,7 @@
 \alias{catr_srs_values}
 \title{Reference SRS codes for \CRANpkg{CatastRo} APIs}
 \format{
-A \link[tibble:tbl_df-class]{tibble} with 16 rows
+A \link[tibble:tbl_df]{tibble} with 16 rows
 and columns:
 \describe{
 \item{SRS}{Spatial Reference System (CRS) value, identified by the
@@ -19,9 +19,9 @@ code.}
 }
 }
 \description{
-A \link[tibble:tbl_df-class]{tibble} including the valid SRS (also known as CRS)
-values that may be used on each API service. The values are provided
-as \href{https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset}{EPSG codes}.
+A \link[tibble:tbl_df]{tibble} including the valid SRS (also known as CRS)
+values that may be used on each API service. Values are provided as
+\href{https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset}{EPSG codes}.
 }
 \details{
 Table: Content of \link{catr_srs_values}\tabular{llll}{
@@ -50,16 +50,16 @@ data("catr_srs_values")
 # OVC valid codes
 library(dplyr)
 
-catr_srs_values |> filter(ovc_service == TRUE)
+catr_srs_values |> filter(ovc_service)
 
 # WFS valid codes
 
-catr_srs_values |> filter(wfs_service == TRUE)
+catr_srs_values |> filter(wfs_service)
 
 # Use with sf::st_crs()
 
 catr_srs_values |>
-  filter(wfs_service == TRUE & ovc_service == TRUE) |>
+  filter(wfs_service & ovc_service) |>
   print() |>
   # First value
   slice_head(n = 1) |>
@@ -76,22 +76,22 @@ catr_srs_values |>
 \seealso{
 \code{\link[sf:st_crs]{sf::st_crs()}}.
 
-Other databases: 
-\code{\link{catr_atom_get_address_db_all}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
-\code{\link{catr_atom_get_parcels_db_all}()},
-\code{\link{catr_atom_search_munic}()}
+Other databases:
+\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
+\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
+\code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
+\code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}}
 
 Other INSPIRE WFS services:
-\code{\link{catr_wfs_get_address_bbox}()},
-\code{\link{catr_wfs_get_buildings_bbox}()},
-\code{\link{catr_wfs_get_parcels_bbox}()},
-\code{\link{inspire_wfs_get}()}
+\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
+\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
+\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
+\code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
 
 OVCCoordenadas API:
-\code{\link{catr_ovc_get_cpmrc}()},
-\code{\link{catr_ovc_get_rccoor}()},
-\code{\link{catr_ovc_get_rccoor_distancia}()}
+\code{\link[=catr_ovc_get_cpmrc]{catr_ovc_get_cpmrc()}},
+\code{\link[=catr_ovc_get_rccoor]{catr_ovc_get_rccoor()}},
+\code{\link[=catr_ovc_get_rccoor_distancia]{catr_ovc_get_rccoor_distancia()}}
 }
 \concept{OVCCoordenadas}
 \concept{WFS}

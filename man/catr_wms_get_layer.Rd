@@ -20,27 +20,27 @@ catr_wms_get_layer(
 )
 }
 \arguments{
-\item{x}{See \strong{Bounding box}. It could be:
+\item{x}{See \strong{Bounding box}. It may be:
 \itemize{
 \item A numeric vector of length 4 with the coordinates that defines
 the bounding box: \code{c(xmin, ymin, xmax, ymax)}
 \item A \code{sf/sfc} object, as provided by the \CRANpkg{sf} package.
 }}
 
-\item{srs}{SRS/CRS to use on the query. To check the admitted values check
+\item{srs}{SRS/CRS to use on the query. To see allowed values, use
 \link{catr_srs_values}, specifically the \code{wfs_service} column. See
 \strong{Bounding box}.}
 
 \item{what, styles}{Layer and style of the WMS layer to be downloaded. See
 \strong{Layers and styles}.}
 
-\item{update_cache}{logical. Should the cached file be refreshed? Default is
-\code{FALSE}. When set to \code{TRUE} it would force a new download.}
+\item{update_cache}{logical, should the cached file be refreshed? Defaults to
+\code{FALSE}. When set to \code{TRUE}, it forces a new download.}
 
-\item{cache_dir}{A path to a cache directory. On \code{NULL} the function
-would store the cached files on a temporary dir (See \code{\link[base:tempfile]{base::tempdir()}}).}
+\item{cache_dir}{Path to a cache directory. On \code{NULL}, the function
+stores cached files in a temporary directory (see \code{\link[base:tempdir]{base::tempdir()}}).}
 
-\item{verbose}{logical. If \code{TRUE} displays informational messages.}
+\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
 
 \item{crop}{logical. If \code{TRUE}, the results will be cropped to the specified
 \code{x} extent. If \code{x} is an \code{\link[sf:sf]{sf}} object with one \code{POINT},
@@ -65,19 +65,19 @@ A \code{\link[terra:rast]{SpatRaster}} is returned, with 3 (RGB) or 4 (RGBA) lay
 see \code{\link[terra:RGB]{terra::RGB()}}.
 }
 \description{
-Get geotagged images from the Spanish Cadastre. This function is a wrapper of
-\code{\link[mapSpain:esp_get_tiles]{mapSpain::esp_get_tiles()}}.
+Get geotagged images from the Spanish Cadastre. This function is a
+wrapper of \code{\link[mapSpain:esp_get_tiles]{mapSpain::esp_get_tiles()}}.
 }
 \section{Bounding box}{
 
 When \code{x} is a numeric vector, make sure that the \code{srs} matches the
-coordinate values. When \code{x} is a \code{\link[sf:sf]{sf}} object, the value
+coordinate values. When \code{x} is a \code{\link[sf:st_sf]{sf}} object, the value
 \code{srs} is ignored.
 
 The query is performed using \href{https://epsg.io/3857}{EPSG:3857} (Web Mercator)
 and the tile is projected back to the SRS of \code{x}. In case that the tile
 looks deformed, try either providing \code{x} or specify the SRS of the requested
-tile via the \code{srs} argument, that (ideally) would need to match the SRS of
+tile via the \code{srs} argument, which should match the SRS of
 \code{x}. See \strong{Examples}.
 }
 
@@ -161,24 +161,24 @@ ggplot() +
 \code{\link[terra:plotRGB]{terra::plotRGB()}} and \code{\link[tidyterra:geom_spatraster_rgb]{tidyterra::geom_spatraster_rgb()}}.
 
 INSPIRE API functions:
-\code{\link{catr_atom_get_address}()},
-\code{\link{catr_atom_get_address_db_all}()},
-\code{\link{catr_atom_get_buildings}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
-\code{\link{catr_atom_get_parcels}()},
-\code{\link{catr_atom_get_parcels_db_all}()},
-\code{\link{catr_wfs_get_address_bbox}()},
-\code{\link{catr_wfs_get_buildings_bbox}()},
-\code{\link{catr_wfs_get_parcels_bbox}()},
-\code{\link{inspire_wfs_get}()}
+\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
+\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
+\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
+\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
+\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
+\code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
+\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
+\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
+\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
+\code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
 
-Other spatial: 
-\code{\link{catr_atom_get_address}()},
-\code{\link{catr_atom_get_buildings}()},
-\code{\link{catr_atom_get_parcels}()},
-\code{\link{catr_wfs_get_address_bbox}()},
-\code{\link{catr_wfs_get_buildings_bbox}()},
-\code{\link{catr_wfs_get_parcels_bbox}()}
+Other spatial:
+\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
+\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
+\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
+\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
+\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
+\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}}
 }
 \concept{INSPIRE}
 \concept{WMS}

@@ -2,10 +2,9 @@
 #'
 #' @description
 #' Implementation of the OVCCallejero service
-#' [ConsultaMunicipioCodigos](`r ovcurl("mun")`).
-#'
-#' Returns the names and codes of a municipality. Returns both the codes as per
-#' the Cadastre and as per the INE (National Statistics Institute).
+#' [ConsultaMunicipioCodigos](`r ovcurl("mun")`). Returns names and codes
+#' of a municipality as per the Cadastre and the INE (National Statistics
+#' Institute).
 #'
 #' @encoding UTF-8
 #' @family OVCCallejero
@@ -25,23 +24,24 @@
 #'   [catr_ovc_get_cod_provinces()].
 #' @param cmun,cmun_ine Code of a municipality, as recorded on the Spanish
 #'   Cadastre (`cmun`) or the National Statistics Institute. Either `cmun` or
-#'   `cmun_ine` should be provided.
+#'   `cmun_ine` must be provided.
 #'
 #' @details
 #' On a successful query, the function returns a [tibble][tibble::tbl_df]
 #' with one row including the following columns:
-#' * `munic`: Name of the municipality as per the Cadastre.
-#' * `catr_to`: Cadastral territorial office code.
-#' * `catr_munic`: Municipality code as recorded on the Cadastre.
-#' * `catrcode`: Full Cadastral code for the municipality.
-#' * `cpro`: Province code as per the INE.
-#' * `catr_munic`: Municipality code as per the INE.
-#' * `catrcode`: Full INE code for the municipality.
-#' * Rest of fields: Check the API Docs.
+#'
+#' - `munic`: Name of the municipality as per the Cadastre.
+#' - `catr_to`: Cadastral territorial office code.
+#' - `catr_munic`: Municipality code as recorded on the Cadastre.
+#' - `catrcode`: Full Cadastral code for the municipality.
+#' - `cpro`: Province code as per the INE.
+#' - `cmun`: Municipality code as per the INE.
+#' - `inecode`: Full INE code for the municipality.
+#' - Rest of fields: Check the API Docs.
 #'
 #' @examplesIf run_example()
 #' \donttest{
-#' # Get municipality by cadastal code
+#' # Get municipality by cadastral code
 #' ab <- catr_ovc_get_cod_munic(cpro = 2, cmun = 900)
 #'
 #' ab

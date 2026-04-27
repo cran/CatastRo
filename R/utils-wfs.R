@@ -1,5 +1,10 @@
 #' Client tool for WFS INSPIRE services
 #'
+#' @description
+#' Access WFS INSPIRE services. This function is used internally in WFS calls
+#' and is exposed for users and developers accessing other cadastral or
+#' INSPIRE resources.
+#'
 #' @encoding UTF-8
 #' @family INSPIRE
 #' @family WFS
@@ -8,16 +13,14 @@
 #'
 #' @rdname inspire_wfs_get
 #'
-#' @param scheme Identifies the protocol to be used to access the resource on
-#'   the Internet.
-#' @param hostname Identifies the host that holds the resource.
-#' @param path Identifies the specific resource in the host that the web client
-#'   wants to access.
-#' @param query A named list with the name and value of the arguments to query.
+#' @param scheme Character string. Protocol to access the resource on the
+#'   Internet.
+#' @param hostname Character string. Host that holds the resource.
+#' @param path Character string. Specific resource in the host to access.
+#' @param query Named list. Names and values of arguments to query.
 #'
 #' @return
-#' A character string with the path of the resulting file in the [tempfile()]
-#' folder.
+#' Character string. Path of the resulting file in the [tempfile()] folder.
 #'
 #' @details
 #' This function is used internally in all the WFS calls. We expose it to make
@@ -147,7 +150,6 @@ inspire_wfs_get <- function(
   NULL
 }
 
-
 #' Prepare the bbox of an object for WFS
 #'
 #' Results in 3857 since the Catastro API fails in some other projections.
@@ -169,7 +171,7 @@ wfs_get_bbox <- function(x, srs = NULL, srs_dest = 3857, limit_km2 = Inf) {
     if (is.null(srs)) {
       cli::cli_abort(
         paste0(
-          "You should provide also the {.arg srs} argument when x is ",
+          "You should also provide the {.arg srs} argument when x is ",
           "{.obj_type_friendly {x}}."
         )
       )

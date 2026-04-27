@@ -2,9 +2,8 @@
 #'
 #' @description
 #' Implementation of the OVCCoordenadas service
-#' [Consulta RCCOOR](`r ovcurl("RCCOOR")`).
-#'
-#' Returns the cadastral reference found for a set of specific coordinates.
+#' [Consulta RCCOOR](`r ovcurl("RCCOOR")`). Returns the cadastral
+#' reference found for a set of specific coordinates.
 #'
 #' @encoding UTF-8
 #' @family OVCCoordenadas
@@ -27,7 +26,7 @@
 #' one row by cadastral reference, including the following columns:
 #' - `geo.xcen`, `geo.ycen`, `geo.srs`: Input arguments of the query.
 #' - `refcat`: Cadastral Reference.
-#' - `address`: Address as it is recorded on the Cadastre.
+#' - `address`: Address as recorded in the Cadastre.
 #' - Rest of fields: Check the API Docs.
 #'
 #' @examplesIf run_example()

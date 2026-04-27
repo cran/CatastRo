@@ -2,12 +2,9 @@
 #'
 #' @description
 #' Implementation of the OVCCoordenadas service
-#' [Consulta RCCOOR Distancia](`r ovcurl("RCCOORD")`).
-#'
-#' Returns the cadastral reference found for a set of coordinates. If no
-#' cadastral references are found, the API returns a list of the cadastral
-#' references found in an area of 50 square meters around the requested
-#' coordinates.
+#' [Consulta RCCOOR Distancia](`r ovcurl("RCCOORD")`). Return cadastral
+#' references for coordinates. If none found, the API returns references
+#' in a 50 square meter area around the requested coordinates.
 #'
 #' @encoding UTF-8
 #' @family OVCCoordenadas
@@ -19,10 +16,10 @@
 #' @references
 #' [Consulta RCCOOR Distancia](`r ovcurl("RCCOORD")`).
 #'
-#' @param lat Latitude to use on the query. It should be specified in the
-#'   CRS/SRS defined in `srs`.
-#' @param lon Longitude to use on the query. It should be specified in the
-#'   CRS/SRS defined in `srs`.
+#' @param lat Latitude for the query, expressed in the CRS/SRS defined by
+#'   `srs`.
+#' @param lon Longitude for the query, expressed in the CRS/SRS defined by
+#'   `srs`.
 #'
 #' @seealso [catr_srs_values], `vignette("ovcservice", package = "CatastRo")`
 #'
@@ -34,7 +31,7 @@
 #' one row by cadastral reference, including the following columns:
 #' - `geo.xcen`, `geo.ycen`, `geo.srs`: Input arguments of the query.
 #' - `refcat`: Cadastral reference.
-#' - `address`: Address as it is recorded on the Cadastre.
+#' - `address`: Address as recorded in the Cadastre.
 #' - `cmun_ine`: Municipality code as registered on the INE (National
 #'    Statistics Institute).
 #' - Rest of fields: Check the API Docs.

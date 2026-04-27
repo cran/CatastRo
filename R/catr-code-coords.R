@@ -1,9 +1,8 @@
 #' Get the cadastral municipality code from coordinates
 #'
 #' @description
-#' This function takes as input a pair of coordinates of a [`sf`][sf::st_sf]
-#' object and returns the corresponding municipality code for those coordinates
-#' using [catr_ovc_get_cod_munic()].
+#' Get the municipality code for coordinates using a [`sf`][sf::st_sf]
+#' object or a pair of coordinates via [catr_ovc_get_cod_munic()].
 #'
 #' @encoding UTF-8
 #' @family search
@@ -19,12 +18,12 @@
 #' [mapSpain::esp_get_munic_siane()], [catr_ovc_get_cod_munic()],
 #' [sf::st_centroid()].
 #'
-#' @param x It can be:
+#' @param x It may be:
 #'   - A pair of coordinates `c(x,y)`. In this case the `srs` of the coordinates
-#'     should be provided.
-#'   - A [`sf`][sf::st_sf] object. If the object has several geometries only the
-#'     first value will be used. The function will extract the coordinates
-#'     using `sf::st_centroid(x, of_largest_polygon = TRUE)`.
+#'     must be provided.
+#'   - A [`sf`][sf::st_sf] object. If the object has several geometries, only
+#'     the first geometry is used. The function extracts coordinates using
+#'     `sf::st_centroid(x, of_largest_polygon = TRUE)`.
 #'
 #' @examplesIf run_example()
 #' \donttest{
@@ -53,7 +52,7 @@ catr_get_code_from_coords <- function(
     if (is.null(srs)) {
       cli::cli_abort(
         paste0(
-          "You should provide also the {.arg srs} argument when x is ",
+          "You should also provide the {.arg srs} argument when x is ",
           "{.obj_type_friendly {x}}."
         )
       )

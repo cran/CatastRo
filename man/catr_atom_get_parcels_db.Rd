@@ -26,21 +26,21 @@ catr_atom_get_parcels_db_to(
 }
 \arguments{
 \item{cache}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} \code{cache} is no longer
-supported; this function will always cache results.}
+supported, this function always caches results.}
 
-\item{update_cache}{logical. Should the cached file be refreshed? Default is
-\code{FALSE}. When set to \code{TRUE} it would force a new download.}
+\item{update_cache}{logical, should the cached file be refreshed? Defaults to
+\code{FALSE}. When set to \code{TRUE}, it forces a new download.}
 
-\item{cache_dir}{A path to a cache directory. On \code{NULL} the function
-would store the cached files on a temporary dir (See \code{\link[base:tempfile]{base::tempdir()}}).}
+\item{cache_dir}{Path to a cache directory. On \code{NULL}, the function
+stores cached files in a temporary directory (see \code{\link[base:tempdir]{base::tempdir()}}).}
 
-\item{verbose}{logical. If \code{TRUE} displays informational messages.}
+\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
 
 \item{to}{character. Territorial office. Internally uses \code{\link[base:grep]{base::grep()}} for
 matching.}
 }
 \value{
-A \link[tibble:tbl_df-class]{tibble} with the information requested with the following
+A \link[tibble:tbl_df]{tibble} with the information requested with the following
 fields:
 \itemize{
 \item \code{territorial_office}: territorial office, corresponding to each province
@@ -52,15 +52,16 @@ service is updated twice a year}.
 }
 }
 \description{
-Create a database containing the URLs provided in the INSPIRE ATOM service
-of the Spanish Cadastre for extracting cadastral parcels.
+Create a database containing the URLs provided in the INSPIRE ATOM
+service of the Spanish Cadastre for extracting cadastral parcels.
 \itemize{
-\item \code{catr_atom_get_parcels_db_all()} provides a top-level table including
-information on all the territorial offices (except the Basque Country and
-Navarre) listing the municipalities included in each office.
+\item \code{catr_atom_get_parcels_db_all()} provides a top-level table
+including information on all the territorial offices (except the
+Basque Country and Navarre) listing the municipalities included in
+each office.
 \item \code{catr_atom_get_parcels_db_to()} provides a table for the specified
-territorial office including information for each of the municipalities
-of that office.
+territorial office including information for each of the
+municipalities of that office.
 }
 }
 \examples{
@@ -72,33 +73,33 @@ catr_atom_get_parcels_db_all()
 }
 \seealso{
 INSPIRE API functions:
-\code{\link{catr_atom_get_address}()},
-\code{\link{catr_atom_get_address_db_all}()},
-\code{\link{catr_atom_get_buildings}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
-\code{\link{catr_atom_get_parcels}()},
-\code{\link{catr_wfs_get_address_bbox}()},
-\code{\link{catr_wfs_get_buildings_bbox}()},
-\code{\link{catr_wfs_get_parcels_bbox}()},
-\code{\link{catr_wms_get_layer}()},
-\code{\link{inspire_wfs_get}()}
+\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
+\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
+\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
+\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
+\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
+\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
+\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
+\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
+\code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}},
+\code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
 
 Other INSPIRE ATOM services:
-\code{\link{catr_atom_get_address}()},
-\code{\link{catr_atom_get_address_db_all}()},
-\code{\link{catr_atom_get_buildings}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
-\code{\link{catr_atom_get_parcels}()},
-\code{\link{catr_atom_search_munic}()}
+\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
+\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
+\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
+\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
+\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
+\code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}}
 
-Other parcels: 
-\code{\link{catr_atom_get_parcels}()},
-\code{\link{catr_wfs_get_parcels_bbox}()}
+Other parcels:
+\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
+\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}}
 
-Other databases: 
-\code{\link{catr_atom_get_address_db_all}()},
-\code{\link{catr_atom_get_buildings_db_all}()},
-\code{\link{catr_atom_search_munic}()},
+Other databases:
+\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
+\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
+\code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}},
 \code{\link{catr_srs_values}}
 }
 \concept{ATOM}

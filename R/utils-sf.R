@@ -1,10 +1,13 @@
-#' Read geospatial file into sf object with optional query
+#' Read geospatial file into sf object
 #'
-#' @param file_local Local file path or URL to the geospatial file.
-#' @param hint Hint for zipped files
+#' @param file_local Character string. Local file path or URL to the
+#'   geospatial file.
+#' @param hint Character string. Hint for identifying files in zipped archives.
+#' @param layer_hint Character string. Optional hint for layer names.
 #' @param ... Additional arguments passed to `sf::read_sf()`.
 #'
 #' @return An `sf` object containing the geospatial data.
+#' @encoding UTF-8
 #'
 #' @noRd
 read_geo_file_sf <- function(
@@ -23,7 +26,7 @@ read_geo_file_sf <- function(
     if (fsize > thr) {
       fsize_unit <- paste0("(", format(fsize_unit, units = "auto"), ").")
       make_msg("warning", TRUE, "Reading large file", fsize_unit)
-      make_msg("generic", TRUE, "It can take a while. Hold on!")
+      make_msg("generic", TRUE, "This may take a while.")
     }
   }
 
@@ -53,11 +56,9 @@ read_geo_file_sf <- function(
 
 #' Convert sf object to UTF-8
 #'
-#' Convert to UTF-8
+#' @param data_sf An `sf` object to convert to UTF-8 encoding.
 #'
-#' @param data_sf data_sf
-#'
-#' @return data_sf with UTF-8 encoding.
+#' @return An `sf` object with UTF-8 encoding applied.
 #'
 #' @source Extracted from [`sf`][sf::st_sf] package.
 #'
@@ -120,7 +121,6 @@ sanitize_sf <- function(data_sf) {
 
   data_sf
 }
-
 
 get_sf_from_bbox <- function(bbox, srs = NULL) {
   if (inherits(bbox, "sf") || inherits(bbox, "sfc")) {
