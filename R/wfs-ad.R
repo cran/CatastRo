@@ -1,47 +1,27 @@
-#' WFS INSPIRE: Download addresses
+#' WFS INSPIRE: download addresses
 #'
 #' @description
-#' Get the spatial data of addresses. The WFS Service allows performing
+#' Get the spatial data of addresses. The WFS service allows performing
 #' several types of queries:
-#' - By bounding box: Implemented on `catr_wfs_get_address_bbox()`.
-#'   Extract objects included in the bounding box provided. See
-#'   **Bounding box**.
 #'
-#' @encoding UTF-8
-#' @family INSPIRE
-#' @family WFS
-#' @family addresses
-#' @family spatial
-#' @export
+#' - By bounding box: `catr_wfs_get_address_bbox()` extracts objects included
+#'   in the provided bounding box. See **Bounding box**.
 #'
-#' @rdname catr_wfs_get_address
-#' @inheritParams catr_set_cache_dir
-#'
-#' @references
-#' ```{r, echo=FALSE, comment="", results="asis"}
-#' paste0("[API Documentation](https://www.catastro.hacienda.gob.es/",
-#'        "webinspire/documentos/inspire-ad-WFS.pdf).") |>
-#'   cat()
-#' cat("\n\n")
-#' paste0("[INSPIRE Services for Cadastral Cartography](https://www.",
-#'        "catastro.hacienda.gob.es/webinspire/index.html).") |>
-#'   cat()
-#'
-#' ```
-#'
-#' @return A [`sf`][sf::st_sf] object.
-#'
-#' @param x See **Bounding box**. It may be:
-#'   - A numeric vector of length 4 with the coordinates that defines
-#'     the bounding box: `c(xmin, ymin, xmax, ymax)`
-#'   - A `sf/sfc` object, as provided by the \CRANpkg{sf} package.
-#' @param srs SRS/CRS to use on the query. To see allowed values, use
+#' @param x See **Bounding box**. Can be one of:
+#' - A numeric vector of length 4 with the coordinates that define
+#'   the bounding box: `c(xmin, ymin, xmax, ymax)`.
+#' - A `sf/sfc` object, as provided by the \CRANpkg{sf} package.
+#' @param srs SRS/CRS to use in the query. To see allowed values, use
 #'   [catr_srs_values], specifically the `wfs_service` column. See
 #'   **Bounding box**.
 #' @param rc The cadastral reference to be extracted.
 #'
+#' @inheritParams catr_set_cache_dir
+#'
+#' @return A [`sf`][sf::st_sf] object.
+#'
 #' @section API Limits:
-#' The API service is limited to a bounding box of 4km2 and a maximum of 5,000
+#' The API service is limited to a bounding box of 4 km2 and a maximum of 5,000
 #' elements.
 #'
 #' @section Bounding box:
@@ -56,45 +36,43 @@
 #'
 #' The result is always provided in the SRS of the [`sf`][sf::st_sf] object
 #' provided as input.
+#' @references
+#' ```{r, echo=FALSE, comment="", results="asis"}
+#' paste0("[API documentation](https://www.catastro.hacienda.gob.es/",
+#'        "webinspire/documentos/inspire-ad-WFS.pdf).") |>
+#'   cat()
+#' cat("\n\n")
+#' paste0("[INSPIRE services for cadastral cartography](https://www.",
+#'        "catastro.hacienda.gob.es/webinspire/index.html).") |>
+#'   cat()
+#'
+#' ```
+#'
+#' @family INSPIRE
+#' @family WFS
+#' @family addresses
+#' @family spatial
+#' @rdname catr_wfs_get_address
+#' @encoding UTF-8
+#' @export
+#'
 catr_wfs_get_address_bbox <- function(x, srs = NULL, verbose = FALSE) {
-  # Sanity checks
+  # Validate arguments.
   x <- validate_non_empty_arg(x)
   srs <- ensure_null(srs)
 
-  bbox_res <- wfs_get_bbox(x = x, srs = srs, srs_dest = 25830, limit_km2 = 4)
-
-  file_local <- inspire_wfs_get(
+  wfs_read_bbox_query(
+    x = x,
+    srs = srs,
     path = "INSPIRE/wfsAD.aspx",
-    verbose = verbose,
-    query = list(
-      # WFS service
-      service = "wfs",
-      version = "2.0.0",
-      request = "getfeature",
-      typenames = "AD.ADDRESS",
-      # Stored query
-      bbox = paste0(bbox_res, collapse = ","),
-      SRSNAME = 25830
-    )
+    typenames = "AD.ADDRESS",
+    limit_km2 = 4,
+    verbose = verbose
   )
-
-  if (is.null(file_local)) {
-    return(NULL)
-  }
-
-  # Transform back to the desired srs
-  out <- read_geo_file_sf(file_local)
-  unlink(file_local)
-  if (is.null(srs)) {
-    srs <- sf::st_crs(x)
-  }
-  out <- sf::st_transform(out, srs)
-
-  out
 }
 #' @description
-#' - By street code: Implemented on `catr_wfs_get_address_codvia()`. Extract
-#'   objects of specific addresses.
+#' - By street code: `catr_wfs_get_address_codvia()` extracts objects for
+#'   specific addresses.
 #'
 #' @param codvia Cadastral street code.
 #' @param del Cadastral office code.
@@ -113,83 +91,53 @@ catr_wfs_get_address_codvia <- function(
   del <- validate_non_empty_arg(del)
   mun <- validate_non_empty_arg(mun)
   srs <- ensure_null(srs)
-  # Fake call to validate srs
-  if (!is.null(srs)) {
-    wfs_get_bbox(c(1, 1, 1, 1), srs = srs)
-  }
 
   q <- list(
-    # WFS service
     service = "wfs",
     version = "2.0.0",
     request = "getfeature",
     StoredQuerie_id = "getadbycodvia",
-    # Stored query
     codvia = codvia,
     del = del,
     mun = mun
   )
 
-  q$SRSNAME <- srs
-
-  file_local <- inspire_wfs_get(
+  wfs_read_stored_query(
     path = "INSPIRE/wfsAD.aspx",
-    verbose = verbose,
-    query = q
+    query = q,
+    srs = srs,
+    verbose = verbose
   )
-
-  if (is.null(file_local)) {
-    return(NULL)
-  }
-
-  out <- read_geo_file_sf(file_local)
-  unlink(file_local)
-  out
 }
 
 #' @description
-#' - By cadastral reference: Implemented on `catr_wfs_get_address_rc()`. Extract
-#'   objects of specific cadastral references.
+#' - By cadastral reference: `catr_wfs_get_address_rc()` extracts objects for
+#'   specific cadastral references.
 #'
 #' @rdname catr_wfs_get_address
 #' @export
 catr_wfs_get_address_rc <- function(rc, srs = NULL, verbose = FALSE) {
   rc <- validate_non_empty_arg(rc)
   srs <- ensure_null(srs)
-  # Fake call to validate srs
-  if (!is.null(srs)) {
-    wfs_get_bbox(c(1, 1, 1, 1), srs = srs)
-  }
 
   q <- list(
-    # WFS service
     service = "wfs",
     version = "2.0.0",
     request = "getfeature",
     StoredQuerie_id = "GetadByRefcat",
-    # Stored query
     REFCAT = rc
   )
 
-  q$SRSNAME <- srs
-
-  file_local <- inspire_wfs_get(
+  wfs_read_stored_query(
     path = "INSPIRE/wfsAD.aspx",
-    verbose = verbose,
-    query = q
+    query = q,
+    srs = srs,
+    verbose = verbose
   )
-
-  if (is.null(file_local)) {
-    return(NULL)
-  }
-
-  out <- read_geo_file_sf(file_local)
-  unlink(file_local)
-  out
 }
 #' @description
-#' - By postal codes: Implemented on `catr_wfs_get_address_postalcode()`.
-#'   Extract objects of specific postal codes
+#' - By postal codes: `catr_wfs_get_address_postalcode()` extracts objects for
+#'   specific postal codes.
 #'
 #' @param postalcode Postal code.
 #'
@@ -216,34 +164,19 @@ catr_wfs_get_address_postalcode <- function(
 ) {
   postalcode <- validate_non_empty_arg(postalcode)
   srs <- ensure_null(srs)
-  # Fake call to validate srs
-  if (!is.null(srs)) {
-    wfs_get_bbox(c(1, 1, 1, 1), srs = srs)
-  }
 
   q <- list(
-    # WFS service
     service = "wfs",
     version = "2.0.0",
     request = "getfeature",
     StoredQuerie_id = "getadbypostalcode",
-    # Stored query
     postalcode = postalcode
   )
 
-  q$SRSNAME <- srs
-
-  file_local <- inspire_wfs_get(
+  wfs_read_stored_query(
     path = "INSPIRE/wfsAD.aspx",
-    verbose = verbose,
-    query = q
+    query = q,
+    srs = srs,
+    verbose = verbose
   )
-
-  if (is.null(file_local)) {
-    return(NULL)
-  }
-
-  out <- read_geo_file_sf(file_local)
-  unlink(file_local)
-  out
 }

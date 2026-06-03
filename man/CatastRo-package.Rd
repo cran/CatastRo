@@ -4,11 +4,11 @@
 \name{CatastRo-package}
 \alias{CatastRo}
 \alias{CatastRo-package}
-\title{CatastRo: Interface to the API 'Sede Electronica Del Catastro'}
+\title{CatastRo: Interface to the Spanish 'Catastro' Web Services}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Access public spatial data available under the 'INSPIRE' directive. Tools for downloading references and addresses of properties, as well as map images.
+Access public spatial data from the Spanish 'Catastro' through its 'INSPIRE' and related web services. Retrieve parcel, building, address and map image data, and convert between parcel references and coordinates.
 }
 \seealso{
 Useful links:

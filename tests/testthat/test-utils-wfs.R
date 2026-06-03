@@ -45,10 +45,7 @@ test_that("Test offline", {
     )
   )
   expect_null(fend)
-  expect_length(
-    list.files(cdir, recursive = TRUE),
-    0
-  )
+  expect_length(list.files(cdir, recursive = TRUE), 0)
   unlink(cdir, recursive = TRUE, force = TRUE)
 
   local_mocked_bindings(is_online_fun = function(...) {
@@ -80,7 +77,7 @@ test_that("Test 404", {
         bbox = "742438,4046840,742613,4046970"
       )
     ),
-    "Error "
+    "HTTP error"
   )
   expect_null(s)
 
@@ -130,7 +127,7 @@ test_that("Error on call", {
         bbox = "742438,4046840,742613,4046970"
       )
     ),
-    "didn't provide results:"
+    "WFS query returned an exception"
   )
   expect_null(s)
 
@@ -150,10 +147,7 @@ test_that("Bad query", {
 
   expect_snapshot(
     error = TRUE,
-    s <- inspire_wfs_get(
-      path = "INSPIRE/wfsBU.aspx",
-      query = 20
-    )
+    s <- inspire_wfs_get(path = "INSPIRE/wfsBU.aspx", query = 20)
   )
 
   expect_snapshot(
@@ -178,7 +172,7 @@ test_that("Bad query", {
       ),
       verbose = TRUE
     ),
-    "Removing 3 empty and/or unnamed elements in"
+    "Removed 3 empty or unnamed elements"
   )
 
   sfobj1 <- read_geo_file_sf(s)

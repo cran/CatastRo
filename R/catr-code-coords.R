@@ -4,13 +4,17 @@
 #' Get the municipality code for coordinates using a [`sf`][sf::st_sf]
 #' object or a pair of coordinates via [catr_ovc_get_cod_munic()].
 #'
-#' @encoding UTF-8
-#' @family search
+#' @param x Can be one of:
+#' - A pair of coordinates `c(x, y)`. In this case the `srs` of the
+#'   coordinates must be provided.
+#' - A [`sf`][sf::st_sf] object. If the object has several geometries, only
+#'   the first geometry is used. This function extracts coordinates using
+#'   `sf::st_centroid(x, of_largest_polygon = TRUE)`.
+#'
 #' @inheritParams catr_ovc_get_cod_munic
 #' @inheritParams catr_ovc_get_cpmrc
 #' @inheritParams catr_set_cache_dir
 #' @inheritDotParams mapSpain::esp_get_munic_siane year resolution region munic
-#' @export
 #' @inherit catr_ovc_get_cod_munic return details
 #' @inherit catr_ovc_get_cpmrc seealso
 #'
@@ -18,16 +22,12 @@
 #' [mapSpain::esp_get_munic_siane()], [catr_ovc_get_cod_munic()],
 #' [sf::st_centroid()].
 #'
-#' @param x It may be:
-#'   - A pair of coordinates `c(x,y)`. In this case the `srs` of the coordinates
-#'     must be provided.
-#'   - A [`sf`][sf::st_sf] object. If the object has several geometries, only
-#'     the first geometry is used. The function extracts coordinates using
-#'     `sf::st_centroid(x, of_largest_polygon = TRUE)`.
-#'
+#' @family search
+#' @encoding UTF-8
+#' @export
 #' @examplesIf run_example()
 #' \donttest{
-#' # Use with coords
+#' # Use with coordinates
 #' catr_get_code_from_coords(c(-16.25462, 28.46824), srs = 4326)
 #'
 #' # Use with sf
@@ -44,24 +44,12 @@ catr_get_code_from_coords <- function(
   x <- validate_non_empty_arg(x)
 
   if (!(inherits(x, "sf") || inherits(x, "sfc"))) {
-    if (length(x) != 2) {
-      cli::cli_abort(
-        "Length of {.arg x} should be {.val {2L}}, not {.val {length(x)}}."
-      )
-    }
-    if (is.null(srs)) {
-      cli::cli_abort(
-        paste0(
-          "You should also provide the {.arg srs} argument when x is ",
-          "{.obj_type_friendly {x}}."
-        )
-      )
-    }
+    validate_vector_with_srs(x, srs, 2L)
 
     x <- sf::st_point(x)
     x <- sf::st_sfc(x)
 
-    # Set crs
+    # Set CRS.
     sf::st_crs(x) <- sf::st_crs(srs)
   }
 
@@ -69,14 +57,14 @@ catr_get_code_from_coords <- function(
 
   if (length(x) > 1) {
     cli::cli_alert_info(
-      "Selecting the first geometry (you provided {.val {length(x)}})."
+      "Using the first geometry, {.val {length(x)}} geometries were provided."
     )
   }
 
   x <- sf::st_transform(x[1], 3857)
   x <- sf::st_centroid(x, of_largest_polygon = TRUE)
 
-  # Get munic
+  # Get municipality.
   cache_dir <- create_cache_dir(cache_dir)
 
   mun <- mapSpain::esp_get_munic_siane(
@@ -94,7 +82,7 @@ catr_get_code_from_coords <- function(
   aa <- sf::st_intersects(mun, x, sparse = FALSE)
 
   if (!any(as.vector(aa))) {
-    cli::cli_alert_warning("Coordinates not found")
+    cli::cli_alert_warning("No municipality found for these coordinates.")
     return(NULL)
   }
 

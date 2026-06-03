@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{catr_ovc_get_cod_munic}
 \alias{catr_ovc_get_cod_munic}
-\title{OVCCallejero: Extract the code of a municipality}
+\title{OVCCallejero: extract the code of a municipality}
 \usage{
 catr_ovc_get_cod_munic(cpro, cmun = NULL, cmun_ine = NULL, verbose = FALSE)
 }
@@ -18,26 +18,26 @@ Cadastre (\code{cmun}) or the National Statistics Institute. Either \code{cmun} 
 \item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
 }
 \value{
-A \link[tibble:tbl_df]{tibble}. See \strong{Details}
+A \link[tibble:tbl_df]{tibble}. See \strong{Details}.
 }
 \description{
 Implementation of the OVCCallejero service
 \href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccallejerocodigos.asmx?op=ConsultaMunicipioCodigos}{ConsultaMunicipioCodigos}. Returns names and codes
-of a municipality as per the Cadastre and the INE (National Statistics
+of a municipality according to the Cadastre and the INE (National Statistics
 Institute).
 }
 \details{
-On a successful query, the function returns a \link[tibble:tbl_df]{tibble}
+On a successful query, this function returns a \link[tibble:tbl_df]{tibble}
 with one row including the following columns:
 \itemize{
-\item \code{munic}: Name of the municipality as per the Cadastre.
+\item \code{munic}: Name of the municipality according to the Cadastre.
 \item \code{catr_to}: Cadastral territorial office code.
 \item \code{catr_munic}: Municipality code as recorded on the Cadastre.
 \item \code{catrcode}: Full Cadastral code for the municipality.
-\item \code{cpro}: Province code as per the INE.
-\item \code{cmun}: Municipality code as per the INE.
+\item \code{cpro}: Province code according to the INE.
+\item \code{cmun}: Municipality code according to the INE.
 \item \code{inecode}: Full INE code for the municipality.
-\item Rest of fields: Check the API Docs.
+\item Remaining fields: Check the API documentation.
 }
 }
 \examples{
@@ -63,7 +63,7 @@ ab2
 \code{\link[mapSpain:esp_get_munic_siane]{mapSpain::esp_get_munic_siane()}} to get shapes of municipalities, including
 the INE code.
 
-OVCCoordenadas API:
+Related OVCCallejero functions:
 \code{\link[=catr_ovc_get_cod_provinces]{catr_ovc_get_cod_provinces()}}
 
 Other search:

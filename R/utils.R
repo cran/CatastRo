@@ -19,21 +19,17 @@ make_msg <- function(type = "generic", verbose, ...) {
   dots <- list(...)
   msg <- paste(dots, collapse = " ")
 
-  if (type == "generic") {
-    cli::cli_alert(msg)
+  alert <- switch(type,
+    "generic" = cli::cli_alert,
+    "success" = cli::cli_alert_success,
+    "warning" = cli::cli_alert_warning,
+    "danger" = cli::cli_alert_danger,
+    "info" = cli::cli_alert_info
+  )
+  if (is.null(alert)) {
+    return(invisible())
   }
-  if (type == "success") {
-    cli::cli_alert_success(msg)
-  }
-  if (type == "warning") {
-    cli::cli_alert_warning(msg)
-  }
-  if (type == "danger") {
-    cli::cli_alert_danger(msg)
-  }
-  if (type == "info") {
-    cli::cli_alert_info(msg)
-  }
+  alert(msg)
   invisible()
 }
 
@@ -69,18 +65,18 @@ match_arg_pretty <- function(arg, choices) {
   }
 
   lmatch <- match(arg, choices)
-  # Hint
+  # Build a hint for approximate matches.
   aproxmatch <- pmatch(arg, choices)[1]
 
   if (length(arg) > 1 || is.na(lmatch)) {
-    # Create error message
+    # Create error message.
     if (length(choices) == 1) {
       msg <- paste0("{.str ", choices, "}")
     } else {
       l_choices <- length(choices)
       msg <- paste0("{.str ", choices[-l_choices], "}", collapse = ", ")
       msg <- paste0(msg, " or {.str ", choices[l_choices], "}")
-      # Add one of at the begining
+      # Add "one of" at the beginning.
       msg <- paste0("one of ", msg)
     }
 
@@ -88,7 +84,7 @@ match_arg_pretty <- function(arg, choices) {
     bad_arg <- paste0("{.str ", arg, "}", collapse = " or ")
     msg <- paste0(msg, bad_arg, ".")
 
-    # Maybe is a regex?
+    # Suggest an approximate match.
     reg_msg <- NULL
     if (!is.na(aproxmatch)) {
       aprox <- choices[aproxmatch]
@@ -97,10 +93,7 @@ match_arg_pretty <- function(arg, choices) {
     }
 
     cli::cli_abort(
-      c(
-        paste0("{.arg {arg_name}} should be ", msg),
-        "i" = reg_msg
-      ),
+      c(paste0("{.arg {arg_name}} must be ", msg), "i" = reg_msg),
       call = NULL
     )
   }
@@ -125,8 +118,38 @@ validate_non_empty_arg <- function(arg, call = parent.frame(1)) {
   arg_name <- as.character(substitute(arg)) # nolint
 
   if (missing(arg)) {
-    cli::cli_abort("{.arg {arg_name}} can't be missing.", call = call)
+    cli::cli_abort("{.arg {arg_name}} cannot be missing.", call = call)
   }
 
   arg
+}
+
+warn_deprecated_cache <- function(cache, what) {
+  if (lifecycle::is_present(cache)) {
+    lifecycle::deprecate_warn(
+      when = "1.0.0",
+      what = what,
+      details = "Results are always cached.",
+      user_env = parent.frame(2)
+    )
+  }
+}
+
+validate_vector_with_srs <- function(x, srs, expected_length) {
+  if (length(x) != expected_length) {
+    cli::cli_abort(
+      paste0(
+        "{.arg x} must have length {.val {expected_length}}, not ",
+        "{.val {length(x)}}."
+      )
+    )
+  }
+  if (is.null(srs)) {
+    cli::cli_abort(paste0(
+      "You must also provide {.arg srs} when {.arg x} is ",
+      "{.obj_type_friendly {x}}."
+    ))
+  }
+
+  invisible()
 }

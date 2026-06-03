@@ -3,11 +3,8 @@ test_that("BBOX Check", {
   skip_if_offline()
 
   expect_message(
-    fend <- catr_wfs_get_address_bbox(
-      c(-20, -20, -19, -20),
-      srs = 4326
-    ),
-    "didn't provide results"
+    fend <- catr_wfs_get_address_bbox(c(-20, -20, -19, -20), srs = 4326),
+    "WFS query returned an exception"
   )
   expect_null(fend)
 
@@ -42,9 +39,7 @@ test_that("AD CODVIA", {
   expect_s3_class(obj, "sf")
   expect_equal(sf::st_crs(obj)$epsg, 4326)
 
-  expect_snapshot(
-    obj <- catr_wfs_get_address_codvia("1", 110, 390)
-  )
+  expect_snapshot(obj <- catr_wfs_get_address_codvia("1", 110, 390))
   expect_null(obj)
   expect_snapshot(
     error = TRUE,
@@ -64,9 +59,7 @@ test_that("AD RC", {
   expect_s3_class(obj, "sf")
   expect_equal(sf::st_crs(obj)$epsg, 4326)
 
-  expect_snapshot(
-    obj <- catr_wfs_get_address_rc("3662303TF")
-  )
+  expect_snapshot(obj <- catr_wfs_get_address_rc("3662303TF"))
   expect_null(obj)
   expect_snapshot(
     error = TRUE,
@@ -78,18 +71,16 @@ test_that("AD Postal Code", {
   skip_on_cran()
   skip_if_offline()
 
-  obj <- catr_wfs_get_address_postalcode("18518")
+  obj <- catr_wfs_get_address_postalcode("11009")
   expect_true(nrow(obj) > 1)
   expect_s3_class(obj, "sf")
 
   # Another SRS
-  obj <- catr_wfs_get_address_postalcode("18518", srs = 4326)
+  obj <- catr_wfs_get_address_postalcode("11009", srs = 4326)
   expect_s3_class(obj, "sf")
   expect_equal(sf::st_crs(obj)$epsg, 4326)
 
-  expect_snapshot(
-    obj <- catr_wfs_get_address_postalcode("XXXXX")
-  )
+  expect_snapshot(obj <- catr_wfs_get_address_postalcode("XXXXX"))
   expect_null(obj)
   expect_snapshot(
     error = TRUE,

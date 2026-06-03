@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{catr_atom_get_parcels}
 \alias{catr_atom_get_parcels}
-\title{ATOM INSPIRE: Download all cadastral parcels of a municipality}
+\title{ATOM INSPIRE: download all cadastral parcels of a municipality}
 \usage{
 catr_atom_get_parcels(
   munic,
@@ -32,7 +32,7 @@ codes.}
 \item{cache}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} \code{cache} is no longer
 supported, this function always caches results.}
 
-\item{update_cache}{logical, should the cached file be refreshed? Defaults to
+\item{update_cache}{Logical. Should the cached file be refreshed? Defaults to
 \code{FALSE}. When set to \code{TRUE}, it forces a new download.}
 
 \item{cache_dir}{Path to a cache directory. On \code{NULL}, the function
@@ -45,7 +45,7 @@ A \code{\link[sf:st_sf]{sf}} object.
 }
 \description{
 Retrieve the spatial data of all cadastral parcels belonging to a single
-municipality using the INSPIRE ATOM service.
+municipality using the ATOM INSPIRE service.
 }
 \examples{
 \dontshow{if (run_example()) withAutoprint(\{ # examplesIf}
@@ -57,19 +57,19 @@ library(ggplot2)
 ggplot(s) +
   geom_sf() +
   labs(
-    title = "Cadastral Parcels",
+    title = "Cadastral parcels",
     subtitle = "Melque de Cercos, Segovia"
   )
 }
 \dontshow{\}) # examplesIf}
 }
 \references{
-\href{https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-ATOM.pdf}{API Documentation}.
+\href{https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-ATOM.pdf}{API documentation}.
 
-\href{https://www.catastro.hacienda.gob.es/webinspire/index.html}{INSPIRE Services for Cadastral Cartography}.
+\href{https://www.catastro.hacienda.gob.es/webinspire/index.html}{INSPIRE services for cadastral cartography}.
 }
 \seealso{
-INSPIRE API functions:
+Related INSPIRE API functions:
 \code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
 \code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
 \code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
@@ -81,7 +81,7 @@ INSPIRE API functions:
 \code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}},
 \code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
 
-Other INSPIRE ATOM services:
+Related ATOM INSPIRE functions:
 \code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
 \code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
 \code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},

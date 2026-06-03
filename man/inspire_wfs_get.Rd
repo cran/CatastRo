@@ -21,7 +21,7 @@ Internet.}
 
 \item{path}{Character string. Specific resource in the host to access.}
 
-\item{query}{Named list. Names and values of arguments to query.}
+\item{query}{Named list. Names and values of arguments for the query.}
 
 \item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
 }
@@ -40,7 +40,7 @@ cadastral or INSPIRE resources. See \strong{Examples}.
 }
 \examples{
 \dontshow{if (run_example()) withAutoprint(\{ # examplesIf}
-# Accessing the Cadastre of Navarra
+# Access the Cadastre of Navarra
 # Try also https://ropenspain.github.io/CatastRoNav/
 
 file_local <- inspire_wfs_get(
@@ -65,7 +65,7 @@ if (!is.null(file_local)) {
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-INSPIRE API functions:
+Related INSPIRE API functions:
 \code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
 \code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
 \code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
@@ -77,7 +77,7 @@ INSPIRE API functions:
 \code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
 \code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}}
 
-Other INSPIRE WFS services:
+Related WFS INSPIRE functions:
 \code{\link{catr_srs_values}},
 \code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
 \code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},

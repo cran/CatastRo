@@ -7,7 +7,7 @@
 \alias{catr_wfs_get_parcels_parcel}
 \alias{catr_wfs_get_parcels_neigh_parcel}
 \alias{catr_wfs_get_parcels_parcel_zoning}
-\title{WFS INSPIRE: Download cadastral parcels}
+\title{WFS INSPIRE: download cadastral parcels}
 \usage{
 catr_wfs_get_parcels_bbox(
   x,
@@ -25,10 +25,10 @@ catr_wfs_get_parcels_neigh_parcel(rc, srs = NULL, verbose = FALSE)
 catr_wfs_get_parcels_parcel_zoning(cod_zona, srs = NULL, verbose = FALSE)
 }
 \arguments{
-\item{x}{See \strong{Bounding box}. It may be:
+\item{x}{See \strong{Bounding box}. Can be one of:
 \itemize{
-\item A numeric vector of length 4 with the coordinates that defines
-the bounding box: \code{c(xmin, ymin, xmax, ymax)}
+\item A numeric vector of length 4 with the coordinates that define
+the bounding box: \code{c(xmin, ymin, xmax, ymax)}.
 \item A \code{sf/sfc} object, as provided by the \CRANpkg{sf} package.
 }}
 
@@ -38,7 +38,7 @@ the bounding box: \code{c(xmin, ymin, xmax, ymax)}
 \item \code{"zoning"} for cadastral zoning.
 }}
 
-\item{srs}{SRS/CRS to use on the query. To see allowed values, use
+\item{srs}{SRS/CRS to use in the query. To see allowed values, use
 \link{catr_srs_values}, specifically the \code{wfs_service} column. See
 \strong{Bounding box}.}
 
@@ -52,41 +52,39 @@ the bounding box: \code{c(xmin, ymin, xmax, ymax)}
 A \code{\link[sf:st_sf]{sf}} object.
 }
 \description{
-Get the spatial data of cadastral parcels and zones. The WFS Service
+Get the spatial data of cadastral parcels and zones. The WFS service
 allows several types of queries:
 \itemize{
-\item By bounding box: Implemented on \code{catr_wfs_get_parcels_bbox()}. Extract
-objects included in the bounding box provided. See \strong{Bounding box}.
+\item By bounding box: \code{catr_wfs_get_parcels_bbox()} extracts objects included
+in the provided bounding box. See \strong{Bounding box}.
 }
 
 \itemize{
-\item By zoning: Implemented on \code{catr_wfs_get_parcels_zoning()}. Extract
-objects of a specific cadastral zone.
+\item By zoning: \code{catr_wfs_get_parcels_zoning()} extracts objects for a specific
+cadastral zone.
 }
 
 \itemize{
-\item By cadastral parcel: Implemented on \code{catr_wfs_get_parcels_parcel()}.
-Extract cadastral parcels of a specific cadastral reference.
+\item By cadastral parcel: \code{catr_wfs_get_parcels_parcel()} extracts cadastral
+parcels for a specific cadastral reference.
 }
 
 \itemize{
-\item Neighbor cadastral parcels: Implemented on
-\code{catr_wfs_get_parcels_neigh_parcel()}. Extract neighbor cadastral parcels
-of a specific cadastral reference.
+\item Neighbor cadastral parcels: \code{catr_wfs_get_parcels_neigh_parcel()}
+extracts neighbor cadastral parcels for a specific cadastral reference.
 }
 
 \itemize{
-\item Cadastral parcels by zoning: Implemented on
-\code{catr_wfs_get_parcels_parcel_zoning()}. Extract cadastral parcels of a
-specific cadastral zone.
+\item Cadastral parcels by zoning: \code{catr_wfs_get_parcels_parcel_zoning()}
+extracts cadastral parcels for a specific cadastral zone.
 }
 }
 \section{API Limits}{
 
 The API service is limited to the following constraints:
 \itemize{
-\item \verb{"parcel}: Bounding box of 1km2 and a maximum of 5,000 elements.
-\item \code{"zoning"}: Bounding box of 25km2 and a maximum of 5,000 elements.
+\item \code{"parcel"}: Bounding box of 1 km2 and a maximum of 5,000 elements.
+\item \code{"zoning"}: Bounding box of 25 km2 and a maximum of 5,000 elements.
 }
 }
 
@@ -123,12 +121,12 @@ ggplot(cp) +
 \dontshow{\}) # examplesIf}
 }
 \references{
-\href{https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-ad-WFS.pdf}{API Documentation}.
+\href{https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-ad-WFS.pdf}{API documentation}.
 
-\href{https://www.catastro.hacienda.gob.es/webinspire/index.html}{INSPIRE Services for Cadastral Cartography}.
+\href{https://www.catastro.hacienda.gob.es/webinspire/index.html}{INSPIRE services for cadastral cartography}.
 }
 \seealso{
-INSPIRE API functions:
+Related INSPIRE API functions:
 \code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
 \code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
 \code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
@@ -140,7 +138,7 @@ INSPIRE API functions:
 \code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}},
 \code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
 
-Other INSPIRE WFS services:
+Related WFS INSPIRE functions:
 \code{\link{catr_srs_values}},
 \code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
 \code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},

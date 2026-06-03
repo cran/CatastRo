@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{catr_ovc_get_rccoor_distancia}
 \alias{catr_ovc_get_rccoor_distancia}
-\title{OVCCoordenadas: Reverse geocode cadastral references on a region}
+\title{OVCCoordenadas: reverse geocode cadastral references near coordinates}
 \usage{
 catr_ovc_get_rccoor_distancia(lat, lon, srs = 4326, verbose = FALSE)
 }
@@ -14,17 +14,17 @@ catr_ovc_get_rccoor_distancia(lat, lon, srs = 4326, verbose = FALSE)
 \item{lon}{Longitude for the query, expressed in the CRS/SRS defined by
 \code{srs}.}
 
-\item{srs}{SRS/CRS to use on the query. To see allowed values, use
+\item{srs}{SRS/CRS to use in the query. To see allowed values, use
 \link{catr_srs_values}, specifically the \code{ovc_service} column.}
 
 \item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
 }
 \value{
-A \link[tibble:tbl_df]{tibble}. See \strong{Details}
+A \link[tibble:tbl_df]{tibble}. See \strong{Details}.
 }
 \description{
 Implementation of the OVCCoordenadas service
-\href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx?op=Consulta_RCCOOR_Distancia}{Consulta RCCOOR Distancia}. Return cadastral
+\href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx?op=Consulta_RCCOOR_Distancia}{Consulta RCCOOR Distancia}. Returns cadastral
 references for coordinates. If none found, the API returns references
 in a 50 square meter area around the requested coordinates.
 }
@@ -32,15 +32,15 @@ in a 50 square meter area around the requested coordinates.
 When the API does not provide any result, the function returns a
 \link[tibble:tbl_df]{tibble} with the input arguments only.
 
-On a successful query, the function returns a \link[tibble:tbl_df]{tibble} with
-one row by cadastral reference, including the following columns:
+On a successful query, this function returns a \link[tibble:tbl_df]{tibble} with
+one row per cadastral reference, including the following columns:
 \itemize{
 \item \code{geo.xcen}, \code{geo.ycen}, \code{geo.srs}: Input arguments of the query.
 \item \code{refcat}: Cadastral reference.
 \item \code{address}: Address as recorded in the Cadastre.
 \item \code{cmun_ine}: Municipality code as registered on the INE (National
 Statistics Institute).
-\item Rest of fields: Check the API Docs.
+\item Remaining fields: Check the API documentation.
 }
 }
 \examples{
@@ -60,7 +60,7 @@ catr_ovc_get_rccoor_distancia(
 \seealso{
 \link{catr_srs_values}, \code{vignette("ovcservice", package = "CatastRo")}
 
-OVCCoordenadas API:
+Related OVCCoordenadas functions:
 \code{\link[=catr_ovc_get_cpmrc]{catr_ovc_get_cpmrc()}},
 \code{\link[=catr_ovc_get_rccoor]{catr_ovc_get_rccoor()}},
 \code{\link{catr_srs_values}}

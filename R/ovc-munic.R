@@ -1,15 +1,30 @@
-#' OVCCallejero: Extract the code of a municipality
+#' OVCCallejero: extract the code of a municipality
 #'
 #' @description
 #' Implementation of the OVCCallejero service
 #' [ConsultaMunicipioCodigos](`r ovcurl("mun")`). Returns names and codes
-#' of a municipality as per the Cadastre and the INE (National Statistics
+#' of a municipality according to the Cadastre and the INE (National Statistics
 #' Institute).
 #'
-#' @encoding UTF-8
-#' @family OVCCallejero
-#' @family search
-#' @export
+#' @details
+#' On a successful query, this function returns a [tibble][tibble::tbl_df]
+#' with one row including the following columns:
+#'
+#' - `munic`: Name of the municipality according to the Cadastre.
+#' - `catr_to`: Cadastral territorial office code.
+#' - `catr_munic`: Municipality code as recorded on the Cadastre.
+#' - `catrcode`: Full Cadastral code for the municipality.
+#' - `cpro`: Province code according to the INE.
+#' - `cmun`: Municipality code according to the INE.
+#' - `inecode`: Full INE code for the municipality.
+#' - Remaining fields: Check the API documentation.
+#'
+#' @param cpro The code of a province, as provided by
+#'   [catr_ovc_get_cod_provinces()].
+#' @param cmun,cmun_ine Code of a municipality, as recorded on the Spanish
+#'   Cadastre (`cmun`) or the National Statistics Institute. Either `cmun` or
+#'   `cmun_ine` must be provided.
+#'
 #' @inheritParams catr_ovc_get_cpmrc
 #' @inherit catr_ovc_get_cpmrc return
 #'
@@ -20,25 +35,10 @@
 #' [mapSpain::esp_get_munic_siane()] to get shapes of municipalities, including
 #' the INE code.
 #'
-#' @param cpro The code of a province, as provided by
-#'   [catr_ovc_get_cod_provinces()].
-#' @param cmun,cmun_ine Code of a municipality, as recorded on the Spanish
-#'   Cadastre (`cmun`) or the National Statistics Institute. Either `cmun` or
-#'   `cmun_ine` must be provided.
-#'
-#' @details
-#' On a successful query, the function returns a [tibble][tibble::tbl_df]
-#' with one row including the following columns:
-#'
-#' - `munic`: Name of the municipality as per the Cadastre.
-#' - `catr_to`: Cadastral territorial office code.
-#' - `catr_munic`: Municipality code as recorded on the Cadastre.
-#' - `catrcode`: Full Cadastral code for the municipality.
-#' - `cpro`: Province code as per the INE.
-#' - `cmun`: Municipality code as per the INE.
-#' - `inecode`: Full INE code for the municipality.
-#' - Rest of fields: Check the API Docs.
-#'
+#' @family OVCCallejero
+#' @family search
+#' @encoding UTF-8
+#' @export
 #' @examplesIf run_example()
 #' \donttest{
 #' # Get municipality by cadastral code
@@ -68,17 +68,15 @@ catr_ovc_get_cod_munic <- function(
   if (is.null(munis)) {
     my_arg <- c("cmun", "cmun_ine") # nolint
     cli::cli_abort(
-      "Please provide a non-{.val NULL} value either on {.or {.arg {my_arg}}}."
+      "Provide a non-{.val NULL} value for either {.or {.arg {my_arg}}}."
     )
   }
 
-  # Prepare query
-  ##  Build url
-  api_entry <- paste0(
-    "http://ovc.catastro.meh.es/ovcservweb/",
+  # Build the query URL.
+  api_entry <- ovc_base_url(paste0(
     "/ovcswlocalizacionrc/ovccallejerocodigos.asmx/ConsultaMunicipioCodigos?",
     "/CodigoProvincia=&CodigoMunicipio=&CodigoMunicipioIne="
-  )
+  ))
 
   api_entry <- httr2::url_modify_query(
     api_entry,
@@ -87,37 +85,27 @@ catr_ovc_get_cod_munic <- function(
     CodigoMunicipioIne = ifelse(is.null(cmun_ine), "", cmun_ine)
   )
 
-  # Extract results
-  resp <- get_request_body(api_entry, verbose = verbose)
-
-  if (is.null(resp)) {
+  # Extract results.
+  content_list <- ovc_get_xml(api_entry, verbose = verbose)
+  if (is.null(content_list)) {
     return(NULL)
   }
 
-  content_list <- xml2::as_list(httr2::resp_body_xml(resp))
-
-  # Check API custom error
+  # Check for API-level errors.
   err <- content_list[[1]]
 
-  if (("lerr" %in% names(err))) {
-    df <- tibble::as_tibble_row(unlist(err["lerr"]))
-
-    cli::cli_alert_danger(
-      paste0("Error code: ", df[1, 1], ". ", df[1, 2])
-    )
-
-    empty <- tibble::tibble(
-      name = NA
-    )
+  if (ovc_has_error(err)) {
+    ovc_report_error(err)
+    empty <- tibble::tibble(name = NA)
 
     return(empty)
   }
 
   res <- content_list[[1]][["municipiero"]]
 
-  df <- tibble::as_tibble_row(unlist(res))
+  df <- ovc_as_tibble_row(res)
 
-  # Fix names
+  # Fix names.
   newnames <- vapply(
     names(df),
     function(x) {
@@ -128,7 +116,7 @@ catr_ovc_get_cod_munic <- function(
 
   names(df) <- newnames
 
-  # Create friendly codes
+  # Create friendly codes.
   catcodes <- tibble::tibble(
     munic = df$nm,
     catr_to = sprintf("%02d", as.integer(df$cd)),
@@ -143,11 +131,7 @@ catr_ovc_get_cod_munic <- function(
 
   inecodes$inecode <- paste0(inecodes$cpro, inecodes$cmun)
 
-  overall <- dplyr::bind_cols(
-    catcodes,
-    inecodes,
-    df
-  )
+  overall <- dplyr::bind_cols(catcodes, inecodes, df)
 
   overall
 }

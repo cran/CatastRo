@@ -1,30 +1,20 @@
-#' WMS INSPIRE: Download map images
+#' WMS INSPIRE: download map images
 #'
 #' @description
 #' Get geotagged images from the Spanish Cadastre. This function is a
 #' wrapper of [mapSpain::esp_get_tiles()].
 #'
-#' @encoding UTF-8
-#' @family INSPIRE
-#' @family WMS
-#' @family spatial
-#' @export
+#' @param what,styles Layer and style of the WMS layer to be downloaded. See
+#'   **Layers and styles**.
 #'
 #' @inheritParams catr_wfs_get_address_bbox
 #' @inheritParams catr_atom_get_address_db_all
 #' @inheritParams mapSpain::esp_get_tiles
 #' @inheritDotParams mapSpain::esp_get_tiles res:mask
 #'
-#' @param what,styles Layer and style of the WMS layer to be downloaded. See
-#'   **Layers and styles**.
-#'
 #' @return
 #' A [`SpatRaster`][terra::rast] is returned, with 3 (RGB) or 4 (RGBA) layers,
 #' see [terra::RGB()].
-#'
-#' @seealso
-#' [mapSpain::esp_get_tiles()] and [terra::RGB()]. For plotting see
-#' [terra::plotRGB()] and [tidyterra::geom_spatraster_rgb()].
 #'
 #' @section Bounding box:
 #' When `x` is a numeric vector, make sure that the `srs` matches the
@@ -45,7 +35,7 @@
 #'
 #' ```{r, echo=FALSE, results='asis'}
 #' cat(paste0(
-#'    " [API Docs](https://www.catastro.hacienda.gob.es/",
+#'    " [API documentation](https://www.catastro.hacienda.gob.es/",
 #'      "webinspire/documentos/inspire-WMS.pdf) ")
 #'      )
 #'
@@ -60,24 +50,34 @@
 #' - `"admunit"`: AU.AdministrativeUnit
 #'
 #' ## Styles
-#' The WMS service provides different styles on each layer (`what` argument).
-#' Some of the styles available are:
-#' - `"parcel"`: styles : `"BoundariesOnly"`, `"ReferencePointOnly"`,
+#' The WMS service provides different styles for each layer (`what` argument).
+#' Some available styles are:
+#' - `"parcel"`: Styles: `"BoundariesOnly"`, `"ReferencePointOnly"`,
 #'   `"ELFCadastre"`.
-#' - `"zoning"`: styles : `"BoundariesOnly"`, `"ELFCadastre"`.
-#' - `"building"`, `"buildingpart"`: `"ELFCadastre"`
-#' - `"address"`: `"Number.ELFCadastre"`
-#' - `"admboundary"`, `"admunit"`: `"ELFCadastre"`
+#' - `"zoning"`: Styles: `"BoundariesOnly"`, `"ELFCadastre"`.
+#' - `"building"`, `"buildingpart"`: `"ELFCadastre"`.
+#' - `"address"`: `"Number.ELFCadastre"`.
+#' - `"admboundary"`, `"admunit"`: `"ELFCadastre"`.
 #'
 #' Check the
 #' ```{r, echo=FALSE, results='asis'}
 #' cat(paste0(
-#'    " [API Docs](https://www.catastro.hacienda.gob.es/",
+#'    " [API documentation](https://www.catastro.hacienda.gob.es/",
 #'      "webinspire/documentos/inspire-WMS.pdf) ")
 #'      )
 #'
 #' ```
 #' for more information.
+#'
+#' @seealso
+#' [mapSpain::esp_get_tiles()] and [terra::RGB()]. For plotting see
+#' [terra::plotRGB()] and [tidyterra::geom_spatraster_rgb()].
+#'
+#' @family INSPIRE
+#' @family WMS
+#' @family spatial
+#' @encoding UTF-8
+#' @export
 #'
 #' @examplesIf run_example()
 #' \donttest{
@@ -105,7 +105,7 @@
 #'
 #' parcels_img <- catr_wms_get_layer(parcels,
 #'   what = "buildingpart",
-#'   srs = 25830, # As parcels object
+#'   srs = 25830, # Same as the parcels object
 #'   bbox_expand = 0.3,
 #'   styles = "ELFCadastre"
 #' )
@@ -138,7 +138,7 @@ catr_wms_get_layer <- function(
   bbox_res <- get_sf_from_bbox(x, srs)
   cache_dir <- create_cache_dir(cache_dir)
 
-  # Manage layer
+  # Manage layer.
 
   what <- match_arg_pretty(what)
 
@@ -152,42 +152,33 @@ catr_wms_get_layer <- function(
     "admunit" = "Catastro.AdministrativeUnit"
   )
 
-  # Manage styles and options
-  # Custom options
-  opts <- list(
-    styles = styles,
-    version = "1.1.0"
-  )
+  # Manage styles and options.
+  # Set custom options.
+  opts <- list(styles = styles, version = "1.1.0")
 
-  # Add srs
+  # Add SRS.
   if (!is.null(srs)) {
     if (!any(grepl("epsg", srs, ignore.case = TRUE))) {
-      opts <- modifyList(
-        opts,
-        list(srs = paste0("EPSG:", srs))
-      )
+      opts <- modifyList(opts, list(srs = paste0("EPSG:", srs)))
     }
   }
 
-  # Add to options
+  # Add to options.
   if (is.null(options)) {
     finalopts <- opts
   } else {
     names(options) <- tolower(names(options))
-    finalopts <- modifyList(
-      opts,
-      options
-    )
+    finalopts <- modifyList(opts, options)
   }
 
-  # Check if need to change crs
+  # Check whether the CRS must change.
 
   if (finalopts$version >= "1.3.0") {
     newnames <- gsub("srs", "crs", names(finalopts), fixed = TRUE)
     names(finalopts) <- newnames
   }
 
-  # Query
+  # Query the WMS service.
 
   out <- mapSpain::esp_get_tiles(
     x = bbox_res,

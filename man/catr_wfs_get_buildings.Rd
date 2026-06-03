@@ -4,7 +4,7 @@
 \name{catr_wfs_get_buildings_bbox}
 \alias{catr_wfs_get_buildings_bbox}
 \alias{catr_wfs_get_buildings_rc}
-\title{WFS INSPIRE: Download buildings}
+\title{WFS INSPIRE: download buildings}
 \usage{
 catr_wfs_get_buildings_bbox(
   x,
@@ -21,10 +21,10 @@ catr_wfs_get_buildings_rc(
 )
 }
 \arguments{
-\item{x}{See \strong{Bounding box}. It may be:
+\item{x}{See \strong{Bounding box}. Can be one of:
 \itemize{
-\item A numeric vector of length 4 with the coordinates that defines
-the bounding box: \code{c(xmin, ymin, xmax, ymax)}
+\item A numeric vector of length 4 with the coordinates that define
+the bounding box: \code{c(xmin, ymin, xmax, ymax)}.
 \item A \code{sf/sfc} object, as provided by the \CRANpkg{sf} package.
 }}
 
@@ -35,7 +35,7 @@ the bounding box: \code{c(xmin, ymin, xmax, ymax)}
 \item \code{"other"} for other elements such as swimming pools.
 }}
 
-\item{srs}{SRS/CRS to use on the query. To see allowed values, use
+\item{srs}{SRS/CRS to use in the query. To see allowed values, use
 \link{catr_srs_values}, specifically the \code{wfs_service} column. See
 \strong{Bounding box}.}
 
@@ -47,22 +47,21 @@ the bounding box: \code{c(xmin, ymin, xmax, ymax)}
 A \code{\link[sf:st_sf]{sf}} object.
 }
 \description{
-Get the spatial data of buildings. The WFS Service allows performing
+Get the spatial data of buildings. The WFS service allows performing
 two types of queries:
 \itemize{
-\item By bounding box: Implemented on \code{catr_wfs_get_buildings_bbox()}.
-Extract objects included in the bounding box provided. See
-\strong{Bounding box}.
+\item By bounding box: \code{catr_wfs_get_buildings_bbox()} extracts objects included
+in the provided bounding box. See \strong{Bounding box}.
 }
 
 \itemize{
-\item By cadastral reference: Implemented on \code{catr_wfs_get_buildings_rc()}.
-Extract objects of specific cadastral references.
+\item By cadastral reference: \code{catr_wfs_get_buildings_rc()} extracts objects for
+specific cadastral references.
 }
 }
 \section{API Limits}{
 
-The API service is limited to a bounding box of 4km2 and a maximum of 5,000
+The API service is limited to a bounding box of 4 km2 and a maximum of 5,000
 elements.
 }
 
@@ -84,7 +83,7 @@ provided as input.
 \examples{
 \dontshow{if (run_example()) withAutoprint(\{ # examplesIf}
 \donttest{
-# Using bbox
+# Using a bbox
 building <- catr_wfs_get_buildings_bbox(
   c(
     376550,
@@ -99,7 +98,7 @@ ggplot(building) +
   geom_sf() +
   labs(title = "Search using bbox")
 
-# Using rc
+# Using a cadastral reference
 rc <- catr_wfs_get_buildings_rc("6656601UL7465N")
 library(ggplot2)
 ggplot(rc) +
@@ -109,12 +108,12 @@ ggplot(rc) +
 \dontshow{\}) # examplesIf}
 }
 \references{
-\href{https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-ad-WFS.pdf}{API Documentation}.
+\href{https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-ad-WFS.pdf}{API documentation}.
 
-\href{https://www.catastro.hacienda.gob.es/webinspire/index.html}{INSPIRE Services for Cadastral Cartography}.
+\href{https://www.catastro.hacienda.gob.es/webinspire/index.html}{INSPIRE services for cadastral cartography}.
 }
 \seealso{
-INSPIRE API functions:
+Related INSPIRE API functions:
 \code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
 \code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
 \code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
@@ -126,7 +125,7 @@ INSPIRE API functions:
 \code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}},
 \code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
 
-Other INSPIRE WFS services:
+Related WFS INSPIRE functions:
 \code{\link{catr_srs_values}},
 \code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
 \code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
