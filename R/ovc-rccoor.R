@@ -1,33 +1,34 @@
-#' OVCCoordenadas: reverse geocode a cadastral reference
+#' OVCCoordenadas: Reverse geocode coordinates
 #'
 #' @description
-#' Implementation of the OVCCoordenadas service
-#' [Consulta RCCOOR](`r ovcurl("RCCOOR")`). Returns the cadastral
-#' reference found for a set of specific coordinates.
+#' Query the OVCCoordenadas
+#' [Consulta RCCOOR](`r ovcurl("RCCOOR")`) service to retrieve the cadastral
+#' reference associated with a pair of coordinates.
 #'
 #' @details
-#' When the API does not provide any result, the function returns a
-#' [tibble][tibble::tbl_df] with the input arguments only.
-#'
-#' On a successful query, this function returns a [tibble][tibble::tbl_df] with
-#' one row per cadastral reference, including the following columns:
-#' - `geo.xcen`, `geo.ycen`, `geo.srs`: Input arguments of the query.
-#' - `refcat`: Cadastral reference.
-#' - `address`: Address as recorded in the Cadastre.
-#' - Remaining fields: Check the API documentation.
+#' `r ovc_coordinate_details()`
 #'
 #' @inheritParams catr_ovc_get_rccoor_distancia
 #'
-#' @inherit catr_ovc_get_rccoor_distancia return
+#' @inherit catr_ovc_get_cpmrc return
 #'
 #' @references
 #' [Consulta RCCOOR](`r ovcurl("RCCOOR")`).
 #'
-#' @seealso [catr_srs_values], `vignette("ovcservice", package = "CatastRo")`
-#' @family OVCCoordenadas
-#' @family cadastral references
-#' @encoding UTF-8
+#' @inherit catr_ovc_get_cpmrc seealso
+#'
+#' @seealso
+#' [catr_ovc_get_rccoor_distancia()] also searches a nearby area when no
+#' exact match is found.
+#' [catr_wfs_get_parcels_parcel()] retrieves parcel geometries using the
+#' returned cadastral references.
+#'
+#' @family cadastral_references
+#' @family ovc_services
+#' @concept ovccoordenadas_services
 #' @export
+#' @encoding UTF-8
+#'
 #' @examplesIf run_example()
 #' \donttest{
 #' catr_ovc_get_rccoor(
@@ -38,8 +39,8 @@
 #' }
 catr_ovc_get_rccoor <- function(lat, lon, srs = 4326, verbose = FALSE) {
   # Validate arguments.
-  lat <- validate_non_empty_arg(lat)
-  lon <- validate_non_empty_arg(lon)
+  lat <- validate_coordinate_arg(lat)
+  lon <- validate_coordinate_arg(lon)
 
   srs <- ovc_validate_srs(srs)
 
@@ -67,7 +68,7 @@ catr_ovc_get_rccoor <- function(lat, lon, srs = 4326, verbose = FALSE) {
 
   if (ovc_has_error(err)) {
     ovc_report_error(err)
-    empty <- tibble::tibble(a = lat, b = lon, srs = srs)
+    empty <- dplyr::tibble(a = lon, b = lat, srs = srs)
 
     names(empty) <- c("geo.xcen", "geo.ycen", "geo.srs")
     return(empty)
@@ -82,7 +83,6 @@ catr_ovc_get_rccoor <- function(lat, lon, srs = 4326, verbose = FALSE) {
   rc_help <- ovc_ref_address(overall)
 
   # Join helper fields and the raw API response.
-
   out <- dplyr::bind_cols(rc_help, overall)
 
   ovc_numeric_coords(out)

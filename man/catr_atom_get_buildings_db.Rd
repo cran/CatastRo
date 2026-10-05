@@ -4,7 +4,7 @@
 \name{catr_atom_get_buildings_db_all}
 \alias{catr_atom_get_buildings_db_all}
 \alias{catr_atom_get_buildings_db_to}
-\title{ATOM INSPIRE: reference database for ATOM buildings}
+\title{ATOM INSPIRE: List building download URLs}
 \source{
 \url{https://www.catastro.hacienda.gob.es/INSPIRE/buildings/ES.SDGC.BU.atom.xml}
 }
@@ -25,23 +25,27 @@ catr_atom_get_buildings_db_to(
 )
 }
 \arguments{
-\item{cache}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} \code{cache} is no longer
-supported, this function always caches results.}
+\item{cache}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is no longer
+supported because results are always cached.}
 
-\item{update_cache}{Logical. Should the cached file be refreshed? Defaults to
-\code{FALSE}. When set to \code{TRUE}, it forces a new download.}
+\item{update_cache}{Logical. Whether to refresh the cached file. Defaults to
+\code{FALSE}.}
 
-\item{cache_dir}{Path to a cache directory. On \code{NULL}, the function
-stores cached files in a temporary directory (see \code{\link[base:tempdir]{base::tempdir()}}).}
+\item{cache_dir}{Path to a cache directory. If \code{NULL} or \code{FALSE}, the
+function stores cached files in a temporary directory. See
+\code{\link[base:tempdir]{base::tempdir()}}.}
 
-\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
+\item{verbose}{Logical. Whether to display informational messages.}
 
-\item{to}{Character. Territorial office. Internally uses \code{\link[base:grep]{base::grep()}} for
-matching.}
+\item{to}{Character string. Territorial office to match using
+\code{\link[base:grep]{base::grep()}}.}
 }
 \value{
-A \link[tibble:tbl_df]{tibble} with the information requested with the following
-fields:
+A \link[tibble:tbl_df]{tibble} with the requested information. Returns
+\code{\link[base:NULL]{NULL}} if
+the data cannot be retrieved or no territorial office matches \code{to}.
+
+\code{catr_atom_get_address_db_all()} returns the following columns:
 \itemize{
 \item \code{territorial_office}: Territorial office, corresponding to each province
 of Spain except the Basque Country and Navarre.
@@ -50,14 +54,17 @@ of Spain except the Basque Country and Navarre.
 \item \code{date}: Reference date of the data. The information from this service is
 updated twice a year.
 }
+
+\code{catr_atom_get_address_db_to()} returns \code{munic}, \code{url} and \code{date} for the
+selected territorial office.
 }
 \description{
-Create a database containing the URLs provided in the ATOM INSPIRE
-service of the Spanish Cadastre for extracting buildings.
+Create a table of URLs provided by the Spanish Cadastre ATOM INSPIRE service
+for downloading buildings.
 
-\code{catr_atom_get_buildings_db_all()} provides a top-level table with all
-territorial offices, except the Basque Country and Navarre, and the
-municipalities included in each office. \code{catr_atom_get_buildings_db_to()}
+\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}} provides a summary table with all
+territorial offices and their municipalities, excluding
+the Basque Country and Navarre. \code{\link[=catr_atom_get_buildings_db_to]{catr_atom_get_buildings_db_to()}}
 provides a table for one territorial office and its municipalities.
 }
 \examples{
@@ -68,37 +75,17 @@ catr_atom_get_buildings_db_all()
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Related INSPIRE API functions:
-\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
-\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
+Work with cadastral buildings:
 \code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
-\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
-\code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
-\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
-\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
-\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
-\code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}},
-\code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
+\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}}
 
-Related ATOM INSPIRE functions:
+Query ATOM INSPIRE services:
 \code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
 \code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
 \code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
 \code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
 \code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
 \code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}}
-
-Other buildings:
-\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
-\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}}
-
-Other databases:
-\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
-\code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
-\code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}},
-\code{\link{catr_srs_values}}
 }
-\concept{ATOM}
-\concept{INSPIRE}
+\concept{atom_services}
 \concept{buildings}
-\concept{databases}

@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{catr_wms_get_layer}
 \alias{catr_wms_get_layer}
-\title{WMS INSPIRE: download map images}
+\title{WMS INSPIRE: Download georeferenced map images}
 \usage{
 catr_wms_get_layer(
   x,
@@ -20,31 +20,34 @@ catr_wms_get_layer(
 )
 }
 \arguments{
-\item{x}{See \strong{Bounding box}. Can be one of:
+\item{x}{Input defining the query area. See \strong{Bounding box}. It can be:
 \itemize{
 \item A numeric vector of length 4 with the coordinates that define
 the bounding box: \code{c(xmin, ymin, xmax, ymax)}.
-\item A \code{sf/sfc} object, as provided by the \CRANpkg{sf} package.
+\item An \code{\link[sf:st_sf]{sf}} or \code{\link[sf:st_sfc]{sfc}} object from \CRANpkg{sf}.
 }}
 
 \item{srs}{SRS/CRS to use in the query. To see allowed values, use
 \link{catr_srs_values}, specifically the \code{wfs_service} column. See
 \strong{Bounding box}.}
 
-\item{what, styles}{Layer and style of the WMS layer to be downloaded. See
+\item{what}{WMS layer to download. See \strong{Layers and styles}.}
+
+\item{styles}{Style to apply to the selected WMS layer. See
 \strong{Layers and styles}.}
 
-\item{update_cache}{Logical. Should the cached file be refreshed? Defaults to
-\code{FALSE}. When set to \code{TRUE}, it forces a new download.}
+\item{update_cache}{Logical. Whether to refresh the cached file. Defaults to
+\code{FALSE}.}
 
-\item{cache_dir}{Path to a cache directory. On \code{NULL}, the function
-stores cached files in a temporary directory (see \code{\link[base:tempdir]{base::tempdir()}}).}
+\item{cache_dir}{Path to a cache directory. If \code{NULL} or \code{FALSE}, the
+function stores cached files in a temporary directory. See
+\code{\link[base:tempdir]{base::tempdir()}}.}
 
-\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
+\item{verbose}{Logical. Whether to display informational messages.}
 
-\item{crop}{logical. If \code{TRUE}, the results will be cropped to the specified
-\code{x} extent. If \code{x} is an \code{\link[sf:sf]{sf}} object with one \code{POINT},
-\code{crop} is set to \code{FALSE}. See \code{\link[terra:crop]{terra::crop()}}.}
+\item{crop}{Logical. If \code{TRUE}, crop results to the specified \code{x} extent. If
+\code{x} is an \code{\link[sf:st_sf]{sf}} object with one \code{POINT}, \code{crop} is set to
+\code{FALSE}. See \code{\link[terra:crop]{terra::crop()}}.}
 
 \item{options}{A named list containing additional options to pass to the
 query.}
@@ -52,134 +55,116 @@ query.}
 \item{...}{
   Arguments passed on to \code{\link[mapSpain:esp_get_tiles]{mapSpain::esp_get_tiles}}
   \describe{
-    \item{\code{res}}{character string or number. Only valid for WMS providers.
+    \item{\code{res}}{Character string or number. Only valid for WMS providers.
 Resolution (in pixels) of the final tile.}
-    \item{\code{bbox_expand}}{number. Expansion percentage of the bounding box of \code{x}.}
-    \item{\code{transparent}}{logical. Provides transparent background, if supported.}
-    \item{\code{mask}}{logical. \code{TRUE} if the result should be masked to \code{x}. See
-\code{\link[terra:mask]{terra::mask()}}.}
+    \item{\code{bbox_expand}}{Number. Expansion percentage of the bounding box of \code{x}.}
+    \item{\code{transparent}}{Logical. Whether to use a transparent background, if
+supported.}
+    \item{\code{mask}}{Logical. \code{TRUE} to mask the result to \code{x}. See \code{\link[terra:mask]{terra::mask()}}.}
   }}
 }
 \value{
-A \code{\link[terra:rast]{SpatRaster}} is returned, with 3 (RGB) or 4 (RGBA) layers,
-see \code{\link[terra:RGB]{terra::RGB()}}.
+A \code{\link[terra:rast]{SpatRaster}} with three RGB or four RGBA layers. See
+\code{\link[terra:RGB]{terra::RGB()}}.
 }
 \description{
-Get geotagged images from the Spanish Cadastre. This function is a
-wrapper of \code{\link[mapSpain:esp_get_tiles]{mapSpain::esp_get_tiles()}}.
+Retrieve georeferenced map images from the Spanish Cadastre WMS service.
+This function wraps \code{\link[mapSpain:esp_get_tiles]{mapSpain::esp_get_tiles()}}.
 }
 \section{Bounding box}{
 
-When \code{x} is a numeric vector, make sure that the \code{srs} matches the
-coordinate values. When \code{x} is a \code{\link[sf:st_sf]{sf}} object, the value
-\code{srs} is ignored.
+When \code{x} is a numeric vector, make sure that \code{srs} matches the coordinate
+values. When \code{x} is an \code{\link[sf:st_sf]{sf}} object, the \code{srs} value is
+ignored.
 
-The query is performed using \href{https://epsg.io/3857}{EPSG:3857} (Web Mercator)
-and the tile is projected back to the SRS of \code{x}. In case that the tile
-looks deformed, try either providing \code{x} or specify the SRS of the requested
-tile via the \code{srs} argument, which should match the SRS of
-\code{x}. See \strong{Examples}.
+The query uses \href{https://epsg.io/3857}{EPSG:3857} (Web Mercator), then
+transforms the tile back to the SRS of \code{x}. If the tile appears distorted,
+provide a spatial object as \code{x} or set \code{srs} to the SRS of the requested
+tile. See \strong{Examples}.
 }
 
 \section{Layers and styles}{
 
 \subsection{Layers}{
 
-The argument \code{what} defines the layer to be extracted. The equivalence with
-the
-\href{https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-WMS.pdf}{API documentation}
-reference is:
+The \code{what} argument selects one of the following API layers:
 \itemize{
-\item \code{"parcel"}: CP.CadastralParcel
-\item \code{"zoning"}: CP.CadastralZoning
-\item \code{"building"}: BU.Building
-\item \code{"buildingpart"}: BU.BuildingPart
-\item \code{"address"}: AD.Address
-\item \code{"admboundary"}: AU.AdministrativeBoundary
-\item \code{"admunit"}: AU.AdministrativeUnit
+\item \code{"parcel"}: \code{CP.CadastralParcel}.
+\item \code{"zoning"}: \code{CP.CadastralZoning}.
+\item \code{"building"}: \code{BU.Building}.
+\item \code{"buildingpart"}: \code{BU.BuildingPart}.
+\item \code{"address"}: \code{AD.Address}.
+\item \code{"admboundary"}: \code{AU.AdministrativeBoundary}.
+\item \code{"admunit"}: \code{AU.AdministrativeUnit}.
 }
 }
 
 \subsection{Styles}{
 
 The WMS service provides different styles for each layer (\code{what} argument).
-Some available styles are:
+Available styles include:
 \itemize{
-\item \code{"parcel"}: Styles: \code{"BoundariesOnly"}, \code{"ReferencePointOnly"},
+\item \code{"parcel"}: \code{"BoundariesOnly"}, \code{"ReferencePointOnly"} and
 \code{"ELFCadastre"}.
-\item \code{"zoning"}: Styles: \code{"BoundariesOnly"}, \code{"ELFCadastre"}.
-\item \code{"building"}, \code{"buildingpart"}: \code{"ELFCadastre"}.
+\item \code{"zoning"}: \code{"BoundariesOnly"} and \code{"ELFCadastre"}.
+\item \code{"building"} and \code{"buildingpart"}: \code{"ELFCadastre"}.
 \item \code{"address"}: \code{"Number.ELFCadastre"}.
-\item \code{"admboundary"}, \code{"admunit"}: \code{"ELFCadastre"}.
+\item \code{"admboundary"} and \code{"admunit"}: \code{"ELFCadastre"}.
 }
 
-Check the \href{https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-WMS.pdf}{API documentation}
-for more information.
+See the \href{https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-WMS.pdf}{API documentation}
+for complete layer and style information.
 }
 }
 
 \examples{
-\dontshow{if (run_example()) withAutoprint(\{ # examplesIf}
+\dontshow{if (run_example() && requireNamespace("ggplot2", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 \donttest{
+if (requireNamespace("tidyterra", quietly = TRUE)) {
+  # With a bounding box
 
-# With a bbox
+  pict <- catr_wms_get_layer(
+    c(222500, 4019500, 223700, 4020700),
+    srs = 25830,
+    what = "parcel"
+  )
 
-pict <- catr_wms_get_layer(
-  c(222500, 4019500, 223700, 4020700),
-  srs = 25830,
-  what = "parcel"
-)
+  library(mapSpain)
+  library(ggplot2)
+  library(tidyterra)
 
-library(mapSpain)
-library(ggplot2)
-library(tidyterra)
+  ggplot() +
+    geom_spatraster_rgb(data = pict)
 
-ggplot() +
-  geom_spatraster_rgb(data = pict)
+  # With a spatial object
 
-# With a spatial object
+  parcels <- catr_wfs_get_parcels_neigh_parcel("3662303TF3136B", srs = 25830)
 
-parcels <- catr_wfs_get_parcels_neigh_parcel("3662303TF3136B", srs = 25830)
+  # Use styles
 
-# Use styles
+  parcels_img <- catr_wms_get_layer(parcels,
+    what = "buildingpart",
+    srs = 25830, # Same as the parcels object
+    bbox_expand = 0.3,
+    styles = "ELFCadastre"
+  )
 
-parcels_img <- catr_wms_get_layer(parcels,
-  what = "buildingpart",
-  srs = 25830, # Same as the parcels object
-  bbox_expand = 0.3,
-  styles = "ELFCadastre"
-)
-
-ggplot() +
-  geom_sf(data = parcels, fill = "blue", alpha = 0.5) +
-  geom_spatraster_rgb(data = parcels_img)
+  ggplot() +
+    geom_sf(data = parcels, fill = "blue", alpha = 0.5) +
+    geom_spatraster_rgb(data = parcels_img)
+}
 }
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[mapSpain:esp_get_tiles]{mapSpain::esp_get_tiles()}} and \code{\link[terra:RGB]{terra::RGB()}}. For plotting see
-\code{\link[terra:plotRGB]{terra::plotRGB()}} and \code{\link[tidyterra:geom_spatraster_rgb]{tidyterra::geom_spatraster_rgb()}}.
-
-Related INSPIRE API functions:
-\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
-\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
-\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
-\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
-\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
-\code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
-\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
-\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
-\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
-\code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
-
-Other spatial:
-\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
-\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
-\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
-\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
-\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
-\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}}
+\itemize{
+\item \code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}}, \code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}} and
+\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}} retrieve vector geometries that can define
+the map extent through \code{x}.
+\item \code{\link[mapSpain:esp_get_tiles]{mapSpain::esp_get_tiles()}} downloads map tiles.
+\item \code{\link[terra:RGB]{terra::RGB()}} identifies RGB channels.
+\item \code{\link[terra:plotRGB]{terra::plotRGB()}} and \code{\link[tidyterra:geom_spatraster_rgb]{tidyterra::geom_spatraster_rgb()}} plot RGB
+rasters.
 }
-\concept{INSPIRE}
-\concept{WMS}
-\concept{spatial}
+}
+\concept{wms_services}

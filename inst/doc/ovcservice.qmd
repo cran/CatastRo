@@ -1,12 +1,14 @@
 ---
-title: "OVCCoordenadas web service"
-description: Retrieve spatial coordinates of urban properties.
+title: "OVCCoordenadas service"
+description: Geocode cadastral references and reverse geocode coordinates.
 author:
-  - Ángel Delgado Panadero
-  - Diego Hernangómez
+  - name: Ángel Delgado Panadero
+    orcid: 0000-0002-8189-9251
+  - name: Diego Hernangómez
+    orcid: 0000-0001-8457-4658
 tbl-cap-location: bottom
 vignette: >
-  %\VignetteIndexEntry{OVCCoordenadas web service}
+  %\VignetteIndexEntry{OVCCoordenadas service}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,38 +17,36 @@ vignette: >
 
 
 
-**CatastRo** provides an **R** interface to the OVCCoordenadas web service from
+**CatastRo** provides an **R** interface to the **OVCCoordenadas** service from
 the [Sede electrónica del Catastro](https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx).
 
-This service retrieves the spatial coordinates of an urban property. You do not
-need to be the owner to get the information. You only need to know the
-cadastral reference of the property. Although the cadastral reference is the
-only required argument, providing the address can improve results and help
-avoid errors.
+This service retrieves the parcel centroid coordinates for a 14-character
+cadastral parcel reference. Optional province and municipality values can
+narrow the search. Province is required when municipality is provided.
 
-The service can also obtain the cadastral reference of an urban property from
-longitude and latitude. It allows you to choose the spatial reference system
-(SRS, also known as CRS) used to express the coordinates.
+The service can also retrieve cadastral references from longitude and latitude.
+You can choose the spatial reference system (SRS, also known as a coordinate
+reference system or CRS) used to express the coordinates.
 
-The service also handles cases where the exact location of the registered urban
-property is unknown. In such cases, it returns all properties located within a
-50-meter square around the given point.
+If no exact match is found, the distance query returns cadastral references
+within a square with sides of 50 meters, centered on the requested coordinates.
 
-The documentation for this service is available
-[here](https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx).
+See the [**OVCCoordenadas** service
+documentation](https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx)
+for endpoint details.
 
 These functions use the `catr_ovc_get_*()` prefix and return tibbles from the
 **tibble** package.
 
 ## CatastRo API
 
-The OVCCoordenadas web service can be accessed using the following functions:
+The **OVCCoordenadas** service is available through the following functions:
 
-- `catr_ovc_get_rccoor()`
-- `catr_ovc_get_rccoor_distancia()`
-- `catr_ovc_get_cpmrc()`
+- `catr_ovc_get_rccoor()`.
+- `catr_ovc_get_rccoor_distancia()`.
+- `catr_ovc_get_cpmrc()`.
 
-## Reverse geocoding cadastral references
+## Reverse geocoding coordinates
 
 `catr_ovc_get_rccoor()` takes the coordinates (`lat` and `lon`) and the spatial
 reference system (`srs`) used to express them. It returns a tibble with the
@@ -80,7 +80,7 @@ This function accepts the following values for the `srs` argument:
 ``` r
 data(catr_srs_values)
 
-# OVC valid codes.
+# Valid OVC SRS codes.
 library(dplyr)
 
 catr_srs_values |>
@@ -95,7 +95,7 @@ catr_srs_values |>
 |-----:|:----------------------|
 |  4230|Geográficas en ED 50   |
 |  4258|Geográficas en ETRS89  |
-|  4326|Geográficas en WGS 80  |
+|  4326|Geográficas en WGS 84  |
 | 23029|UTM huso 29N en ED50   |
 | 23030|UTM huso 30N en ED50   |
 | 23031|UTM huso 31N en ED50   |
@@ -110,9 +110,10 @@ catr_srs_values |>
 
 
 
-It is also possible to get all cadastral references within a 50-meter square
-centered on the coordinates `lat` and `lon` using the function
-`catr_ovc_get_rccoor_distancia()`.
+If no exact match is found, `catr_ovc_get_rccoor_distancia()` retrieves cadastral
+references within a square with sides of 50 meters, centered on `lat` and `lon`.
+The `dis` column gives the distance to the queried point, and `cmun_ine`
+combines the INE province and municipality codes into a five-digit code.
 
 
 ``` r
@@ -135,10 +136,11 @@ catr_ovc_get_rccoor_distancia(
 
 ## Geocoding a cadastral reference
 
-The opposite query is also possible. When provided with a cadastral reference
-(`rc`), province (`province`) and municipality (`municipality`), the function
-`catr_ovc_get_cpmrc()` returns the coordinates (`lat` and `lon`) in a specified
-`srs`, along with the address (town, street and number).
+For geocoding, `catr_ovc_get_cpmrc()` accepts a 14-character cadastral parcel
+reference (`rc`) and returns its centroid coordinates as `xcoord` and `ycoord`
+in the specified `srs`, together with the address. Optional `province` and
+`municipality` values can narrow the search. `province` is required when
+`municipality` is provided.
 
 
 ``` r
@@ -159,10 +161,8 @@ catr_ovc_get_cpmrc(
 
 
 
-The `province` and `municipality` arguments are optional, but if `municipality`
-is provided, `province` must also be provided. If a value is passed to the
-`province` argument while `municipality` is `NULL`, the function
-`catr_ovc_get_cpmrc()` displays a message and returns an empty tibble.
+The following query shows that `municipality` alone is not sufficient to narrow
+the search:
 
 
 ``` r
@@ -182,11 +182,11 @@ catr_ovc_get_cpmrc(
 
 
 
-When using only `rc`, the result is provided as expected:
+You can also query by providing only `rc`:
 
 
 ``` r
-# Get the result without a warning.
+# Query using only the cadastral reference.
 catr_ovc_get_cpmrc(rc = "13077A01800039") |>
   knitr::kable()
 ```

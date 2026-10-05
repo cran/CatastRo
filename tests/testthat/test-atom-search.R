@@ -1,86 +1,54 @@
-test_that("Test offline", {
-  skip_on_cran()
-  skip_if_offline()
-
+test_that("catr_atom_search_munic() returns NULL when offline", {
   local_mocked_bindings(is_online_fun = function(...) {
     FALSE
   })
 
-  cdir <- file.path(tempdir(), "testthat_ex1")
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
+  cdir <- withr::local_tempdir(pattern = "testthat_ex1")
   expect_snapshot(fend <- catr_atom_search_munic("LABAJOS", cache_dir = cdir))
   expect_null(fend)
-
-  local_mocked_bindings(is_online_fun = function(...) {
-    httr2::is_online()
-  })
-  expect_identical(is_online_fun(), httr2::is_online())
-  unlink(cdir, recursive = TRUE, force = TRUE)
 })
 
-test_that("Test 404 all", {
-  skip_on_cran()
-  skip_if_offline()
+test_that("catr_atom_search_munic() returns NULL after an HTTP 404", {
+  cdir <- withr::local_tempdir(pattern = "testthat_ex2")
 
-  cdir <- file.path(tempdir(), "testthat_ex2")
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
-
-  local_mocked_bindings(is_404 = function(...) {
-    TRUE
-  })
+  local_mocked_bindings(
+    is_online_fun = function(...) TRUE,
+    is_404 = function(...) TRUE
+  )
 
   expect_snapshot(
     fend <- catr_atom_search_munic("MELQUE", to = "Segovia", cache_dir = cdir)
   )
   expect_null(fend)
-
-  local_mocked_bindings(is_404 = function(...) {
-    FALSE
-  })
-  unlink(cdir, recursive = TRUE, force = TRUE)
-  # Otherwise work
-  expect_silent(
-    fend <- catr_atom_search_munic("MELQUE", to = "Segovia", cache_dir = cdir)
-  )
-  expect_shape(fend, dim = c(1, 3))
-
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
 })
 
-test_that("Test search", {
+test_that("catr_atom_search_munic() ranks matching municipalities", {
   skip_on_cran()
   skip_if_offline()
-  cdir <- file.path(tempdir(), "testthat_ex2")
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
+  cdir <- withr::local_tempdir(pattern = "testthat_ex2")
   a <- catr_atom_search_munic("Mad", cache_dir = cdir)
   expect_gt(nrow(a), 1)
 
-  # Try with to
+  # Try with `to`.
   b <- catr_atom_search_munic("Mad", to = 3, cache_dir = cdir)
 
+  expect_s3_class(a, "tbl_df")
+  expect_named(a, c("territorial_office", "munic", "catrcode"))
+  expect_match(a$catrcode, "^[0-9]{5}$")
   expect_gt(nrow(a), nrow(b))
 
-  # Try with no result
+  # Try a query with no results.
 
   expect_snapshot(c <- catr_atom_search_munic("XXX", cache_dir = cdir))
   expect_null(c)
 
-  expect_message(
+  expect_snapshot(
     d <- catr_atom_search_munic(
       "Melque",
       to = "XXX",
       verbose = TRUE,
       cache_dir = cdir
-    ),
-    'Ignoring `to`, no territorial office matched "XXX".'
+    )
   )
 
   d <- catr_atom_search_munic("Mel", to = "XXX", cache_dir = cdir)
@@ -92,18 +60,38 @@ test_that("Test search", {
   )
 
   expect_null(ff)
-  unlink(cdir)
 })
 
-test_that("Deprecations", {
-  skip_on_cran()
-  skip_if_offline()
-  cdir <- file.path(tempdir(), "testthat_ex2")
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
+test_that("catr_atom_search_munic() warns about deprecated arguments", {
+  cdir <- withr::local_tempdir(pattern = "testthat_ex2")
+  local_mocked_bindings(catr_atom_get_address_db_all = function(...) NULL)
   expect_snapshot(
     a <- catr_atom_search_munic("Mad", cache_dir = cdir, cache = TRUE)
   )
-  unlink(cdir, recursive = TRUE, force = TRUE)
+})
+
+test_that("catr_atom_search_munic() filters one exact office match", {
+  local_mocked_bindings(catr_atom_get_address_db_all = function(...) {
+    dplyr::tibble(
+      territorial_office = c("Segovia", "Madrid"),
+      munic = c("40146-MELQUE", "28079-MADRID")
+    )
+  })
+
+  expect_message(
+    out <- catr_atom_search_munic("MADRID", to = "Segovia"),
+    "No municipality matched"
+  )
+  expect_null(out)
+})
+
+test_that("catr_atom_search_munic() rejects nonscalar search values", {
+  expect_error(
+    catr_atom_search_munic(c("Madrid", "Segovia")),
+    class = "rlang_error"
+  )
+  expect_error(
+    catr_atom_search_munic("Madrid", to = TRUE),
+    class = "rlang_error"
+  )
 })

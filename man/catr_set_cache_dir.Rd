@@ -16,55 +16,55 @@ catr_set_cache_dir(
 catr_detect_cache_dir()
 }
 \arguments{
-\item{cache_dir}{Path to a cache directory. On \code{NULL}, the function
-stores cached files in a temporary directory (see \code{\link[base:tempdir]{base::tempdir()}}).}
+\item{cache_dir}{Path to a cache directory. If \code{NULL} or \code{FALSE}, the
+function stores cached files in a temporary directory. See
+\code{\link[base:tempdir]{base::tempdir()}}.}
 
-\item{overwrite}{Logical. If \code{TRUE}, overwrites an existing
+\item{overwrite}{Logical. Whether to overwrite an existing
 \code{CATASTROESP_CACHE_DIR} value already present on your machine.}
 
-\item{install}{Logical. If \code{TRUE}, installs the key on your local
-machine for use in future sessions. Defaults to \code{FALSE}. If \code{cache_dir}
-is \code{FALSE}, this argument is set to \code{FALSE} automatically.}
+\item{install}{Logical. Whether to store the path locally for use in future
+sessions. Defaults to \code{FALSE}.}
 
-\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
+\item{verbose}{Logical. Whether to display informational messages.}
 }
 \value{
-\code{catr_set_cache_dir()} returns an (invisible) character with the path to
-your \code{cache_dir}, but it is mainly called for its side effect.
+\code{catr_set_cache_dir()} returns a \link[base:character]{character} string
+containing the cache
+directory path, invisibly. This function is called for its side effects.
 
-\code{catr_detect_cache_dir()} returns the path to the \code{cache_dir} used in this
-session.
+\code{catr_detect_cache_dir()} returns a \link[base:character]{character} string
+containing the cache
+directory path used in this session.
 }
 \description{
-Store your \code{cache_dir} path locally for future sessions.
-Type \code{Sys.getenv("CATASTROESP_CACHE_DIR")} or use
-\code{\link[=catr_detect_cache_dir]{catr_detect_cache_dir()}} to find your cached path.
+Configure the cache directory used by \CRANpkg{CatastRo}. Use
+\code{Sys.getenv("CATASTROESP_CACHE_DIR")} or \code{\link[=catr_detect_cache_dir]{catr_detect_cache_dir()}} to inspect
+the current path.
 }
 \details{
-By default, when no \code{cache_dir} is set, the package uses a folder inside
-\code{\link[base:tempdir]{base::tempdir()}} (so files are temporary and are removed when the \R
-session ends). To persist a cache across \R sessions, use
-\code{catr_set_cache_dir(cache_dir, install = TRUE)} which writes the chosen
-path to a small configuration file under
+By default, when no \code{cache_dir} is set, \CRANpkg{CatastRo} uses a directory
+inside \code{\link[base:tempdir]{base::tempdir()}}, so files are temporary and are removed when the \R
+session ends. To persist a cache across \R sessions, use
+\code{catr_set_cache_dir(cache_dir, install = TRUE)}, which writes the chosen path
+to a small configuration file under
 \code{tools::R_user_dir("CatastRo", "config")}.
 }
 \note{
-In \CRANpkg{CatastRo} >= 1.0.0 the location of the configuration file has
+In \CRANpkg{CatastRo} >= 1.0.0, the location of the configuration file has
 moved from \code{rappdirs::user_config_dir("CatastRo", "R")} to
-\code{tools::R_user_dir("CatastRo", "config")}. We have implemented a
-function that migrates previous configuration files from one location to
-another with a message. This message appears only once to inform you of the
-migration.
+\code{tools::R_user_dir("CatastRo", "config")}. A migration function moves
+previous configuration files to the new location and displays a message.
+This message appears only once.
 }
 \section{Caching strategies}{
 
 
-Some files can be read from their online source without caching using the
-option \code{cache = FALSE}. Otherwise the source file is downloaded to
-your computer. \CRANpkg{CatastRo} implements the following caching options:
+Source files are cached after download. \CRANpkg{CatastRo} implements the
+following caching options:
 \itemize{
-\item For occasional use, rely on the default \code{\link[=tempdir]{tempdir()}}-based cache (no
-install).
+\item For occasional use, rely on the default \code{\link[=tempdir]{tempdir()}}-based cache without
+installing it.
 \item Modify the cache for a single session by setting
 \code{catr_set_cache_dir(cache_dir = "a/path/here")}.
 \item For reproducible workflows, install a persistent cache with
@@ -74,13 +74,12 @@ This cache is kept across \R sessions.
 corresponding function.
 }
 
-Sometimes cached files may be corrupt. In that case, try re-downloading
+Cached files can occasionally become corrupt. In that case, try downloading
 the data by setting \code{update_cache = TRUE} in the corresponding function.
 
-If you experience any problem downloading, try downloading the
-corresponding file by another method and save it in your
-\code{cache_dir}. Use the option \code{verbose = TRUE} to debug the API query
-and \code{\link[=catr_detect_cache_dir]{catr_detect_cache_dir()}} to identify your cached path.
+If a download fails, try another download method and save the file in
+\code{cache_dir}. Use \code{verbose = TRUE} to inspect the API query
+and \code{\link[=catr_detect_cache_dir]{catr_detect_cache_dir()}} to identify your cache path.
 }
 
 \examples{
@@ -100,14 +99,12 @@ catr_set_cache_dir(my_cache)
 identical(my_cache, catr_detect_cache_dir())
 }
 
-
 catr_detect_cache_dir()
-
 }
 \seealso{
-\code{\link[tools:R_user_dir]{tools::R_user_dir()}}
+\code{\link[tools:R_user_dir]{tools::R_user_dir()}} defines platform-specific user directories.
 
-Other cache utilities:
+Manage the local cache:
 \code{\link[=catr_clear_cache]{catr_clear_cache()}}
 }
-\concept{cache utilities}
+\concept{cache_utilities}

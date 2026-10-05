@@ -3,20 +3,22 @@
 \encoding{UTF-8}
 \name{catr_ovc_get_cod_provinces}
 \alias{catr_ovc_get_cod_provinces}
-\title{OVCCallejero: extract provinces with their codes}
+\title{OVCCallejero: Get province codes}
 \usage{
 catr_ovc_get_cod_provinces(verbose = FALSE)
 }
 \arguments{
-\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
+\item{verbose}{Logical. Whether to display informational messages.}
 }
 \value{
-A \link[tibble:tbl_df]{tibble}.
+A \link[tibble:tbl_df]{tibble} with province names and codes. Returns
+\code{\link[base:NULL]{NULL}} if the request fails.
 }
 \description{
-Implementation of the OVCCallejero service
-\href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccallejerocodigos.asmx?op=ConsultaProvincia}{ConsultaProvincia}. Returns a list of provinces
-included in the Spanish Cadastre.
+Query the OVCCallejero
+\href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccallejerocodigos.asmx?op=ConsultaProvincia}{ConsultaProvincia} service to retrieve provinces and
+their INE codes. Only provinces within the jurisdiction of the Directorate
+General for Cadastre are included.
 }
 \examples{
 \dontshow{if (run_example()) withAutoprint(\{ # examplesIf}
@@ -29,13 +31,20 @@ catr_ovc_get_cod_provinces()
 \href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccallejerocodigos.asmx?op=ConsultaProvincia}{ConsultaProvincia}.
 }
 \seealso{
-Related OVCCallejero functions:
-\code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}}
+\code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}} uses a province code as \code{cpro} to look up
+municipality codes.
 
-Other search:
+Search for cadastral identifiers:
 \code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}},
 \code{\link[=catr_get_code_from_coords]{catr_get_code_from_coords()}},
 \code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}}
+
+Query OVC web services:
+\code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}},
+\code{\link[=catr_ovc_get_cpmrc]{catr_ovc_get_cpmrc()}},
+\code{\link[=catr_ovc_get_rccoor]{catr_ovc_get_rccoor()}},
+\code{\link[=catr_ovc_get_rccoor_distancia]{catr_ovc_get_rccoor_distancia()}}
 }
-\concept{OVCCallejero}
-\concept{search}
+\concept{ovc_services}
+\concept{ovccallejero_services}
+\concept{search_tools}

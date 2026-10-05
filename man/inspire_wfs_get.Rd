@@ -3,45 +3,51 @@
 \encoding{UTF-8}
 \name{inspire_wfs_get}
 \alias{inspire_wfs_get}
-\title{Client tool for WFS INSPIRE services}
+\title{Query WFS INSPIRE services}
 \usage{
 inspire_wfs_get(
   scheme = "https",
   hostname = "ovc.catastro.meh.es",
   path = "INSPIRE/wfsCP.aspx",
   query = list(),
+  cache_dir = NULL,
   verbose = FALSE
 )
 }
 \arguments{
-\item{scheme}{Character string. Protocol to access the resource on the
-Internet.}
+\item{scheme}{Character string specifying the protocol used to access the
+resource.}
 
-\item{hostname}{Character string. Host that holds the resource.}
+\item{hostname}{Character string specifying the resource host.}
 
-\item{path}{Character string. Specific resource in the host to access.}
+\item{path}{Character string specifying the resource path on the host.}
 
-\item{query}{Named list. Names and values of arguments for the query.}
+\item{query}{Named list of query parameters and their values.}
 
-\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
+\item{cache_dir}{Path to a cache directory. If \code{NULL} or \code{FALSE}, the
+function stores cached files in a temporary directory. See
+\code{\link[base:tempdir]{base::tempdir()}}.}
+
+\item{verbose}{Logical. Whether to display informational messages.}
 }
 \value{
-Character string. Path of the resulting file in the \code{\link[=tempfile]{tempfile()}} folder.
+A \link[base:character]{character} string containing the downloaded file path.
+Returns \code{\link[base:NULL]{NULL}} if
+the request fails.
 }
 \description{
-Access WFS INSPIRE services. This function is used internally in WFS calls
-and is exposed for users and developers accessing other cadastral or
-INSPIRE resources.
+Build and run a WFS INSPIRE request. This function supports the package's WFS
+functions and is also available for querying other cadastral or INSPIRE
+resources.
 }
 \details{
-This function is used internally in all the WFS calls. We expose it to make
-it available to other users and/or developers for accessing other
-cadastral or INSPIRE resources. See \strong{Examples}.
+This function constructs a request URL from its components, downloads the
+result to the cache directory and reports WFS exceptions. See \strong{Examples}.
 }
 \examples{
 \dontshow{if (run_example()) withAutoprint(\{ # examplesIf}
-# Access the Cadastre of Navarra
-# Try also https://ropenspain.github.io/CatastRoNav/
+# Access the Cadastre of Navarre.
+# See also https://ropenspain.github.io/CatastRoNav/
 
 file_local <- inspire_wfs_get(
   hostname = "inspire.navarra.es",
@@ -58,30 +64,18 @@ file_local <- inspire_wfs_get(
 if (!is.null(file_local)) {
   pamp <- sf::read_sf(file_local)
 
-  library(ggplot2)
-  ggplot(pamp) +
-    geom_sf()
+  if (requireNamespace("ggplot2", quietly = TRUE)) {
+    library(ggplot2)
+    ggplot(pamp) +
+      geom_sf()
+  }
 }
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Related INSPIRE API functions:
-\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
-\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
-\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
-\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
-\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
-\code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
-\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
-\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
-\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
-\code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}}
-
-Related WFS INSPIRE functions:
-\code{\link{catr_srs_values}},
+Query WFS INSPIRE services:
 \code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
 \code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
 \code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}}
 }
-\concept{INSPIRE}
-\concept{WFS}
+\concept{wfs_services}

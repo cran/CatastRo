@@ -1,53 +1,60 @@
+# CatastRo 1.1.0
+
+- The reference index now groups functions by Spanish Cadastre service, alongside the existing task-based sections.
+- CLI messages now display braces in paths, URLs and argument values literally.
+- **CatastRo** users can now configure HTTP timeout and SSL verification with the `CATASTRO_TIMEOUT` and `CATASTRO_SSL_VERIFY` environment variables. The existing `catastro_timeout` and `catastro_ssl_verify` options still take precedence (#82).
+- **CatastRo** now preserves existing cached files when a refresh fails and validates required query values before making a request.
+- `catr_atom_get_*()` functions now respect exact territorial office matches, propagate cache refresh options and preserve the update date of each ATOM entry.
+- `catr_atom_search_munic()` now filters results when `to` matches exactly one territorial office.
+- `catr_clear_cache()` now reports incomplete deletions instead of announcing success when files remain.
+- `catr_ovc_get_rccoor()` now preserves the correct X and Y coordinates when the API returns an error.
+- `catr_ovc_get_rccoor_distancia()` now reports API errors and returns the queried coordinates and SRS.
+
 # CatastRo 1.0.2
 
-- This development cycle includes AI-assisted maintenance work to simplify
-  internal code, improve **cli** messages, standardize roxygen2 metadata and
-  make package documentation more consistent.
+- Improve internal maintenance, **cli** messages, **roxygen2** metadata and package documentation.
 
 # CatastRo 1.0.1
 
-- Improve documentation for cache behavior, INSPIRE services and OVC reference
-  data.
+- Improve documentation for cache behavior, INSPIRE services and OVC reference data.
 
 # CatastRo 1.0.0
 
 This major release introduces a full overhaul of the codebase and test suite.
-All requests now use **httr2** and cached files are reorganized into topic-based
-subfolders for easier management.
+All requests now use **httr2**. Cached files are organized into topic-based
+subdirectories for easier management.
 
 > Because of internal changes, **existing caches are not compatible** with this
 > release and must be rebuilt.
 
 Persistent cache directories now use `tools::R_user_dir()` instead of
-`rappdirs::user_config_dir()`. If you already have a cache directory in place,
-**CatastRo** displays a one-time message about this migration.
+`rappdirs::user_config_dir()`. If you already have a cache directory,
+**CatastRo** displays a one-time migration message.
 
-The package now requires **R ≥ 4.1.0** and dependency updates improve both
-performance and maintainability. All functions return tidy objects (tibbles or
-`sf` objects with tibble data).
+The package now requires **R** ≥ 4.1.0 and dependency updates improve both
+performance and maintainability. Data retrieval functions return tidy objects
+(tibbles, `sf` objects with tibble data or `SpatRaster` objects).
 
 ## Major changes
 
-- Minimum required **R** version is now **4.1.0**.
-- Refactor the code and test suite for improved stability.
+- Minimum required **R** version is now 4.1.0.
+- Refactor the code and test suite to improve stability.
 - Switch API requests to **httr2**.
-- New options (especially for macOS and Linux users):
-  - On SSL errors, use `options(catastro_ssl_verify = 0)` to disable SSL
-    verification.
-  - Query timeout can be controlled with `options(catastro_timeout = 300)`
-    (default value). Check `httr2::req_timeout()` for details.
-- Reorganize the cache into topic-based subfolders.
+- Add new options, especially for **macOS** and **Linux** users:
+  - On SSL errors, use `options(catastro_ssl_verify = 0)` to disable SSL verification.
+  - Query timeout can be controlled with `options(catastro_timeout = 300)` (default value). Check `httr2::req_timeout()` for details.
+- Reorganize the cache into topic-based subdirectories.
 
 > **Note:** Previous caches must be recreated.
 
 ### Compatibility and performance
 
-- Require **R ≥ 4.1.0**.
+- Require **R** ≥ 4.1.0.
 - Update dependencies:
-  - Add: **cli**, **lifecycle**, **withr**.
-  - Remove: **png**, **slippymath**.
+  - Add: **cli**, **lifecycle** and **withr**.
+  - Remove: **png** and **slippymath**.
 - Return tidy objects consistently.
-- Vignettes engine has been migrated to Quarto.
+- Migrate the vignette engine to **Quarto**.
 
 ## Deprecations
 
@@ -55,8 +62,7 @@ performance and maintainability. All functions return tidy objects (tibbles or
 
 ## New features
 
-- Add `inspire_wfs_get()`, a general function that downloads data from any
-  INSPIRE-based service endpoint.
+- Add `inspire_wfs_get()`, a general function that downloads data from any INSPIRE-based service endpoint.
 
 ## Other updates
 
@@ -79,23 +85,20 @@ performance and maintainability. All functions return tidy objects (tibbles or
 
 # CatastRo 0.3.0
 
-- `catr_atom_get_address()` also returns the names of the streets (layer
-  `"ThoroughfareName"` of the `*.gml` file). The new fields are named with the
-  prefix `tfname_*`.
-- Add a helper function for easily detecting the `cache_dir`:
-  `catr_detect_cache_dir()`.
+- `catr_atom_get_address()` also returns the names of the streets (layer `"ThoroughfareName"` of the `*.gml` file). The new fields are named with the prefix `tfname_*`.
+- Add a helper function for detecting `cache_dir`: `catr_detect_cache_dir()`.
 - Update documentation and tests.
 
 # CatastRo 0.2.3
 
-- Housekeeping and updates of documentation.
-- Adapt `catr_wms_get_layer()` to **mapSpain** (\>= 0.7.0).
+- Update documentation and package maintenance files.
+- `catr_wms_get_layer()` is now compatible with **mapSpain** (\>= 0.7.0).
 
 # CatastRo 0.2.2
 
 - Add **tidyterra** to `Suggests`.
 - `catr_get_code_from_coords()` now handles `sfc` objects (#26).
-- `catr_clear_cache()` now has `config = FALSE` as default argument.
+- `catr_clear_cache()` now has `config = FALSE` as the default.
 
 # CatastRo 0.2.1
 
@@ -107,27 +110,21 @@ performance and maintainability. All functions return tidy objects (tibbles or
 
 - Add **ATOM INSPIRE** capabilities:
   - Addresses: `catr_atom_get_address()`, `catr_atom_get_address_db_all()`.
-  - Cadastral parcels: `catr_atom_get_parcels()`,
-    `catr_atom_get_parcels_db_all()`.
+  - Cadastral parcels: `catr_atom_get_parcels()`, `catr_atom_get_parcels_db_all()`.
   - Buildings: `catr_atom_get_buildings()`, `catr_atom_get_buildings_db_all()`.
 - Add **WFS INSPIRE** capabilities:
-  - Addresses: `catr_wfs_get_address_bbox()`, `catr_wfs_get_address_codvia()`,
-    `catr_wfs_get_address_postalcode()`, `catr_wfs_get_address_rc()`.
-  - Cadastral parcels: `catr_wfs_get_parcels_neigh_parcel()`,
-    `catr_wfs_get_parcels_parcel()`, `catr_wfs_get_parcels_parcel_zoning()`,
-    `catr_wfs_get_parcels_zoning()`.
+  - Addresses: `catr_wfs_get_address_bbox()`, `catr_wfs_get_address_codvia()`, `catr_wfs_get_address_postalcode()`, `catr_wfs_get_address_rc()`.
+  - Cadastral parcels: `catr_wfs_get_parcels_neigh_parcel()`, `catr_wfs_get_parcels_parcel()`, `catr_wfs_get_parcels_parcel_zoning()`, `catr_wfs_get_parcels_zoning()`.
   - Buildings: `catr_wfs_get_buildings_bbox()`, `catr_wfs_get_buildings_rc()`.
 - Add **WMS INSPIRE** capabilities: `catr_wms_get_layer()`.
-- Add a new interface for **OVC services**. Deprecated previous functions in
-  favor of the new API:
-  - New SRS database in `?catr_srs_values`, replaces `coordinates`.
+- Add a new interface for **OVC services**. Deprecated previous functions in favor of the new API:
+  - The new SRS reference dataset in `?catr_srs_values` replaces `coordinates`.
   - `catr_ovc_get_rccoor_distancia()` replaces `near_rc()`.
   - `catr_ovc_get_rccoor()` replaces `get_rc()`.
   - `catr_ovc_get_cpmrc()` replaces `get_coor()`.
-- Added
-  [pre-computed](https://ropensci.org/blog/2019/12/08/precompute-vignettes/)
-  vignettes.
+- Add [precomputed](https://ropensci.org/blog/2019/12/08/precompute-vignettes/) vignettes.
 
 # CatastRo 0.1.0
 
 - Initial release.
+

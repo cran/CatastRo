@@ -1,6 +1,58 @@
-# Helper.
+# Documentation helpers.
+atom_db_details <- function(resource) {
+  all <- paste0("catr_atom_get_", resource, "_db_all")
+  territorial_office <- paste0("catr_atom_get_", resource, "_db_to")
+
+  paste(
+    paste0("[", all, "()] provides a summary table with all"),
+    "territorial offices and their municipalities, excluding",
+    paste0(
+      "the Basque Country and Navarre. [",
+      territorial_office,
+      "()]"
+    ),
+    "provides a table for one territorial office and its municipalities.",
+    sep = "\n"
+  )
+}
+
+ovc_coordinate_details <- function(include_ine = FALSE) {
+  columns <- c(
+    "- `geo.xcen`, `geo.ycen`, `geo.srs`: Input arguments of the query.",
+    "- `refcat`: Cadastral reference.",
+    "- `address`: Address as recorded in the Spanish Cadastre."
+  )
+
+  if (include_ine) {
+    columns <- c(
+      columns,
+      paste(
+        "- `cmun_ine`: Full five-digit INE municipality code, combining the",
+        "  province and municipality codes (National Statistics Institute).",
+        sep = "\n"
+      ),
+      "- `dis`: Distance from the cadastral reference to the queried point."
+    )
+  }
+
+  columns <- c(columns, "- Remaining fields: See the API documentation.")
+
+  paste(
+    "If the API returns no results or reports an error, the result is a",
+    "[tibble][tibble::tbl_df] containing only query information.",
+    "",
+    paste(
+      "On a successful query, this function returns a",
+      "tibble with",
+      sep = "\n"
+    ),
+    "one row per cadastral reference, including the following columns:",
+    paste(columns, collapse = "\n"),
+    sep = "\n"
+  )
+}
+
 ovcurl <- function(x) {
-  # nocov start
   base <- "https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc"
 
   app <- switch(x,
@@ -13,5 +65,16 @@ ovcurl <- function(x) {
   )
 
   paste0(c(base, app), collapse = "/")
-  # nocov end
+}
+
+wfs_map_seealso <- function() {
+  paste(
+    "[catr_wms_get_layer()] downloads a map image using the returned spatial",
+    "object as its extent (`x`).",
+    sep = "\n"
+  )
+}
+
+cache_directory_seealso <- function() {
+  "[tools::R_user_dir()] defines platform-specific user directories."
 }

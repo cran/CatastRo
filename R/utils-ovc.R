@@ -2,10 +2,7 @@
 #'
 #' @noRd
 ovc_base_url <- function(service) {
-  paste0(
-    "http://ovc.catastro.meh.es/ovcservweb/",
-    service
-  )
+  paste0("http://ovc.catastro.meh.es/ovcservweb/", service)
 }
 
 #' Validate and format an OVC SRS value
@@ -32,14 +29,14 @@ ovc_get_xml <- function(url, verbose = FALSE) {
   xml2::as_list(httr2::resp_body_xml(resp))
 }
 
-#' Convert an OVC XML node to a one-row tibble
+#' Convert an OVC XML node to a one-row [tibble][tibble::tbl_df]
 #'
 #' @noRd
 ovc_as_tibble_row <- function(x) {
-  tibble::as_tibble_row(unlist(x))
+  dplyr::bind_cols(as.list(unlist(x)))
 }
 
-#' Convert OVC XML nodes to a tibble
+#' Convert OVC XML nodes to a [tibble][tibble::tbl_df]
 #'
 #' @noRd
 ovc_as_tibble_rows <- function(x) {
@@ -50,12 +47,14 @@ ovc_as_tibble_rows <- function(x) {
 #'
 #' @noRd
 ovc_report_error <- function(err) {
-  df <- ovc_as_tibble_row(err["lerr"])
+  df <- ovc_as_tibble_row(err["lerr"]) # nolint
 
-  cli::cli_alert_danger(paste0("OVC service error ", df[1, 1], ": ", df[1, 2]))
+  cli::cli_alert_danger(
+    "OVC service error {.val {df[1, 1]}}: {.val {df[1, 2]}}"
+  )
 }
 
-#' Return TRUE when an OVC node contains an API error
+#' Detect an OVC API error
 #'
 #' @noRd
 ovc_has_error <- function(x) {
@@ -66,10 +65,7 @@ ovc_has_error <- function(x) {
 #'
 #' @noRd
 ovc_ref_address <- function(x) {
-  tibble::tibble(
-    refcat = paste0(x$pc.pc1, x$pc.pc2),
-    address = x$ldt
-  )
+  dplyr::tibble(refcat = paste0(x$pc.pc1, x$pc.pc2), address = x$ldt)
 }
 
 #' Convert common OVC coordinate columns to numeric

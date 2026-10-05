@@ -1,16 +1,18 @@
-#' Internal function to download and cache a file from a URL
+#' Download and cache a file from a URL
 #'
-#' @param url Character string. The URL to download.
-#' @param name Character string. The name of the file to save.
-#' @param cache_dir Character string. The base cache directory.
-#' @param subdir Character string. Subdirectory inside the cache directory.
-#' @param update_cache Logical. Whether to update the cached file.
-#' @param verbose Logical. Whether to print messages.
+#' @param url Character string containing the URL to download.
+#' @param name Character string specifying the destination file name.
+#' @param cache_dir Character string specifying the base cache directory.
+#' @param subdir Character string specifying a cache subdirectory.
+#' @param update_cache Logical. Whether to refresh the cached file.
+#' @param verbose Logical. Whether to display informational messages.
 #'
-#' @return Character string. Path of the downloaded file.
-#' @encoding UTF-8
+#' @returns A [character][base::character] string containing the downloaded file
+#'   path. Returns
+#'   [`NULL`][base::NULL] if the download fails.
 #'
 #' @noRd
+#' @encoding UTF-8
 download_url <- function(
   url = NULL,
   name = basename(url),
@@ -22,19 +24,19 @@ download_url <- function(
   cache_dir <- create_cache_dir(cache_dir)
   cache_dir <- create_cache_dir(file.path(cache_dir, subdir))
 
-  # Create and clean destination file.
+  # Create and normalize the destination file path.
   file_local <- file.path(cache_dir, name)
   file_local <- gsub("//", "/", file_local, fixed = TRUE)
 
-  msg <- paste0("Using cache directory {.path ", cache_dir, "}.")
+  msg <- "Using cache directory {.path {cache_dir}}."
   make_msg("info", verbose, msg)
 
   # Check whether the file already exists.
   fileoncache <- file.exists(file_local)
 
-  # Return cached files unless a refresh is requested.
+  # Return the cached file unless a refresh is requested.
   if (isFALSE(update_cache) && fileoncache) {
-    msg <- paste0("Using cached file {.file ", file_local, "}.")
+    msg <- "Using cached file {.file {file_local}}."
     make_msg("success", verbose, msg)
 
     return(file_local)
@@ -44,20 +46,15 @@ download_url <- function(
     make_msg("warning", verbose, "Refreshing cached file.")
   }
 
-  msg <- paste0("Downloading {.url ", url, "}.")
+  msg <- "Downloading {.url {url}}."
   make_msg("info", verbose, msg)
 
   req <- httr2::request(url)
-  req <- httr2::req_error(req, is_error = function(x) {
-    FALSE
-  })
+  req <- httr2::req_error(req, is_error = catr_never_error)
 
-  req <- httr2::req_options(
-    req,
-    ssl_verifypeer = getOption("catastro_ssl_verify", 1L)
-  )
+  req <- httr2::req_options(req, ssl_verifypeer = catr_ssl_verify())
 
-  req <- httr2::req_timeout(req, getOption("catastro_timeout", 300))
+  req <- httr2::req_timeout(req, catr_timeout())
   req <- httr2::req_retry(req, max_tries = 3)
   if (verbose) {
     req <- httr2::req_progress(req)
@@ -65,13 +62,30 @@ download_url <- function(
 
   if (!is_online_fun()) {
     cli::cli_alert_danger("No internet connection detected.")
-    cli::cli_alert("Returning {.val NULL} because the request cannot run.")
+    cli::cli_inform("Returning {.code NULL} because the request cannot run.")
     return(NULL)
   }
 
-  # Use HEAD to check whether the download size should be reported.
+  # Simulate an HTTP failure when requested by the tests.
+  test_offline <- is_404()
+  if (test_offline) {
+    report_http_error(url)
+    cli::cli_inform("Returning {.code NULL} because the download failed.")
+    return(NULL)
+  }
+
+  # Use HEAD to determine whether to report the download size.
   get_header <- httr2::req_method(req, "HEAD")
-  getsize <- httr2::req_perform(get_header)
+  getsize <- tryCatch(
+    catr_req_perform(get_header),
+    httr2_failure = function(cnd) {
+      report_request_failure(cnd, "download")
+      NULL
+    }
+  )
+  if (is.null(getsize)) {
+    return(NULL)
+  }
 
   size_dwn <- as.numeric(httr2::resp_header(getsize, "content-length", 0))
   class(size_dwn) <- class(object.size("a"))
@@ -82,61 +96,99 @@ download_url <- function(
     req <- httr2::req_progress(req)
   }
 
-  # Testing.
-  test_offline <- is_404()
-  if (test_offline) {
-    # Redirect to a fake URL.
-    req <- httr2::req_url(req, "http://ovc.catastro.meh.es/urlnoexist/fake")
-    file_local <- tempfile(fileext = ".txt")
-  }
+  file_download <- tempfile(pattern = "download-", tmpdir = cache_dir)
+  on.exit(unlink(file_download, force = TRUE), add = TRUE)
 
-  resp <- httr2::req_perform(req, path = file_local)
-
-  if (httr2::resp_is_error(resp)) {
-    unlink(file_local, force = TRUE)
-    get_status_code <- httr2::resp_status(resp) # nolint
-    get_status_desc <- httr2::resp_status_desc(resp) # nolint
-
-    cli::cli_alert_danger(c(
-      "{.strong HTTP error {get_status_code}} ({get_status_desc}):",
-      " {.url {url}}."
-    ))
-    cli::cli_alert_warning(c(
-      "If this looks like a package bug, please open an issue at ",
-      "{.url https://github.com/ropenspain/CatastRo/issues}"
-    ))
-    cli::cli_alert("Returning {.val NULL} because the download failed.")
+  resp <- tryCatch(
+    catr_req_perform(req, path = file_download),
+    httr2_failure = function(cnd) {
+      report_request_failure(cnd, "download")
+      NULL
+    }
+  )
+  if (is.null(resp)) {
     return(NULL)
   }
-  msg <- paste0("Downloaded file to {.file ", file_local, "}.")
+
+  if (httr2::resp_is_error(resp)) {
+    report_http_error(
+      url,
+      httr2::resp_status(resp),
+      httr2::resp_status_desc(resp)
+    )
+    cli::cli_inform("Returning {.code NULL} because the download failed.")
+    return(NULL)
+  }
+  replace_cached_file(file_download, file_local)
+  msg <- "Downloaded file to {.file {file_local}}."
   make_msg("success", verbose, msg)
 
   file_local
 }
 
-#' Internal function to get the response body from a URL
+#' Replace a cached file while preserving the previous version on failure
+#' @noRd
+replace_cached_file <- function(download, target) {
+  if (suppressWarnings(catr_file_rename(download, target))) {
+    return(invisible(target))
+  }
+
+  if (!file.exists(target)) {
+    cli::cli_abort("Could not install the downloaded file {.file {target}}.")
+  }
+
+  backup <- tempfile(pattern = "cache-backup-", tmpdir = dirname(target))
+  if (!catr_file_rename(target, backup)) {
+    cli::cli_abort("Could not preserve the cached file {.file {target}}.")
+  }
+
+  restore_backup <- TRUE
+  on.exit(
+    {
+      if (restore_backup && file.exists(backup)) {
+        catr_file_rename(backup, target)
+      }
+    },
+    add = TRUE
+  )
+
+  if (!catr_file_rename(download, target)) {
+    cli::cli_abort("Could not install the downloaded file {.file {target}}.")
+  }
+
+  restore_backup <- FALSE
+  unlink(backup, force = TRUE)
+  invisible(target)
+}
+
+#' Wrap `file.rename()` for testing
+#' @noRd
+# nocov start
+catr_file_rename <- function(...) {
+  file.rename(...)
+}
+# nocov end
+
+#' Get a response body from a URL
 #'
-#' @param url Character string. The URL to download.
-#' @param verbose Logical. Whether to print messages.
+#' @param url Character string containing the URL to request.
+#' @param verbose Logical. Whether to display informational messages.
 #'
-#' @return httr2 response object.
+#' @returns A [response][httr2::response] object from \CRANpkg{httr2}. Returns
+#'   [`NULL`][base::NULL] if the
+#'   request fails.
 #'
 #' @noRd
 get_request_body <- function(url, verbose = TRUE) {
-  msg <- paste0("Requesting {.url ", url, "}.")
+  msg <- "Requesting {.url {url}}."
   make_msg("info", verbose, msg)
 
   req <- httr2::request(url)
-  req <- httr2::req_error(req, is_error = function(x) {
-    FALSE
-  })
+  req <- httr2::req_error(req, is_error = catr_never_error)
 
-  req <- httr2::req_options(
-    req,
-    ssl_verifypeer = getOption("catastro_ssl_verify", 1L)
-  )
+  req <- httr2::req_options(req, ssl_verifypeer = catr_ssl_verify())
 
-  req <- httr2::req_timeout(req, getOption("catastro_timeout", 300))
+  req <- httr2::req_timeout(req, catr_timeout())
   req <- httr2::req_retry(req, max_tries = 3)
   if (verbose) {
     req <- httr2::req_progress(req)
@@ -144,32 +196,33 @@ get_request_body <- function(url, verbose = TRUE) {
 
   if (!is_online_fun()) {
     cli::cli_alert_danger("No internet connection detected.")
-    cli::cli_alert("Returning {.val NULL} because the request cannot run.")
+    cli::cli_inform("Returning {.code NULL} because the request cannot run.")
     return(NULL)
   }
 
-  # Testing.
+  # Simulate an HTTP failure when requested by the tests.
   test_offline <- is_404()
   if (test_offline) {
-    # Redirect to a fake URL.
-    req <- httr2::req_url(req, "http://ovc.catastro.meh.es/urlnoexist/fake")
+    report_http_error(url)
+    cli::cli_inform("Returning {.code NULL} because the request failed.")
+    return(NULL)
   }
 
-  resp <- httr2::req_perform(req)
+  resp <- tryCatch(catr_req_perform(req), httr2_failure = function(cnd) {
+    report_request_failure(cnd, "request")
+    NULL
+  })
+  if (is.null(resp)) {
+    return(NULL)
+  }
 
   if (httr2::resp_is_error(resp)) {
-    get_status_code <- httr2::resp_status(resp) # nolint
-    get_status_desc <- httr2::resp_status_desc(resp) # nolint
-
-    cli::cli_alert_danger(c(
-      "{.strong HTTP error {get_status_code}} ({get_status_desc}):",
-      " {.url {url}}."
-    ))
-    cli::cli_alert_warning(c(
-      "If this looks like a package bug, please open an issue at ",
-      "{.url https://github.com/ropenspain/CatastRo/issues}"
-    ))
-    cli::cli_alert("Returning {.val NULL} because the request failed.")
+    report_http_error(
+      url,
+      httr2::resp_status(resp),
+      httr2::resp_status_desc(resp)
+    )
+    cli::cli_inform("Returning {.code NULL} because the request failed.")
     return(NULL)
   }
 
@@ -177,14 +230,91 @@ get_request_body <- function(url, verbose = TRUE) {
   resp
 }
 
-#' Wrapper is_online for testing
+#' Wrap `httr2::is_online()` for testing
 #' @noRd
 is_online_fun <- function(...) {
   httr2::is_online()
 }
 
-#' Wrapper is_404 for testing
+#' Wrap `httr2::req_perform()` for testing
+#' @noRd
+# nocov start
+catr_req_perform <- function(...) {
+  httr2::req_perform(...)
+}
+# nocov end
+
+#' Return `FALSE` for every request error predicate
+#' @noRd
+catr_never_error <- function(...) {
+  FALSE
+}
+
+#' Get an HTTP configuration value from options or environment variables
+#' @noRd
+catr_http_config <- function(option, envvar, default) {
+  opt <- getOption(option, NULL)
+  if (!is.null(opt)) {
+    return(opt)
+  }
+
+  env <- Sys.getenv(envvar, unset = NA_character_)
+  if (is.na(env) || identical(env, "")) {
+    return(default)
+  }
+
+  env_num <- suppressWarnings(as.numeric(env))
+  if (is.na(env_num)) {
+    return(default)
+  }
+
+  env_num
+}
+
+#' Get the SSL verification setting for \CRANpkg{CatastRo} HTTP requests
+#' @noRd
+catr_ssl_verify <- function() {
+  catr_http_config("catastro_ssl_verify", "CATASTRO_SSL_VERIFY", 1L)
+}
+
+#' Get the timeout setting for \CRANpkg{CatastRo} HTTP requests
+#' @noRd
+catr_timeout <- function() {
+  catr_http_config("catastro_timeout", "CATASTRO_TIMEOUT", 300)
+}
+
+#' Report a simulated HTTP 404 response for testing
 #' @noRd
 is_404 <- function(...) {
   FALSE
+}
+
+report_http_error <- function(
+  url,
+  status_code = 404,
+  status_desc = "Not Found"
+) {
+  cli::cli_alert_danger(c(
+    "HTTP error {.val {status_code}} ({status_desc}):",
+    " {.url {url}}."
+  ))
+  cli::cli_alert_warning(paste0(
+    "If this looks like a package bug, open an issue at ",
+    "{.url https://github.com/ropenspain/CatastRo/issues}."
+  ))
+}
+
+report_request_failure <- function(cnd, type) {
+  request_type <- if (identical(type, "request")) {
+    "request"
+  } else {
+    paste(type, "request")
+  }
+  cli::cli_alert_danger(paste0(
+    "The ",
+    request_type,
+    " could not be completed."
+  ))
+  cli::cli_alert_warning("{conditionMessage(cnd)}")
+  cli::cli_inform("Returning {.code NULL} because the {type} failed.")
 }

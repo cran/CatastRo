@@ -1,18 +1,19 @@
-#' ATOM INSPIRE: download all addresses of a municipality
+#' ATOM INSPIRE: Download all addresses for a municipality
 #'
 #' @description
-#' Retrieve the spatial data of all addresses belonging to a single municipality
-#' using the ATOM INSPIRE service. This function also returns corresponding
+#' Retrieve spatial data for all addresses in a municipality using the ATOM
+#' INSPIRE service. The result also contains the corresponding
 #' street information in fields prefixed with `tfname_*`.
 #'
-#' @param munic Municipality to extract, can be part of a string or a
-#'   cadastral code. See [catr_atom_search_munic()] for getting the cadastral
-#'   codes.
-#' @param to Optional argument for defining the territorial office to which
-#'   `munic` belongs. This argument is a helper for narrowing the search.
-#'
+#' @param munic Municipality name, partial name or cadastral code. Use
+#'   [catr_atom_search_munic()] to find cadastral codes.
+#' @param to Optional territorial office containing `munic`. Use this argument
+#'   to narrow the search.
 #' @inheritParams catr_atom_get_address_db_all
-#' @return A [`sf`][sf::st_sf] object.
+#'
+#' @returns An [`sf`][sf::st_sf] object. Returns [`NULL`][base::NULL] if the
+#'   data cannot be
+#'   retrieved.
 #'
 #' @references
 #' ```{r, echo=FALSE, comment="", results="asis"}
@@ -26,14 +27,12 @@
 #'
 #' ```
 #'
-#' @family INSPIRE
-#' @family ATOM
 #' @family addresses
-#' @family spatial
-#' @encoding UTF-8
+#' @family atom_services
 #' @export
+#' @encoding UTF-8
 #'
-#' @examplesIf run_example()
+#' @examplesIf run_example() && requireNamespace("ggplot2", quietly = TRUE)
 #' \donttest{
 #' s <- catr_atom_get_address("Melque", to = "Segovia")
 #'
@@ -50,7 +49,6 @@
 #'     subtitle = "Melque de Cercos, Segovia"
 #'   )
 #' }
-#'
 catr_atom_get_address <- function(
   munic,
   to = NULL,
@@ -61,8 +59,11 @@ catr_atom_get_address <- function(
 ) {
   warn_deprecated_cache(cache, "CatastRo::catr_atom_get_address(cache)")
 
-  munic <- validate_non_empty_arg(munic)
+  munic <- validate_scalar_arg(munic)
   to <- ensure_null(to)
+  if (!is.null(to)) {
+    to <- validate_scalar_arg(to)
+  }
 
   all <- catr_atom_get_address_db_all(
     update_cache = update_cache,
@@ -112,7 +113,7 @@ catr_atom_get_address <- function(
     layer_hint = "Thorough"
   )
 
-  # Rename and prepare for left join.
+  # Rename columns to prepare for the left join.
   names(str_names) <- paste0("tfname_", names(str_names))
 
   sfobj$tfname_gml_id <- vapply(

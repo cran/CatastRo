@@ -2,21 +2,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ángel Delgado Panadero">
 <meta name="author" content="Diego Hernangómez">
-<meta name="description" content="Retrieve spatial coordinates of urban properties.">
+<meta name="description" content="Geocode cadastral references and reverse geocode coordinates.">
 
-<title>OVCCoordenadas web service</title>
+<title>OVCCoordenadas service</title>
 <style>
 
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -210,7 +213,7 @@ text-decoration: underline; }
 
 
 <header id="title-block-header">
-<h1 class="title">OVCCoordenadas web service</h1>
+<h1 class="title">OVCCoordenadas service</h1>
 <p class="author">Ángel Delgado Panadero</p>
 <p class="author">Diego Hernangómez</p>
 
@@ -218,20 +221,20 @@ text-decoration: underline; }
 
 
 <!-- ovcservice.qmd is generated from ovcservice.qmd.orig. Please edit that file -->
-<p><strong>CatastRo</strong> provides an <strong>R</strong> interface to the OVCCoordenadas web service from the <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">Sede electrónica del Catastro</a>.</p>
-<p>This service retrieves the spatial coordinates of an urban property. You do not need to be the owner to get the information. You only need to know the cadastral reference of the property. Although the cadastral reference is the only required argument, providing the address can improve results and help avoid errors.</p>
-<p>The service can also obtain the cadastral reference of an urban property from longitude and latitude. It allows you to choose the spatial reference system (SRS, also known as CRS) used to express the coordinates.</p>
-<p>The service also handles cases where the exact location of the registered urban property is unknown. In such cases, it returns all properties located within a 50-meter square around the given point.</p>
-<p>The documentation for this service is available <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">here</a>.</p>
+<p><strong>CatastRo</strong> provides an <strong>R</strong> interface to the <strong>OVCCoordenadas</strong> service from the <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx">Sede electrónica del Catastro</a>.</p>
+<p>This service retrieves the parcel centroid coordinates for a 14-character cadastral parcel reference. Optional province and municipality values can narrow the search. Province is required when municipality is provided.</p>
+<p>The service can also retrieve cadastral references from longitude and latitude. You can choose the spatial reference system (SRS, also known as a coordinate reference system or CRS) used to express the coordinates.</p>
+<p>If no exact match is found, the distance query returns cadastral references within a square with sides of 50 meters, centered on the requested coordinates.</p>
+<p>See the <a href="https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx"><strong>OVCCoordenadas</strong> service documentation</a> for endpoint details.</p>
 <p>These functions use the <code>catr_ovc_get_*()</code> prefix and return tibbles from the <strong>tibble</strong> package.</p>
 <h2 id="catastro-api">CatastRo API</h2>
-<p>The OVCCoordenadas web service can be accessed using the following functions:</p>
+<p>The <strong>OVCCoordenadas</strong> service is available through the following functions:</p>
 <ul>
-<li><code>catr_ovc_get_rccoor()</code></li>
-<li><code>catr_ovc_get_rccoor_distancia()</code></li>
-<li><code>catr_ovc_get_cpmrc()</code></li>
+<li><code>catr_ovc_get_rccoor()</code>.</li>
+<li><code>catr_ovc_get_rccoor_distancia()</code>.</li>
+<li><code>catr_ovc_get_cpmrc()</code>.</li>
 </ul>
-<h2 id="reverse-geocoding-cadastral-references">Reverse geocoding cadastral references</h2>
+<h2 id="reverse-geocoding-coordinates">Reverse geocoding coordinates</h2>
 <p><code>catr_ovc_get_rccoor()</code> takes the coordinates (<code>lat</code> and <code>lon</code>) and the spatial reference system (<code>srs</code>) used to express them. It returns a tibble with the cadastral reference of the property at that spatial point, including other information such as the address (town, street and number).</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(CatastRo)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -281,7 +284,7 @@ text-decoration: underline; }
 <p>This function accepts the following values for the <code>srs</code> argument:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(catr_srs_values)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># OVC valid codes.</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Valid OVC SRS codes.</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>catr_srs_values <span class="sc">|&gt;</span></span>
@@ -306,7 +309,7 @@ text-decoration: underline; }
 </tr>
 <tr class="odd">
 <td style="text-align: right;">4326</td>
-<td style="text-align: left;">Geográficas en WGS 80</td>
+<td style="text-align: left;">Geográficas en WGS 84</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">23029</td>
@@ -354,7 +357,7 @@ text-decoration: underline; }
 </tr>
 </tbody>
 </table>
-<p>It is also possible to get all cadastral references within a 50-meter square centered on the coordinates <code>lat</code> and <code>lon</code> using the function <code>catr_ovc_get_rccoor_distancia()</code>.</p>
+<p>If no exact match is found, <code>catr_ovc_get_rccoor_distancia()</code> retrieves cadastral references within a square with sides of 50 meters, centered on <code>lat</code> and <code>lon</code>. The <code>dis</code> column gives the distance to the queried point, and <code>cmun_ine</code> combines the INE province and municipality codes into a five-digit code.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_rccoor_distancia</span>(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fl">40.96002</span>,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon =</span> <span class="sc">-</span><span class="fl">5.663408</span>,</span>
@@ -432,7 +435,7 @@ text-decoration: underline; }
 </tbody>
 </table>
 <h2 id="geocoding-a-cadastral-reference">Geocoding a cadastral reference</h2>
-<p>The opposite query is also possible. When provided with a cadastral reference (<code>rc</code>), province (<code>province</code>) and municipality (<code>municipality</code>), the function <code>catr_ovc_get_cpmrc()</code> returns the coordinates (<code>lat</code> and <code>lon</code>) in a specified <code>srs</code>, along with the address (town, street and number).</p>
+<p>For geocoding, <code>catr_ovc_get_cpmrc()</code> accepts a 14-character cadastral parcel reference (<code>rc</code>) and returns its centroid coordinates as <code>xcoord</code> and <code>ycoord</code> in the specified <code>srs</code>, together with the address. Optional <code>province</code> and <code>municipality</code> values can narrow the search. <code>province</code> is required when <code>municipality</code> is provided.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">srs =</span> <span class="st">&quot;4230&quot;</span>,</span>
@@ -482,7 +485,7 @@ text-decoration: underline; }
 </tr>
 </tbody>
 </table>
-<p>The <code>province</code> and <code>municipality</code> arguments are optional, but if <code>municipality</code> is provided, <code>province</code> must also be provided. If a value is passed to the <code>province</code> argument while <code>municipality</code> is <code>NULL</code>, the function <code>catr_ovc_get_cpmrc()</code> displays a message and returns an empty tibble.</p>
+<p>The following query shows that <code>municipality</code> alone is not sufficient to narrow the search:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>,</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">municipality =</span> <span class="st">&quot;SANTA CRUZ DE MUDELA&quot;</span></span>
@@ -503,8 +506,8 @@ text-decoration: underline; }
 </tr>
 </tbody>
 </table>
-<p>When using only <code>rc</code>, the result is provided as expected:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the result without a warning.</span></span>
+<p>You can also query by providing only <code>rc</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Query using only the cadastral reference.</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">catr_ovc_get_cpmrc</span>(<span class="at">rc =</span> <span class="st">&quot;13077A01800039&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table style="width:100%;">

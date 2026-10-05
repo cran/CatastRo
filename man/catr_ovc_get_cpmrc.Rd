@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{catr_ovc_get_cpmrc}
 \alias{catr_ovc_get_cpmrc}
-\title{OVCCoordenadas: geocode a cadastral reference}
+\title{OVCCoordenadas: Geocode a cadastral reference}
 \usage{
 catr_ovc_get_cpmrc(
   rc,
@@ -14,34 +14,36 @@ catr_ovc_get_cpmrc(
 )
 }
 \arguments{
-\item{rc}{The cadastral reference to be geocoded.}
+\item{rc}{A 14-character cadastral parcel reference to geocode.}
 
 \item{srs}{SRS/CRS to use in the query. To see allowed values, use
 \link{catr_srs_values}, specifically the \code{ovc_service} column.}
 
-\item{province, municipality}{Optional, used for narrowing the search.}
+\item{province, municipality}{Optional character strings used to narrow the
+search. \code{province} is required when \code{municipality} is provided.}
 
-\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
+\item{verbose}{Logical. Whether to display informational messages.}
 }
 \value{
-A \link[tibble:tbl_df]{tibble}. See \strong{Details}.
+A \link[tibble:tbl_df]{tibble} as described in \strong{Details}. Returns
+\code{\link[base:NULL]{NULL}} if the request fails.
 }
 \description{
-Implementation of the OVCCoordenadas service
-\href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx?op=Consulta_CPMRC}{Consulta CPMRC}. Returns coordinates for a
-specific cadastral reference.
+Query the OVCCoordenadas
+\href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx?op=Consulta_CPMRC}{Consulta CPMRC} service to retrieve coordinates for a
+parcel reference. The returned coordinates locate the parcel centroid.
 }
 \details{
-When the API does not provide any result, this function returns a
-\link[tibble:tbl_df]{tibble} with the input arguments only.
+If the API returns no results or reports an error, the result is a
+\link[tibble:tbl_df]{tibble} containing only query information.
 
-On a successful query, this function returns a \link[tibble:tbl_df]{tibble}
-with one row per cadastral reference, including the following columns:
+On a successful query, this function returns a tibble with one row per
+cadastral reference, including the following columns:
 \itemize{
 \item \code{xcoord}, \code{ycoord}: X and Y coordinates in the specified SRS.
 \item \code{refcat}: Cadastral reference.
-\item \code{address}: Address as recorded in the Cadastre.
-\item Remaining fields: Check the API documentation.
+\item \code{address}: Address as recorded in the Spanish Cadastre.
+\item Remaining fields: See the API documentation.
 }
 }
 \examples{
@@ -64,16 +66,21 @@ catr_ovc_get_cpmrc("9872023VH5797S")
 \href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx?op=Consulta_CPMRC}{Consulta CPMRC}.
 }
 \seealso{
-\link{catr_srs_values}, \code{vignette("ovcservice", package = "CatastRo")}
+\itemize{
+\item \link{catr_srs_values} lists supported SRS values.
+\item \code{vignette("ovcservice", package = "CatastRo")} describes the OVC services.
+}
 
-Related OVCCoordenadas functions:
+Work with cadastral references:
 \code{\link[=catr_ovc_get_rccoor]{catr_ovc_get_rccoor()}},
-\code{\link[=catr_ovc_get_rccoor_distancia]{catr_ovc_get_rccoor_distancia()}},
-\code{\link{catr_srs_values}}
+\code{\link[=catr_ovc_get_rccoor_distancia]{catr_ovc_get_rccoor_distancia()}}
 
-Other cadastral references:
+Query OVC web services:
+\code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}},
+\code{\link[=catr_ovc_get_cod_provinces]{catr_ovc_get_cod_provinces()}},
 \code{\link[=catr_ovc_get_rccoor]{catr_ovc_get_rccoor()}},
 \code{\link[=catr_ovc_get_rccoor_distancia]{catr_ovc_get_rccoor_distancia()}}
 }
-\concept{OVCCoordenadas}
-\concept{cadastral references}
+\concept{cadastral_references}
+\concept{ovc_services}
+\concept{ovccoordenadas_services}

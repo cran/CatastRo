@@ -1,7 +1,4 @@
-test_that("Test offline", {
-  skip_on_cran()
-  skip_if_offline()
-
+test_that("catr_ovc_get_rccoor_distancia() returns NULL when offline", {
   local_mocked_bindings(is_online_fun = function(...) {
     FALSE
   })
@@ -14,20 +11,13 @@ test_that("Test offline", {
     )
   )
   expect_null(fend)
-
-  local_mocked_bindings(is_online_fun = function(...) {
-    httr2::is_online()
-  })
-  expect_identical(is_online_fun(), httr2::is_online())
 })
 
-test_that("Test 404 all", {
-  skip_on_cran()
-  skip_if_offline()
-
-  local_mocked_bindings(is_404 = function(...) {
-    TRUE
-  })
+test_that("catr_ovc_get_rccoor_distancia() returns NULL after an HTTP 404", {
+  local_mocked_bindings(
+    is_online_fun = function(...) TRUE,
+    is_404 = function(...) TRUE
+  )
 
   expect_snapshot(
     fend <- catr_ovc_get_rccoor_distancia(
@@ -43,20 +33,38 @@ test_that("Test 404 all", {
   })
 })
 
-test_that("Expect error on bad SRS", {
-  skip_on_cran()
-  skip_if_offline()
-
-  expect_error(catr_ovc_get_rccoor_distancia(
-    lat = 40.963200,
-    lon = -5.671420,
-    "abcd"
-  ))
+test_that("catr_ovc_get_rccoor_distancia() rejects an unsupported SRS", {
+  expect_snapshot(
+    error = TRUE,
+    df <- catr_ovc_get_rccoor_distancia(
+      lat = 40.963200,
+      lon = -5.671420,
+      "abcd"
+    )
+  )
 })
 
-test_that("return tibble given SRS", {
-  skip_on_cran()
-  skip_if_offline()
+test_that("catr_ovc_get_rccoor_distancia() returns data with an SRS", {
+  local_mocked_bindings(ovc_get_xml = function(...) {
+    list(
+      consulta_coordenadas_distancias = list(
+        coordenadas_distancias = list(
+          coordd = list(
+            geo = list(
+              xcen = "-5.671420",
+              ycen = "40.963200",
+              srs = "EPSG:4326"
+            ),
+            lpcd = list(list(
+              pc = list(pc1 = "9872023", pc2 = "VH5797S"),
+              ldt = "Mocked address",
+              dt = list(loine = list(cp = "37", cm = "274"))
+            ))
+          )
+        )
+      )
+    )
+  })
 
   result <- catr_ovc_get_rccoor_distancia(
     lat = 40.963200,
@@ -64,66 +72,189 @@ test_that("return tibble given SRS", {
     "4326"
   )
   expect_s3_class(result, "tbl")
-  expect_true(is.numeric(result$geo.xcen))
-  expect_true(is.numeric(result$geo.ycen))
+  expect_type(result$geo.xcen, "double")
+  expect_type(result$geo.ycen, "double")
 })
 
-test_that("return tibble without SRS", {
-  skip_on_cran()
-  skip_if_offline()
+test_that("catr_ovc_get_rccoor_distancia() returns data without an SRS", {
+  local_mocked_bindings(ovc_get_xml = function(...) {
+    list(
+      consulta_coordenadas_distancias = list(
+        coordenadas_distancias = list(
+          coordd = list(
+            geo = list(
+              xcen = "-5.671420",
+              ycen = "40.963200",
+              srs = "EPSG:4326"
+            ),
+            lpcd = list(list(
+              pc = list(pc1 = "9872023", pc2 = "VH5797S"),
+              ldt = "Mocked address",
+              dt = list(loine = list(cp = "37", cm = "274"))
+            ))
+          )
+        )
+      )
+    )
+  })
 
   result <- catr_ovc_get_rccoor_distancia(lat = 40.963200, lon = -5.671420)
   expect_s3_class(result, "tbl")
 })
 
-test_that("check fields without SRS", {
-  skip_on_cran()
-  skip_if_offline()
+test_that("catr_ovc_get_rccoor_distancia() normalizes fields without SRS", {
+  local_mocked_bindings(ovc_get_xml = function(...) {
+    list(
+      consulta_coordenadas_distancias = list(
+        coordenadas_distancias = list(
+          coordd = list(
+            geo = list(
+              xcen = "-5.671420",
+              ycen = "40.963200",
+              srs = "EPSG:4326"
+            ),
+            lpcd = list(list(
+              pc = list(pc1 = "9872023", pc2 = "VH5797S"),
+              ldt = "Mocked address",
+              dt = list(loine = list(cp = "37", cm = "274"))
+            ))
+          )
+        )
+      )
+    )
+  })
 
   result <- catr_ovc_get_rccoor_distancia(lat = 40.963200, lon = -5.671420)
 
-  expect_true(all(
-    is.character(result$address),
-    is.character(result$refcat),
-    is.character(result$cmun_ine)
-  ))
+  expect_type(result$address, "character")
+  expect_type(result$refcat, "character")
+  expect_type(result$cmun_ine, "character")
 })
 
-test_that("check fields given SRS", {
-  skip_on_cran()
-  skip_if_offline()
+test_that("catr_ovc_get_rccoor_distancia() normalizes fields with SRS", {
+  local_mocked_bindings(ovc_get_xml = function(...) {
+    list(
+      consulta_coordenadas_distancias = list(
+        coordenadas_distancias = list(
+          coordd = list(
+            geo = list(
+              xcen = "-5.671420",
+              ycen = "40.963200",
+              srs = "EPSG:4230"
+            ),
+            lpcd = list(list(
+              pc = list(pc1 = "9872023", pc2 = "VH5797S"),
+              ldt = "Mocked address",
+              dt = list(loine = list(cp = "37", cm = "274"))
+            ))
+          )
+        )
+      )
+    )
+  })
 
   result <- catr_ovc_get_rccoor_distancia(
     lat = 40.963200,
     lon = -5.671420,
     4230
   )
-  expect_true(all(
-    is.character(result$address),
-    is.character(result$refcat),
-    is.character(result$cmun_ine)
-  ))
+  expect_type(result$address, "character")
+  expect_type(result$refcat, "character")
+  expect_type(result$cmun_ine, "character")
 })
 
-test_that("if data is known return a tibble with 3 cols", {
-  skip_on_cran()
-  skip_if_offline()
+test_that("catr_ovc_get_rccoor_distancia() returns three columns", {
+  local_mocked_bindings(ovc_get_xml = function(...) {
+    list(
+      consulta_coordenadas_distancias = list(
+        coordenadas_distancias = list(
+          coordd = list(
+            geo = list(
+              xcen = "-999999999",
+              ycen = "99999999",
+              srs = "EPSG:4326"
+            )
+          )
+        )
+      )
+    )
+  })
 
-  expect_message(catr_ovc_get_rccoor_distancia(
-    lat = 99999999,
-    lon = -999999999
-  ))
+  expect_snapshot(
+    df <- catr_ovc_get_rccoor_distancia(lat = 99999999, lon = -999999999)
+  )
   result <- catr_ovc_get_rccoor_distancia(lat = 99999999, lon = -999999999)
-  expect_true(ncol(result) == 3)
+  expect_equal(ncol(result), 3)
 })
 
-test_that("Expect message", {
+test_that("catr_ovc_get_rccoor_distancia() ranks matching references", {
+  local_mocked_bindings(ovc_get_xml = function(url, verbose = FALSE) {
+    if (verbose) {
+      cli::cli_alert_info("Requesting {.url {url}}.")
+      cli::cli_alert_success("Request succeeded.")
+    }
+
+    list(
+      consulta_coordenadas_distancias = list(
+        coordenadas_distancias = list(
+          coordd = list(
+            geo = list(
+              xcen = "-5.671420",
+              ycen = "40.963200",
+              srs = "EPSG:4326"
+            ),
+            lpcd = list(list(
+              pc = list(pc1 = "9872023", pc2 = "VH5797S"),
+              ldt = "Mocked address",
+              dt = list(loine = list(cp = "37", cm = "274"))
+            ))
+          )
+        )
+      )
+    )
+  })
+
+  expect_snapshot(
+    df <- catr_ovc_get_rccoor_distancia(
+      lat = 40.963200,
+      lon = -5.671420,
+      verbose = TRUE
+    )
+  )
+})
+
+test_that("catr_ovc_get_rccoor_distancia() reports API errors", {
+  local_mocked_bindings(ovc_get_xml = function(...) {
+    list(
+      consulta_coordenadas_distancias = list(
+        lerr = list(
+          err = list(cod = "16", des = "NO REFERENCES AVAILABLE")
+        )
+      )
+    )
+  })
+
+  expect_snapshot(
+    result <- catr_ovc_get_rccoor_distancia(
+      lat = 40.963200,
+      lon = -5.671420
+    )
+  )
+  expect_equal(
+    result,
+    tibble::tibble(
+      geo.xcen = -5.671420,
+      geo.ycen = 40.963200,
+      geo.srs = "EPSG:4326"
+    )
+  )
+})
+
+test_that("catr_ovc_get_rccoor_distancia() can call the real API", {
   skip_on_cran()
   skip_if_offline()
+  skip_on_ci()
 
-  expect_message(catr_ovc_get_rccoor_distancia(
-    lat = 40.963200,
-    lon = -5.671420,
-    verbose = TRUE
-  ))
+  result <- catr_ovc_get_rccoor_distancia(lat = 40.963200, lon = -5.671420)
+  expect_s3_class(result, "tbl")
 })

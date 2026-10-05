@@ -1,31 +1,35 @@
-#' WFS INSPIRE: download cadastral parcels
+#' WFS INSPIRE: Download cadastral parcels
 #'
 #' @description
-#' Get the spatial data of cadastral parcels and zones. The WFS service
-#' allows several types of queries:
+#' Retrieve spatial cadastral parcel and zoning data through several types of
+#' WFS queries:
 #'
-#' - By bounding box: `catr_wfs_get_parcels_bbox()` extracts objects included
+#' - By bounding box: `catr_wfs_get_parcels_bbox()` retrieves objects included
 #'   in the provided bounding box. See **Bounding box**.
 #'
 #' @inheritParams catr_wfs_get_address_bbox
 #' @inheritParams catr_atom_get_parcels
-#' @inherit catr_wfs_get_address_bbox return references
-#' @inheritSection catr_wfs_get_address_bbox Bounding box
 #'
-#' @section API Limits:
-#' The API service is limited to the following constraints:
+#' @inherit catr_wfs_get_address_bbox return
+#'
+#' @section API limits:
+#' The API service has the following limits:
 #'
 #' - `"parcel"`: Bounding box of 1 km2 and a maximum of 5,000 elements.
 #' - `"zoning"`: Bounding box of 25 km2 and a maximum of 5,000 elements.
-#' @family INSPIRE
-#' @family WFS
+#'
+#' @inheritSection catr_wfs_get_address_bbox Bounding box
+#'
+#' @inherit catr_wfs_get_address_bbox references
+#'
+#' @seealso
+#' `r wfs_map_seealso()`
+#'
 #' @family parcels
-#' @family spatial
+#' @family wfs_services
 #' @rdname catr_wfs_get_parcels
-#'
-#' @encoding UTF-8
 #' @export
-#'
+#' @encoding UTF-8
 catr_wfs_get_parcels_bbox <- function(
   x,
   what = c("parcel", "zoning"),
@@ -58,8 +62,8 @@ catr_wfs_get_parcels_bbox <- function(
   )
 }
 #' @description
-#' - By zoning: `catr_wfs_get_parcels_zoning()` extracts objects for a specific
-#'   cadastral zone.
+#' - By zoning: `catr_wfs_get_parcels_zoning()` retrieves objects for a
+#'   specific cadastral zone.
 #'
 #' @param cod_zona Cadastral zone code.
 #'
@@ -67,7 +71,7 @@ catr_wfs_get_parcels_bbox <- function(
 #' @export
 catr_wfs_get_parcels_zoning <- function(cod_zona, srs = NULL, verbose = FALSE) {
   # Validate arguments.
-  cod_zona <- validate_non_empty_arg(cod_zona)
+  cod_zona <- validate_scalar_arg(cod_zona)
   srs <- ensure_null(srs)
 
   q <- list(
@@ -86,14 +90,14 @@ catr_wfs_get_parcels_zoning <- function(cod_zona, srs = NULL, verbose = FALSE) {
   )
 }
 #' @description
-#' - By cadastral parcel: `catr_wfs_get_parcels_parcel()` extracts cadastral
+#' - By cadastral parcel: `catr_wfs_get_parcels_parcel()` retrieves cadastral
 #'   parcels for a specific cadastral reference.
 #'
 #' @rdname catr_wfs_get_parcels
 #' @export
 catr_wfs_get_parcels_parcel <- function(rc, srs = NULL, verbose = FALSE) {
   # Validate arguments.
-  rc <- validate_non_empty_arg(rc)
+  rc <- validate_scalar_arg(rc)
   srs <- ensure_null(srs)
 
   q <- list(
@@ -113,13 +117,14 @@ catr_wfs_get_parcels_parcel <- function(rc, srs = NULL, verbose = FALSE) {
 }
 #' @description
 #' - Neighbor cadastral parcels: `catr_wfs_get_parcels_neigh_parcel()`
-#'   extracts neighbor cadastral parcels for a specific cadastral reference.
+#'   retrieves neighboring cadastral parcels for a specific cadastral
+#'   reference.
 #'
 #' @rdname catr_wfs_get_parcels
 #' @export
 catr_wfs_get_parcels_neigh_parcel <- function(rc, srs = NULL, verbose = FALSE) {
   # Validate arguments.
-  rc <- validate_non_empty_arg(rc)
+  rc <- validate_scalar_arg(rc)
   srs <- ensure_null(srs)
 
   q <- list(
@@ -139,11 +144,12 @@ catr_wfs_get_parcels_neigh_parcel <- function(rc, srs = NULL, verbose = FALSE) {
 }
 #' @description
 #' - Cadastral parcels by zoning: `catr_wfs_get_parcels_parcel_zoning()`
-#'   extracts cadastral parcels for a specific cadastral zone.
+#'   retrieves cadastral parcels for a specific cadastral zone.
 #'
 #' @rdname catr_wfs_get_parcels
 #' @export
-#' @examplesIf run_example()
+#'
+#' @examplesIf run_example() && requireNamespace("ggplot2", quietly = TRUE)
 #' \donttest{
 #' cp <- catr_wfs_get_parcels_bbox(
 #'   c(
@@ -163,7 +169,7 @@ catr_wfs_get_parcels_parcel_zoning <- function(
   verbose = FALSE
 ) {
   # Validate arguments.
-  cod_zona <- validate_non_empty_arg(cod_zona)
+  cod_zona <- validate_scalar_arg(cod_zona)
   srs <- ensure_null(srs)
 
   q <- list(

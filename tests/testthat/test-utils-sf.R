@@ -1,11 +1,28 @@
-test_that("Read shp", {
-  skip_on_cran()
-  skip_if_offline()
+test_that("read_geo_file_sf() reads local geospatial archives", {
+  local_mocked_bindings(download_url = function(
+    url,
+    name,
+    cache_dir,
+    subdir,
+    ...
+  ) {
+    out <- file.path(cache_dir, subdir, name)
+    dir.create(dirname(out), recursive = TRUE, showWarnings = FALSE)
 
-  cdir <- file.path(tempdir(), "testthat_ex")
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
+    gpkg <- withr::local_tempfile(fileext = ".gpkg")
+    sfobj <- sf::st_sf(
+      id = 1,
+      geometry = sf::st_sfc(sf::st_point(c(0, 0)), crs = 4326)
+    )
+    sf::st_write(sfobj, gpkg, layer = "building", quiet = TRUE)
+
+    oldwd <- setwd(dirname(gpkg))
+    withr::defer(setwd(oldwd))
+    utils::zip(out, basename(gpkg), flags = "-q")
+    out
+  })
+
+  cdir <- withr::local_tempdir(pattern = "testthat_ex")
   url <- paste0(
     "https://www.catastro.hacienda.gob.es/INSPIRE/Buildings/46/",
     "46900-VALENCIA/A.ES.SDGC.BU.46900.zip"
@@ -20,24 +37,48 @@ test_that("Read shp", {
     verbose = FALSE
   )
 
-  s <- read_geo_file_sf(fake_local, hint = "building.gml")
+  s <- read_geo_file_sf(fake_local, hint = "gpkg")
 
   expect_s3_class(s, "sf")
   expect_s3_class(s, "tbl_df")
   expect_true(file.exists(fake_local))
-
-  unlink(cdir, recursive = TRUE, force = TRUE)
-  expect_false(dir.exists(cdir))
 })
 
-test_that("Read shp address", {
-  skip_on_cran()
-  skip_if_offline()
+test_that("read_geo_file_sf() preserves expected address fields", {
+  expected_address <- "Calle Mu\u00f1\u00f3, \u00c1vila"
+  expected_name <- "Pe\u00f1a"
 
-  cdir <- file.path(tempdir(), "testthat_ex")
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
+  local_mocked_bindings(download_url = function(
+    url,
+    name,
+    cache_dir,
+    subdir,
+    ...
+  ) {
+    out <- file.path(cache_dir, subdir, name)
+    dir.create(dirname(out), recursive = TRUE, showWarnings = FALSE)
+
+    gpkg <- withr::local_tempfile(fileext = ".gpkg")
+    sfobj <- sf::st_sf(
+      id = 1,
+      address = expected_address,
+      geometry = sf::st_sfc(sf::st_point(c(0, 0)), crs = 4326)
+    )
+    sf::st_write(sfobj, gpkg, layer = "address", quiet = TRUE)
+    sf::st_write(
+      data.frame(id = 1, name = expected_name),
+      gpkg,
+      layer = "fare",
+      quiet = TRUE
+    )
+
+    oldwd <- setwd(dirname(gpkg))
+    withr::defer(setwd(oldwd))
+    utils::zip(out, basename(gpkg), flags = "-q")
+    out
+  })
+
+  cdir <- withr::local_tempdir(pattern = "testthat_ex")
   url <- paste0(
     "https://www.catastro.hacienda.gob.es/INSPIRE/Addresses/40/",
     "40146-MELQUE%20DE%20CERCOS/A.ES.SDGC.AD.40146.zip"
@@ -52,21 +93,34 @@ test_that("Read shp address", {
     verbose = FALSE
   )
 
-  s <- read_geo_file_sf(fake_local, hint = "gml", "address")
+  s <- read_geo_file_sf(fake_local, hint = "gpkg", "address")
 
   expect_s3_class(s, "sf")
   expect_s3_class(s, "tbl_df")
   expect_true(file.exists(fake_local))
+  expect_identical(s$address, expected_address)
 
-  # But
-  tb <- read_geo_file_sf(fake_local, hint = "gml", "fare")
+  # Read the nonspatial layer as a tibble.
+  tb <- read_geo_file_sf(fake_local, hint = "gpkg", "fare")
   expect_s3_class(tb, c("tbl_df", "tbl", "data.frame"), exact = TRUE)
-
-  unlink(cdir, recursive = TRUE, force = TRUE)
-  expect_false(dir.exists(cdir))
+  expect_identical(tb$name, expected_name)
 })
 
-test_that("get_sf_from_bbox", {
+test_that("read_geo_file_sf() warns before reading large files", {
+  fake_local <- withr::local_tempfile(fileext = ".gpkg")
+  sfobj <- sf::st_sf(
+    id = 1,
+    geometry = sf::st_sfc(sf::st_point(c(0, 0)), crs = 4326)
+  )
+  sf::st_write(sfobj, fake_local, quiet = TRUE)
+
+  local_mocked_bindings(catr_file_size = function(...) 21 * 1024^2)
+
+  expect_snapshot(out <- read_geo_file_sf(fake_local))
+  expect_s3_class(out, "sf")
+})
+
+test_that("sf_bbox_to_sf() converts bounding boxes to spatial features", {
   a <- get_sf_from_bbox(c(1, 2, 3, 4), srs = 3857)
   b <- get_sf_from_bbox(a)
 
@@ -77,5 +131,6 @@ test_that("get_sf_from_bbox", {
   expect_identical(c, cc)
 
   expect_snapshot(error = TRUE, get_sf_from_bbox(c(1, 2)))
+  expect_snapshot(error = TRUE, get_sf_from_bbox(rep("x", 4), srs = 4326))
   expect_snapshot(error = TRUE, get_sf_from_bbox(c(1, 2, 1, 2)))
 })

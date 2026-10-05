@@ -1,24 +1,23 @@
-#' ATOM INSPIRE: download all cadastral parcels of a municipality
+#' ATOM INSPIRE: Download all cadastral parcels for a municipality
 #'
 #' @description
-#' Retrieve the spatial data of all cadastral parcels belonging to a single
-#' municipality using the ATOM INSPIRE service.
+#' Retrieve spatial data for all cadastral parcels in a municipality using the
+#' ATOM INSPIRE service.
 #'
-#' @param what Information to load. Options are:
-#' - `"parcel"` for cadastral parcels.
-#' - `"zoning"` for cadastral zoning.
-#'
+#' @param what Information to load, either `"parcel"` for cadastral parcels
+#'   or `"zoning"` for cadastral zoning.
 #' @inheritParams catr_atom_get_address
-#' @inherit catr_atom_get_address references return
 #'
-#' @family INSPIRE
-#' @family ATOM
+#' @inherit catr_atom_get_address return
+#'
+#' @inherit catr_atom_get_address references
+#'
 #' @family parcels
-#' @family spatial
-#' @encoding UTF-8
+#' @family atom_services
 #' @export
+#' @encoding UTF-8
 #'
-#' @examplesIf run_example()
+#' @examplesIf run_example() && requireNamespace("ggplot2", quietly = TRUE)
 #' \donttest{
 #' s <- catr_atom_get_parcels("Melque", to = "Segovia", what = "parcel")
 #'
@@ -31,7 +30,6 @@
 #'     subtitle = "Melque de Cercos, Segovia"
 #'   )
 #' }
-#'
 catr_atom_get_parcels <- function(
   munic,
   to = NULL,
@@ -45,8 +43,11 @@ catr_atom_get_parcels <- function(
 
   # Validate arguments.
   what <- match_arg_pretty(what)
-  munic <- validate_non_empty_arg(munic)
+  munic <- validate_scalar_arg(munic)
   to <- ensure_null(to)
+  if (!is.null(to)) {
+    to <- validate_scalar_arg(to)
+  }
 
   all <- catr_atom_get_parcels_db_all(
     update_cache = update_cache,

@@ -1,65 +1,53 @@
-#' WMS INSPIRE: download map images
+#' WMS INSPIRE: Download georeferenced map images
 #'
 #' @description
-#' Get geotagged images from the Spanish Cadastre. This function is a
-#' wrapper of [mapSpain::esp_get_tiles()].
+#' Retrieve georeferenced map images from the Spanish Cadastre WMS service.
+#' This function wraps [mapSpain::esp_get_tiles()].
 #'
-#' @param what,styles Layer and style of the WMS layer to be downloaded. See
+#' @param what WMS layer to download. See **Layers and styles**.
+#' @param styles Style to apply to the selected WMS layer. See
 #'   **Layers and styles**.
-#'
 #' @inheritParams catr_wfs_get_address_bbox
 #' @inheritParams catr_atom_get_address_db_all
 #' @inheritParams mapSpain::esp_get_tiles
 #' @inheritDotParams mapSpain::esp_get_tiles res:mask
 #'
-#' @return
-#' A [`SpatRaster`][terra::rast] is returned, with 3 (RGB) or 4 (RGBA) layers,
-#' see [terra::RGB()].
+#' @returns
+#' A [`SpatRaster`][terra::rast] with three RGB or four RGBA layers. See
+#' [terra::RGB()].
 #'
 #' @section Bounding box:
-#' When `x` is a numeric vector, make sure that the `srs` matches the
-#' coordinate values. When `x` is a [`sf`][sf::st_sf] object, the value
-#' `srs` is ignored.
+#' When `x` is a numeric vector, make sure that `srs` matches the coordinate
+#' values. When `x` is an [`sf`][sf::st_sf] object, the `srs` value is
+#' ignored.
 #'
-#' The query is performed using [EPSG:3857](https://epsg.io/3857) (Web Mercator)
-#' and the tile is projected back to the SRS of `x`. In case that the tile
-#' looks deformed, try either providing `x` or specify the SRS of the requested
-#' tile via the `srs` argument, which should match the SRS of
-#' `x`. See **Examples**.
-#'
+#' The query uses [EPSG:3857](https://epsg.io/3857) (Web Mercator), then
+#' transforms the tile back to the SRS of `x`. If the tile appears distorted,
+#' provide a spatial object as `x` or set `srs` to the SRS of the requested
+#' tile. See **Examples**.
 #' @section Layers and styles:
 #'
 #' ## Layers
-#' The argument `what` defines the layer to be extracted. The equivalence with
-#' the
-#'
-#' ```{r, echo=FALSE, results='asis'}
-#' cat(paste0(
-#'    " [API documentation](https://www.catastro.hacienda.gob.es/",
-#'      "webinspire/documentos/inspire-WMS.pdf) ")
-#'      )
-#'
-#' ```
-#' reference is:
-#' - `"parcel"`: CP.CadastralParcel
-#' - `"zoning"`: CP.CadastralZoning
-#' - `"building"`: BU.Building
-#' - `"buildingpart"`: BU.BuildingPart
-#' - `"address"`: AD.Address
-#' - `"admboundary"`: AU.AdministrativeBoundary
-#' - `"admunit"`: AU.AdministrativeUnit
+#' The `what` argument selects one of the following API layers:
+#' - `"parcel"`: `CP.CadastralParcel`.
+#' - `"zoning"`: `CP.CadastralZoning`.
+#' - `"building"`: `BU.Building`.
+#' - `"buildingpart"`: `BU.BuildingPart`.
+#' - `"address"`: `AD.Address`.
+#' - `"admboundary"`: `AU.AdministrativeBoundary`.
+#' - `"admunit"`: `AU.AdministrativeUnit`.
 #'
 #' ## Styles
 #' The WMS service provides different styles for each layer (`what` argument).
-#' Some available styles are:
-#' - `"parcel"`: Styles: `"BoundariesOnly"`, `"ReferencePointOnly"`,
+#' Available styles include:
+#' - `"parcel"`: `"BoundariesOnly"`, `"ReferencePointOnly"` and
 #'   `"ELFCadastre"`.
-#' - `"zoning"`: Styles: `"BoundariesOnly"`, `"ELFCadastre"`.
-#' - `"building"`, `"buildingpart"`: `"ELFCadastre"`.
+#' - `"zoning"`: `"BoundariesOnly"` and `"ELFCadastre"`.
+#' - `"building"` and `"buildingpart"`: `"ELFCadastre"`.
 #' - `"address"`: `"Number.ELFCadastre"`.
-#' - `"admboundary"`, `"admunit"`: `"ELFCadastre"`.
+#' - `"admboundary"` and `"admunit"`: `"ELFCadastre"`.
 #'
-#' Check the
+#' See the
 #' ```{r, echo=FALSE, results='asis'}
 #' cat(paste0(
 #'    " [API documentation](https://www.catastro.hacienda.gob.es/",
@@ -67,52 +55,56 @@
 #'      )
 #'
 #' ```
-#' for more information.
+#' for complete layer and style information.
 #'
 #' @seealso
-#' [mapSpain::esp_get_tiles()] and [terra::RGB()]. For plotting see
-#' [terra::plotRGB()] and [tidyterra::geom_spatraster_rgb()].
+#' - [catr_wfs_get_address_bbox()], [catr_wfs_get_buildings_bbox()] and
+#'   [catr_wfs_get_parcels_bbox()] retrieve vector geometries that can define
+#'   the map extent through `x`.
+#' - [mapSpain::esp_get_tiles()] downloads map tiles.
+#' - [terra::RGB()] identifies RGB channels.
+#' - [terra::plotRGB()] and [tidyterra::geom_spatraster_rgb()] plot RGB
+#'   rasters.
 #'
-#' @family INSPIRE
-#' @family WMS
-#' @family spatial
-#' @encoding UTF-8
+#' @concept wms_services
 #' @export
+#' @encoding UTF-8
 #'
-#' @examplesIf run_example()
+#' @examplesIf run_example() && requireNamespace("ggplot2", quietly = TRUE)
 #' \donttest{
+#' if (requireNamespace("tidyterra", quietly = TRUE)) {
+#'   # With a bounding box
 #'
-#' # With a bbox
+#'   pict <- catr_wms_get_layer(
+#'     c(222500, 4019500, 223700, 4020700),
+#'     srs = 25830,
+#'     what = "parcel"
+#'   )
 #'
-#' pict <- catr_wms_get_layer(
-#'   c(222500, 4019500, 223700, 4020700),
-#'   srs = 25830,
-#'   what = "parcel"
-#' )
+#'   library(mapSpain)
+#'   library(ggplot2)
+#'   library(tidyterra)
 #'
-#' library(mapSpain)
-#' library(ggplot2)
-#' library(tidyterra)
+#'   ggplot() +
+#'     geom_spatraster_rgb(data = pict)
 #'
-#' ggplot() +
-#'   geom_spatraster_rgb(data = pict)
+#'   # With a spatial object
 #'
-#' # With a spatial object
+#'   parcels <- catr_wfs_get_parcels_neigh_parcel("3662303TF3136B", srs = 25830)
 #'
-#' parcels <- catr_wfs_get_parcels_neigh_parcel("3662303TF3136B", srs = 25830)
+#'   # Use styles
 #'
-#' # Use styles
+#'   parcels_img <- catr_wms_get_layer(parcels,
+#'     what = "buildingpart",
+#'     srs = 25830, # Same as the parcels object
+#'     bbox_expand = 0.3,
+#'     styles = "ELFCadastre"
+#'   )
 #'
-#' parcels_img <- catr_wms_get_layer(parcels,
-#'   what = "buildingpart",
-#'   srs = 25830, # Same as the parcels object
-#'   bbox_expand = 0.3,
-#'   styles = "ELFCadastre"
-#' )
-#'
-#' ggplot() +
-#'   geom_sf(data = parcels, fill = "blue", alpha = 0.5) +
-#'   geom_spatraster_rgb(data = parcels_img)
+#'   ggplot() +
+#'     geom_sf(data = parcels, fill = "blue", alpha = 0.5) +
+#'     geom_spatraster_rgb(data = parcels_img)
+#' }
 #' }
 catr_wms_get_layer <- function(
   x,
@@ -138,8 +130,7 @@ catr_wms_get_layer <- function(
   bbox_res <- get_sf_from_bbox(x, srs)
   cache_dir <- create_cache_dir(cache_dir)
 
-  # Manage layer.
-
+  # Map the requested value to a WMS layer name.
   what <- match_arg_pretty(what)
 
   layer <- switch(what,
@@ -152,18 +143,15 @@ catr_wms_get_layer <- function(
     "admunit" = "Catastro.AdministrativeUnit"
   )
 
-  # Manage styles and options.
-  # Set custom options.
+  # Set custom WMS options.
   opts <- list(styles = styles, version = "1.1.0")
 
   # Add SRS.
-  if (!is.null(srs)) {
-    if (!any(grepl("epsg", srs, ignore.case = TRUE))) {
-      opts <- modifyList(opts, list(srs = paste0("EPSG:", srs)))
-    }
+  if (!is.null(srs) && !any(grepl("epsg", srs, ignore.case = TRUE))) {
+    opts <- modifyList(opts, list(srs = paste0("EPSG:", srs)))
   }
 
-  # Add to options.
+  # Merge caller-provided options.
   if (is.null(options)) {
     finalopts <- opts
   } else {
@@ -171,16 +159,14 @@ catr_wms_get_layer <- function(
     finalopts <- modifyList(opts, options)
   }
 
-  # Check whether the CRS must change.
-
+  # Use the CRS parameter name required by WMS 1.3.0.
   if (finalopts$version >= "1.3.0") {
     newnames <- gsub("srs", "crs", names(finalopts), fixed = TRUE)
     names(finalopts) <- newnames
   }
 
   # Query the WMS service.
-
-  out <- mapSpain::esp_get_tiles(
+  out <- catr_esp_get_tiles(
     x = bbox_res,
     type = layer,
     update_cache = update_cache,
@@ -196,3 +182,8 @@ catr_wms_get_layer <- function(
 
   out
 }
+
+catr_esp_get_tiles <- function(...) {
+  # nocov start
+  mapSpain::esp_get_tiles(...)
+} # nocov end

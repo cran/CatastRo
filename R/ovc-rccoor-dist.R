@@ -1,41 +1,40 @@
-#' OVCCoordenadas: reverse geocode cadastral references near coordinates
+#' OVCCoordenadas: Find cadastral references near coordinates
 #'
 #' @description
-#' Implementation of the OVCCoordenadas service
-#' [Consulta RCCOOR Distancia](`r ovcurl("RCCOORD")`). Returns cadastral
-#' references for coordinates. If none found, the API returns references
-#' in a 50 square meter area around the requested coordinates.
+#' Query the OVCCoordenadas
+#' [Consulta RCCOOR Distancia](`r ovcurl("RCCOORD")`) service to retrieve
+#' cadastral references near a pair of coordinates. If no exact match is found,
+#' the API searches a square with sides of 50 meters, centered on the requested
+#' coordinates.
 #'
 #' @details
-#' When the API does not provide any result, the function returns a
-#' [tibble][tibble::tbl_df] with the input arguments only.
+#' `r ovc_coordinate_details(include_ine = TRUE)`
 #'
-#' On a successful query, this function returns a [tibble][tibble::tbl_df] with
-#' one row per cadastral reference, including the following columns:
-#' - `geo.xcen`, `geo.ycen`, `geo.srs`: Input arguments of the query.
-#' - `refcat`: Cadastral reference.
-#' - `address`: Address as recorded in the Cadastre.
-#' - `cmun_ine`: Municipality code as registered on the INE (National
-#'    Statistics Institute).
-#' - Remaining fields: Check the API documentation.
-#'
-#' @param lat Latitude for the query, expressed in the CRS/SRS defined by
-#'   `srs`.
-#' @param lon Longitude for the query, expressed in the CRS/SRS defined by
-#'   `srs`.
-#'
+#' @param lat Y coordinate for the query, expressed in the SRS/CRS defined by
+#'   `srs`. For geographic coordinates, this is the latitude.
+#' @param lon X coordinate for the query, expressed in the SRS/CRS defined by
+#'   `srs`. For geographic coordinates, this is the longitude.
 #' @inheritParams catr_ovc_get_cpmrc
+#'
 #' @inherit catr_ovc_get_cpmrc return
 #'
 #' @references
 #' [Consulta RCCOOR Distancia](`r ovcurl("RCCOORD")`).
 #'
-#' @seealso [catr_srs_values], `vignette("ovcservice", package = "CatastRo")`
+#' @inherit catr_ovc_get_cpmrc seealso
 #'
-#' @family OVCCoordenadas
-#' @family cadastral references
-#' @encoding UTF-8
+#' @seealso
+#' [catr_ovc_get_rccoor()] looks up the cadastral reference at the exact
+#' coordinates.
+#' [catr_wfs_get_parcels_parcel()] retrieves parcel geometries using the
+#' returned cadastral references.
+#'
+#' @family cadastral_references
+#' @family ovc_services
+#' @concept ovccoordenadas_services
 #' @export
+#' @encoding UTF-8
+#'
 #' @examplesIf run_example()
 #' \donttest{
 #' catr_ovc_get_rccoor_distancia(
@@ -51,8 +50,8 @@ catr_ovc_get_rccoor_distancia <- function(
   verbose = FALSE
 ) {
   # Validate arguments.
-  lat <- validate_non_empty_arg(lat)
-  lon <- validate_non_empty_arg(lon)
+  lat <- validate_coordinate_arg(lat)
+  lon <- validate_coordinate_arg(lon)
 
   srs <- ovc_validate_srs(srs)
 
@@ -73,6 +72,17 @@ catr_ovc_get_rccoor_distancia <- function(
   content_list <- ovc_get_xml(api_entry, verbose = verbose)
   if (is.null(content_list)) {
     return(NULL)
+  }
+
+  # Check for API-level errors.
+  err <- content_list[["consulta_coordenadas_distancias"]]
+  if (ovc_has_error(err)) {
+    ovc_report_error(err)
+    return(dplyr::tibble(
+      geo.xcen = lon,
+      geo.ycen = lat,
+      geo.srs = srs
+    ))
   }
 
   # nolint start
@@ -98,13 +108,10 @@ catr_ovc_get_rccoor_distancia <- function(
   # Build additional cadastral reference, address and municipality fields.
   rc_help <- dplyr::bind_cols(
     ovc_ref_address(rc_all),
-    tibble::tibble(
-      cmun_ine = paste0(rc_all$dt.loine.cp, rc_all$dt.loine.cm)
-    )
+    dplyr::tibble(cmun_ine = paste0(rc_all$dt.loine.cp, rc_all$dt.loine.cm))
   )
 
   # Join helper fields and the raw API response.
-
   out <- dplyr::bind_cols(overall, rc_help, rc_all)
 
   ovc_numeric_coords(out)

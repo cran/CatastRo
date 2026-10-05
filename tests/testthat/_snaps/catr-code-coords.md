@@ -1,11 +1,11 @@
-# Test offline
+# catr_get_code_from_coords() returns NULL when offline
 
     Code
       fend <- catr_get_code_from_coords(c(-16.25462, 28.46824), srs = 4326,
       cache_dir = cdir)
     Message
       x No internet connection detected.
-      > Returning "NULL" because the request cannot run.
+      Returning `NULL` because the request cannot run.
 
 ---
 
@@ -14,17 +14,17 @@
       cache_dir = cdir)
     Message
       x No internet connection detected.
-      > Returning "NULL" because the request cannot run.
+      Returning `NULL` because the request cannot run.
 
-# Test 404 all
+# catr_get_code_from_coords() returns NULL after an HTTP 404
 
     Code
       fend <- catr_get_code_from_coords(c(-16.25462, 28.46824), srs = 4326,
       cache_dir = cdir)
     Message
       x HTTP error 404 (Not Found): <http://ovc.catastro.meh.es/ovcservweb//ovcswlocalizacionrc/ovccallejerocodigos.asmx/ConsultaMunicipioCodigos?%2FCodigoProvincia=&CodigoProvincia=38&CodigoMunicipio=&CodigoMunicipioIne=038>.
-      ! If this looks like a package bug, please open an issue at <https://github.com/ropenspain/CatastRo/issues>
-      > Returning "NULL" because the request failed.
+      ! If this looks like a package bug, open an issue at <https://github.com/ropenspain/CatastRo/issues>.
+      Returning `NULL` because the request failed.
 
 ---
 
@@ -33,14 +33,37 @@
       cache_dir = cdir)
     Message
       x HTTP error 404 (Not Found): <http://ovc.catastro.meh.es/ovcservweb//ovcswlocalizacionrc/ovccallejerocodigos.asmx/ConsultaMunicipioCodigos?%2FCodigoProvincia=&CodigoProvincia=10&CodigoMunicipio=&CodigoMunicipioIne=125>.
-      ! If this looks like a package bug, please open an issue at <https://github.com/ropenspain/CatastRo/issues>
-      > Returning "NULL" because the request failed.
+      ! If this looks like a package bug, open an issue at <https://github.com/ropenspain/CatastRo/issues>.
+      Returning `NULL` because the request failed.
 
-# Test 404 mapSpain
+# catr_get_code_from_coords() handles mapSpain request failures
 
     Code
       fend <- catr_get_code_from_coords(c(-16.25462, 28.46824), srs = 4326,
       cache_dir = cdir)
     Message
       i Mocking mapSpain
+
+# catr_get_code_from_coords() returns municipality codes
+
+    Code
+      df <- catr_get_code_from_coords(c(0, 0))
+    Condition
+      Error in `catr_get_code_from_coords()`:
+      ! You must also provide `srs` when `x` is a double vector.
+
+---
+
+    Code
+      df <- catr_get_code_from_coords(c(0, 0, 0))
+    Condition
+      Error in `catr_get_code_from_coords()`:
+      ! `x` must be a finite numeric vector of length 2.
+
+---
+
+    Code
+      df <- catr_get_code_from_coords(c(0, 0), srs = 4326)
+    Message
+      ! No municipality found for these coordinates.
 

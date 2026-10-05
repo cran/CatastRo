@@ -9,8 +9,8 @@
 A \link[tibble:tbl_df]{tibble} with 16 rows
 and columns:
 \describe{
-\item{SRS}{Spatial Reference System (CRS) value, identified by the
-corresponding
+\item{SRS}{Spatial reference system (SRS) value, also known as a
+coordinate reference system (CRS), identified by the corresponding
 \href{https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset}{EPSG}
 code.}
 \item{Description}{Description of the SRS/EPSG code.}
@@ -20,8 +20,8 @@ services.}
 }
 }
 \description{
-A \link[tibble:tbl_df]{tibble} including the valid SRS (also known as CRS)
-values that may be used in each API service. Values are provided as
+A \link[tibble:tbl_df]{tibble} containing valid SRS values, also known as CRS
+values, for each API service. Values are represented as
 \href{https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset}{EPSG codes}.
 }
 \details{
@@ -31,7 +31,7 @@ Table: Content of \link{catr_srs_values}\tabular{llll}{
    \code{3857} \tab \verb{Web Mercator} \tab \code{FALSE} \tab \code{TRUE} \cr
    \code{4230} \tab \verb{Geográficas en ED 50} \tab \code{TRUE} \tab \code{FALSE} \cr
    \code{4258} \tab \verb{Geográficas en ETRS89} \tab \code{TRUE} \tab \code{TRUE} \cr
-   \code{4326} \tab \verb{Geográficas en WGS 80} \tab \code{TRUE} \tab \code{TRUE} \cr
+   \code{4326} \tab \verb{Geográficas en WGS 84} \tab \code{TRUE} \tab \code{TRUE} \cr
    \code{23029} \tab \verb{UTM huso 29N en ED50} \tab \code{TRUE} \tab \code{FALSE} \cr
    \code{23030} \tab \verb{UTM huso 30N en ED50} \tab \code{TRUE} \tab \code{FALSE} \cr
    \code{23031} \tab \verb{UTM huso 31N en ED50} \tab \code{TRUE} \tab \code{FALSE} \cr
@@ -71,29 +71,13 @@ catr_srs_values |>
 \references{
 \itemize{
 \item \href{https://ovc.catastro.meh.es/ovcservweb/ovcswlocalizacionrc/ovccoordenadas.asmx}{OVCCoordenadas}.
-\item \href{https://www.catastro.hacienda.gob.es/webinspire/index.html}{WFS INSPIRE Service}.
+\item \href{https://www.catastro.hacienda.gob.es/webinspire/index.html}{WFS INSPIRE service}.
 }
 }
 \seealso{
-\code{\link[sf:st_crs]{sf::st_crs()}}.
-
-Other databases:
-\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
-\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
-\code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
-\code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}}
-
-Related WFS INSPIRE functions:
-\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
-\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
-\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
-\code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
-
-Related OVCCoordenadas functions:
-\code{\link[=catr_ovc_get_cpmrc]{catr_ovc_get_cpmrc()}},
-\code{\link[=catr_ovc_get_rccoor]{catr_ovc_get_rccoor()}},
-\code{\link[=catr_ovc_get_rccoor_distancia]{catr_ovc_get_rccoor_distancia()}}
+\code{\link[=catr_ovc_get_cpmrc]{catr_ovc_get_cpmrc()}} and \code{\link[=catr_ovc_get_rccoor]{catr_ovc_get_rccoor()}} accept SRS codes
+listed in the \code{ovc_service} column. \code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}} accepts
+codes listed in the \code{wfs_service} column. \code{\link[sf:st_crs]{sf::st_crs()}} inspects the
+corresponding coordinate reference system.
 }
-\concept{OVCCoordenadas}
-\concept{WFS}
-\concept{databases}
+\keyword{datasets}

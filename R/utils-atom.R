@@ -1,14 +1,15 @@
-#' Internal function to read ATOM feed
+#' Read an ATOM feed
 #'
-#' @param file Path to ATOM feed file.
-#' @param top Logical. Extract top-level entries?
-#' @param encoding Character string. File encoding. Defaults to "UTF-8".
+#' @param file Path to an ATOM feed file.
+#' @param top Logical. Whether to extract top-level entries.
+#' @param encoding Character string specifying the file encoding. Defaults to
+#'   `"UTF-8"`.
 #'
-#' @return A [tibble][tibble::tbl_df] with ATOM feed entries.
+#' @returns A [tibble][tibble::tbl_df] containing ATOM feed entries.
 #'
 #' @noRd
 catr_read_atom <- function(file, top = TRUE, encoding = "UTF-8") {
-  # Retry without encoding when the parser fails.
+  # Try the requested encoding first.
   feed <- try(
     xml2::as_list(xml2::read_xml(
       file,
@@ -18,28 +19,28 @@ catr_read_atom <- function(file, top = TRUE, encoding = "UTF-8") {
     silent = TRUE
   )
 
-  # Try without encoding on error.
+  # Retry without an explicit encoding if parsing fails.
   if (inherits(feed, "try-error")) {
     feed <- xml2::as_list(xml2::read_xml(file, options = "NOCDATA"))
   }
 
-  # Prepare data.
+  # Keep only feed entries.
   feed <- feed$feed
   feed <- feed[names(feed) == "entry"]
 
-  # Convert to tibble.
+  # Convert feed entries into rows.
   if (top) {
     tbl_all <- lapply(feed, function(x) {
       title <- unlist(x$title)
       url <- unlist(attr(x$link, "href"))
-      date <- as.POSIXct(unlist(feed[1]$entry$updated))
+      date <- as.POSIXct(unlist(x$updated), tz = "UTC")
       value <- unlist(x$content$div$div)
 
-      # Clean values.
+      # Remove whitespace and keep numeric values.
       value <- trimws(gsub("\\n|\\t", "", value))
       value <- value[grepl("^[0-9]", value)]
 
-      tbl <- tibble::tibble(
+      tbl <- dplyr::tibble(
         title = trimws(title),
         url = trimws(url),
         value = trimws(value),
@@ -52,9 +53,9 @@ catr_read_atom <- function(file, top = TRUE, encoding = "UTF-8") {
     tbl_all <- lapply(feed, function(x) {
       title <- unlist(x$title)
       url <- unlist(attr(x$link, "href"))
-      date <- as.POSIXct(unlist(feed[1]$entry$updated))
+      date <- as.POSIXct(unlist(x$updated), tz = "UTC")
 
-      tbl <- tibble::tibble(
+      tbl <- dplyr::tibble(
         title = trimws(title),
         url = trimws(url),
         date = date
@@ -69,7 +70,7 @@ catr_read_atom <- function(file, top = TRUE, encoding = "UTF-8") {
   tbl_all
 }
 
-#' Read a top-level ATOM database
+#' Read a summary ATOM table
 #'
 #' @noRd
 catr_atom_read_db_all <- function(
@@ -96,7 +97,7 @@ catr_atom_read_db_all <- function(
   tbl
 }
 
-#' Read a territorial office ATOM database
+#' Read a territorial office ATOM table
 #'
 #' @noRd
 catr_atom_read_db_to <- function(
@@ -106,7 +107,11 @@ catr_atom_read_db_to <- function(
   cache_dir = NULL,
   verbose = FALSE
 ) {
-  all <- all_fn(cache_dir = cache_dir)
+  all <- all_fn(
+    update_cache = update_cache,
+    cache_dir = cache_dir,
+    verbose = verbose
+  )
 
   if (is.null(all)) {
     return(NULL)
@@ -114,19 +119,17 @@ catr_atom_read_db_to <- function(
 
   alldist <- unique(all[, c("territorial_office", "url")])
 
-  # Escape parentheses in territorial office names for matching.
+  # Remove parentheses before matching territorial office names.
   to <- gsub("\\(|\\)", "", to)
   allto <- gsub("\\(|\\)", "", alldist$territorial_office)
 
   to_loc <- ensure_null(grep(to, allto, ignore.case = TRUE))
   if (is.null(to_loc)) {
-    cli::cli_alert_warning(
-      "No territorial office matched pattern {.str {to}}."
-    )
+    cli::cli_alert_warning("No territorial office matched pattern {.str {to}}.")
     return(NULL)
   }
 
-  # Compute string distances for territorial office matching.
+  # Rank territorial offices by string distance.
   with_d <- data.frame(
     to = alldist$territorial_office,
     dist = as.vector(adist(to, alldist$territorial_office))
@@ -141,12 +144,12 @@ catr_atom_read_db_to <- function(
       "Found {length(tb)} territorial offices matching {.str {to}}."
     )
 
-    cli::cli_alert_success("Using closest match {.str {tb[1]}}.")
+    cli::cli_alert_success("Using the closest match {.str {tb[1]}}.")
     cli::cli_alert_info("Other matches:")
     bullets <- tb[-1]
-    bullets <- paste0("{.str ", bullets, "}")
-    names(bullets) <- rep(" ", length(bullets))
-    cli::cli_bullets(bullets)
+    bullet_text <- paste0("{.str {bullets[", seq_along(bullets), "]}}")
+    names(bullet_text) <- rep(" ", length(bullet_text))
+    cli::cli_bullets(bullet_text)
 
     tb <- tb[1]
   }
@@ -154,7 +157,7 @@ catr_atom_read_db_to <- function(
   make_msg(
     "info",
     verbose,
-    paste0("Extracting information for {.str ", tb, "}.")
+    "Retrieving information for {.str {tb}}."
   )
 
   api_entry <- as.character(alldist[alldist$territorial_office == tb, "url"])
@@ -177,7 +180,7 @@ catr_atom_read_db_to <- function(
   tbl
 }
 
-#' Select a municipality from an ATOM top-level database
+#' Select a municipality from an ATOM summary table
 #'
 #' @noRd
 catr_atom_select_munic <- function(
@@ -190,13 +193,13 @@ catr_atom_select_munic <- function(
   if (!is.null(to)) {
     linesto <- grep(to, all$territorial_office, ignore.case = TRUE)
 
-    # Filter by territorial office if matches are found.
-    if (length(linesto) > 1) {
+    # Filter by territorial office when matches are found.
+    if (length(linesto) > 0L) {
       all <- all[linesto, ]
     } else {
       if (verbose) {
         cli::cli_alert_warning(paste0(
-          "Ignoring {.arg to}, no territorial office ",
+          "Ignoring {.arg to} because no territorial office ",
           "matched {.str {to}}."
         ))
       }
@@ -216,7 +219,7 @@ catr_atom_select_munic <- function(
     return(NULL)
   }
 
-  # Compute string distances for municipality matching.
+  # Rank municipalities by string distance.
   with_d <- data.frame(
     munic = all$munic,
     territorial_office = all$territorial_office,
@@ -230,12 +233,12 @@ catr_atom_select_munic <- function(
       "Found {nrow(tb)} municipalities matching {.str {munic}}."
     )
 
-    cli::cli_alert_success("Using closest match {.str {tb[1,]$munic}}.")
+    cli::cli_alert_success("Using the closest match {.str {tb[1,]$munic}}.")
     cli::cli_alert_info("Other matches:")
     bullets <- tb[-1, ]$munic
-    bullets <- paste0("{.str ", bullets, "}")
-    names(bullets) <- rep(" ", length(bullets))
-    cli::cli_bullets(bullets)
+    bullet_text <- paste0("{.str {bullets[", seq_along(bullets), "]}}")
+    names(bullet_text) <- rep(" ", length(bullet_text))
+    cli::cli_bullets(bullet_text)
 
     tb <- tb[1, ]
   }
@@ -243,13 +246,13 @@ catr_atom_select_munic <- function(
   make_msg(
     "info",
     verbose,
-    paste0("Extracting information for {.str ", tb$munic, "}.")
+    "Retrieving information for {.str {tb$munic}}."
   )
 
   tb
 }
 
-#' Find the municipality data URL in an ATOM territorial office database
+#' Find a municipality data URL in a territorial office ATOM table
 #'
 #' @noRd
 catr_atom_get_munic_url <- function(municurls, munic) {

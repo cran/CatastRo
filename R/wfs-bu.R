@@ -1,26 +1,29 @@
-#' WFS INSPIRE: download buildings
+#' WFS INSPIRE: Download buildings
 #'
 #' @description
-#' Get the spatial data of buildings. The WFS service allows performing
-#' two types of queries:
+#' Retrieve spatial building data through two types of WFS queries:
 #'
-#' - By bounding box: `catr_wfs_get_buildings_bbox()` extracts objects included
-#'   in the provided bounding box. See **Bounding box**.
+#' - By bounding box: `catr_wfs_get_buildings_bbox()` retrieves objects
+#'   included in the provided bounding box. See **Bounding box**.
 #'
 #' @inheritParams catr_wfs_get_address_bbox
 #' @inheritParams catr_atom_get_buildings
-#' @inherit catr_wfs_get_address_bbox return references
-#' @inheritSection catr_wfs_get_address_bbox API Limits
+#'
+#' @inherit catr_wfs_get_address_bbox return
+#'
+#' @inheritSection catr_wfs_get_address_bbox API limits
 #' @inheritSection catr_wfs_get_address_bbox Bounding box
-#' @family INSPIRE
-#' @family WFS
+#'
+#' @inherit catr_wfs_get_address_bbox references
+#'
+#' @seealso
+#' `r wfs_map_seealso()`
+#'
 #' @family buildings
-#' @family spatial
+#' @family wfs_services
 #' @rdname catr_wfs_get_buildings
-#'
-#' @encoding UTF-8
 #' @export
-#'
+#' @encoding UTF-8
 catr_wfs_get_buildings_bbox <- function(
   x,
   what = c("building", "buildingpart", "other"),
@@ -50,15 +53,15 @@ catr_wfs_get_buildings_bbox <- function(
 }
 
 #' @description
-#' - By cadastral reference: `catr_wfs_get_buildings_rc()` extracts objects for
-#'   specific cadastral references.
+#' - By cadastral reference: `catr_wfs_get_buildings_rc()` retrieves objects
+#'   for specific cadastral references.
 #'
 #' @rdname catr_wfs_get_buildings
-#'
 #' @export
-#' @examplesIf run_example()
+#'
+#' @examplesIf run_example() && requireNamespace("ggplot2", quietly = TRUE)
 #' \donttest{
-#' # Using a bbox
+#' # Using a bounding box
 #' building <- catr_wfs_get_buildings_bbox(
 #'   c(
 #'     376550,
@@ -71,7 +74,7 @@ catr_wfs_get_buildings_bbox <- function(
 #' library(ggplot2)
 #' ggplot(building) +
 #'   geom_sf() +
-#'   labs(title = "Search using bbox")
+#'   labs(title = "Search using a bounding box")
 #'
 #' # Using a cadastral reference
 #' rc <- catr_wfs_get_buildings_rc("6656601UL7465N")
@@ -87,7 +90,7 @@ catr_wfs_get_buildings_rc <- function(
   verbose = FALSE
 ) {
   # Validate arguments.
-  rc <- validate_non_empty_arg(rc)
+  rc <- validate_scalar_arg(rc)
   srs <- ensure_null(srs)
   what <- match_arg_pretty(what)
 

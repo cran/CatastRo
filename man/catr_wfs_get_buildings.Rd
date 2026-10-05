@@ -4,7 +4,7 @@
 \name{catr_wfs_get_buildings_bbox}
 \alias{catr_wfs_get_buildings_bbox}
 \alias{catr_wfs_get_buildings_rc}
-\title{WFS INSPIRE: download buildings}
+\title{WFS INSPIRE: Download buildings}
 \usage{
 catr_wfs_get_buildings_bbox(
   x,
@@ -21,45 +21,43 @@ catr_wfs_get_buildings_rc(
 )
 }
 \arguments{
-\item{x}{See \strong{Bounding box}. Can be one of:
+\item{x}{Input defining the query area. See \strong{Bounding box}. It can be:
 \itemize{
 \item A numeric vector of length 4 with the coordinates that define
 the bounding box: \code{c(xmin, ymin, xmax, ymax)}.
-\item A \code{sf/sfc} object, as provided by the \CRANpkg{sf} package.
+\item An \code{\link[sf:st_sf]{sf}} or \code{\link[sf:st_sfc]{sfc}} object from \CRANpkg{sf}.
 }}
 
-\item{what}{Information to load. Options are:
-\itemize{
-\item \code{"building"} for buildings.
-\item \code{"buildingpart"} for parts of a building.
-\item \code{"other"} for other elements such as swimming pools.
-}}
+\item{what}{Information to load, either \code{"building"} for buildings,
+\code{"buildingpart"} for parts of a building or \code{"other"} for other elements
+such as swimming pools.}
 
 \item{srs}{SRS/CRS to use in the query. To see allowed values, use
 \link{catr_srs_values}, specifically the \code{wfs_service} column. See
 \strong{Bounding box}.}
 
-\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
+\item{verbose}{Logical. Whether to display informational messages.}
 
-\item{rc}{The cadastral reference to be extracted.}
+\item{rc}{Cadastral reference to retrieve.}
 }
 \value{
-A \code{\link[sf:st_sf]{sf}} object.
+An \code{\link[sf:st_sf]{sf}} object. Returns \code{\link[base:NULL]{NULL}} if the
+data cannot be
+retrieved.
 }
 \description{
-Get the spatial data of buildings. The WFS service allows performing
-two types of queries:
+Retrieve spatial building data through two types of WFS queries:
 \itemize{
-\item By bounding box: \code{catr_wfs_get_buildings_bbox()} extracts objects included
-in the provided bounding box. See \strong{Bounding box}.
+\item By bounding box: \code{catr_wfs_get_buildings_bbox()} retrieves objects
+included in the provided bounding box. See \strong{Bounding box}.
 }
 
 \itemize{
-\item By cadastral reference: \code{catr_wfs_get_buildings_rc()} extracts objects for
-specific cadastral references.
+\item By cadastral reference: \code{catr_wfs_get_buildings_rc()} retrieves objects
+for specific cadastral references.
 }
 }
-\section{API Limits}{
+\section{API limits}{
 
 The API service is limited to a bounding box of 4 km2 and a maximum of 5,000
 elements.
@@ -67,23 +65,23 @@ elements.
 
 \section{Bounding box}{
 
-When \code{x} is a numeric vector, make sure that the \code{srs} matches the
-coordinate values. Additionally, the function queries the bounding box on
-\href{https://epsg.io/25830}{EPSG:25830} - ETRS89 / UTM zone 30N, to overcome
-a potential bug on the API side.
+When \code{x} is a numeric vector, make sure that \code{srs} matches the
+coordinate values. This function queries the bounding box in
+\href{https://epsg.io/25830}{EPSG:25830}, ETRS89 / UTM zone 30N, to work around a
+potential API issue.
 
-When \code{x} is a \code{\link[sf:st_sf]{sf}} object, the value \code{srs} is ignored. In
-this case, the bounding box of the \code{\link[sf:st_sf]{sf}} object is
+When \code{x} is an \code{\link[sf:st_sf]{sf}} object, the \code{srs} value is ignored. In
+this case, the bounding box of the \code{sf} object is
 used for the query (see \code{\link[sf:st_bbox]{sf::st_bbox()}}).
 
-The result is always provided in the SRS of the \code{\link[sf:st_sf]{sf}} object
-provided as input.
+The result uses the SRS of the input spatial object or the \code{srs} value
+provided with a numeric vector.
 }
 
 \examples{
-\dontshow{if (run_example()) withAutoprint(\{ # examplesIf}
+\dontshow{if (run_example() && requireNamespace("ggplot2", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 \donttest{
-# Using a bbox
+# Using a bounding box
 building <- catr_wfs_get_buildings_bbox(
   c(
     376550,
@@ -96,7 +94,7 @@ building <- catr_wfs_get_buildings_bbox(
 library(ggplot2)
 ggplot(building) +
   geom_sf() +
-  labs(title = "Search using bbox")
+  labs(title = "Search using a bounding box")
 
 # Using a cadastral reference
 rc <- catr_wfs_get_buildings_rc("6656601UL7465N")
@@ -113,37 +111,17 @@ ggplot(rc) +
 \href{https://www.catastro.hacienda.gob.es/webinspire/index.html}{INSPIRE services for cadastral cartography}.
 }
 \seealso{
-Related INSPIRE API functions:
-\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
-\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
-\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
-\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
-\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
-\code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
-\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
-\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
-\code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}},
-\code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
+\code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}} downloads a map image using the returned spatial
+object as its extent (\code{x}).
 
-Related WFS INSPIRE functions:
-\code{\link{catr_srs_values}},
-\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
-\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
-\code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
-
-Other buildings:
+Work with cadastral buildings:
 \code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
 \code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}}
 
-Other spatial:
-\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
-\code{\link[=catr_atom_get_buildings]{catr_atom_get_buildings()}},
-\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
+Query WFS INSPIRE services:
 \code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
 \code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
-\code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}}
+\code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
 }
-\concept{INSPIRE}
-\concept{WFS}
 \concept{buildings}
-\concept{spatial}
+\concept{wfs_services}

@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{catr_get_code_from_coords}
 \alias{catr_get_code_from_coords}
-\title{Get the cadastral municipality code from coordinates}
+\title{Get a cadastral municipality code from coordinates}
 \usage{
 catr_get_code_from_coords(
   x,
@@ -14,11 +14,11 @@ catr_get_code_from_coords(
 )
 }
 \arguments{
-\item{x}{Can be one of:
+\item{x}{Coordinate input. It can be:
 \itemize{
 \item A pair of coordinates \code{c(x, y)}. In this case the \code{srs} of the
 coordinates must be provided.
-\item A \code{\link[sf:st_sf]{sf}} object. If the object has several geometries, only
+\item An \code{\link[sf:st_sf]{sf}} object. If the object has several geometries, only
 the first geometry is used. This function extracts coordinates using
 \code{sf::st_centroid(x, of_largest_polygon = TRUE)}.
 }}
@@ -26,50 +26,52 @@ the first geometry is used. This function extracts coordinates using
 \item{srs}{SRS/CRS to use in the query. To see allowed values, use
 \link{catr_srs_values}, specifically the \code{ovc_service} column.}
 
-\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
+\item{verbose}{Logical. Whether to display informational messages.}
 
-\item{cache_dir}{Path to a cache directory. On \code{NULL}, the function
-stores cached files in a temporary directory (see \code{\link[base:tempdir]{base::tempdir()}}).}
+\item{cache_dir}{Path to a cache directory. If \code{NULL} or \code{FALSE}, the
+function stores cached files in a temporary directory. See
+\code{\link[base:tempdir]{base::tempdir()}}.}
 
 \item{...}{
   Arguments passed on to \code{\link[mapSpain:esp_get_munic_siane]{mapSpain::esp_get_munic_siane}}
   \describe{
-    \item{\code{year}}{character string or number. Release year, it must be in
-formats \code{YYYY} (assuming end of year) or \code{YYYY-MM-DD}. Historical
-information starts as of 2005.}
-    \item{\code{resolution}}{character string or number. Resolution of the geospatial
+    \item{\code{year}}{Character string or number. Release year. It must use format
+\code{YYYY} (assuming end of year) or \code{YYYY-MM-DD}. Historical information
+starts as of 2005.}
+    \item{\code{resolution}}{Character string or number. Resolution of the geospatial
 data. One of:
 \itemize{
-\item "10": 1:10 million.
-\item "6.5": 1:6.5 million.
-\item "3": 1:3 million.
+\item \code{"10"}: 1:10 million.
+\item \code{"6.5"}: 1:6.5 million.
+\item \code{"3"}: 1:3 million.
 }}
     \item{\code{region}}{Optional. A vector of region names, NUTS or ISO codes
 (see \code{\link[mapSpain:esp_dict_region_code]{esp_dict_region_code()}}).}
-    \item{\code{munic}}{character string. A name or \code{\link[base:grep]{regex}} expression
-with the names of the required municipalities. \code{NULL} will return all
+    \item{\code{munic}}{Character string. A name or \code{\link[base:grep]{regex}} expression
+with the names of the required municipalities. Use \code{NULL} to return all
 municipalities.}
   }}
 }
 \value{
-A \link[tibble:tbl_df]{tibble}. See \strong{Details}.
+A \link[tibble:tbl_df]{tibble} as described in \strong{Details}. Returns
+\code{\link[base:NULL]{NULL}} if the request fails.
 }
 \description{
-Get the municipality code for coordinates using a \code{\link[sf:st_sf]{sf}}
-object or a pair of coordinates via \code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}}.
+Retrieve the municipality code associated with an \code{\link[sf:st_sf]{sf}} object
+or a coordinate pair.
 }
 \details{
-On a successful query, this function returns a \link[tibble:tbl_df]{tibble}
-with one row including the following columns:
+On a successful query, this function returns a one-row
+\link[tibble:tbl_df]{tibble} with the following columns:
 \itemize{
-\item \code{munic}: Name of the municipality according to the Cadastre.
+\item \code{munic}: Municipality name used by the Spanish Cadastre.
 \item \code{catr_to}: Cadastral territorial office code.
-\item \code{catr_munic}: Municipality code as recorded on the Cadastre.
-\item \code{catrcode}: Full Cadastral code for the municipality.
+\item \code{catr_munic}: Municipality code as recorded by the Cadastre.
+\item \code{catrcode}: Full cadastral code for the municipality.
 \item \code{cpro}: Province code according to the INE.
 \item \code{cmun}: Municipality code according to the INE.
 \item \code{inecode}: Full INE code for the municipality.
-\item Remaining fields: Check the API documentation.
+\item Remaining fields: See the API documentation.
 }
 }
 \examples{
@@ -78,19 +80,23 @@ with one row including the following columns:
 # Use with coordinates
 catr_get_code_from_coords(c(-16.25462, 28.46824), srs = 4326)
 
-# Use with sf
+# Use with an `sf` object.
 prov <- mapSpain::esp_get_prov("Caceres")
 catr_get_code_from_coords(prov)
 }
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[mapSpain:esp_get_munic_siane]{mapSpain::esp_get_munic_siane()}}, \code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}},
-\code{\link[sf:st_centroid]{sf::st_centroid()}}.
+\itemize{
+\item \code{\link[mapSpain:esp_get_munic_siane]{mapSpain::esp_get_munic_siane()}} retrieves municipality geometries.
+\item \code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}} retrieves municipality codes.
+\item \code{\link[sf:st_centroid]{sf::st_centroid()}} computes geometry centroids.
+}
 
-Other search:
+Search for cadastral identifiers:
 \code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}},
 \code{\link[=catr_ovc_get_cod_munic]{catr_ovc_get_cod_munic()}},
 \code{\link[=catr_ovc_get_cod_provinces]{catr_ovc_get_cod_provinces()}}
 }
-\concept{search}
+\concept{ovccallejero_services}
+\concept{search_tools}

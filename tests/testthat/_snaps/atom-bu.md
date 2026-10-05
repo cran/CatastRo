@@ -1,21 +1,21 @@
-# Test offline
+# catr_atom_get_buildings() returns NULL when offline
 
     Code
       fend <- catr_atom_get_buildings("LABAJOS", cache_dir = cdir)
     Message
       x No internet connection detected.
-      > Returning "NULL" because the request cannot run.
+      Returning `NULL` because the request cannot run.
 
-# Test 404 all
+# catr_atom_get_buildings() handles a database HTTP 404
 
     Code
       fend <- catr_atom_get_buildings("MELQUE", to = "Segovia", cache_dir = cdir)
     Message
       x HTTP error 404 (Not Found): <https://www.catastro.hacienda.gob.es/INSPIRE/buildings/ES.SDGC.BU.atom.xml>.
-      ! If this looks like a package bug, please open an issue at <https://github.com/ropenspain/CatastRo/issues>
-      > Returning "NULL" because the download failed.
+      ! If this looks like a package bug, open an issue at <https://github.com/ropenspain/CatastRo/issues>.
+      Returning `NULL` because the download failed.
 
-# ATOM Buildings
+# catr_atom_get_buildings() returns spatial data for a municipality
 
     Code
       catr_atom_get_buildings("xyxghx", cache_dir = cdir)
@@ -35,12 +35,12 @@
       The `cache` argument of `catr_atom_get_buildings()` is deprecated as of CatastRo 1.0.0.
       i Results are always cached.
 
-# Test 404 single
+# catr_atom_get_buildings() handles a download HTTP 404
 
     Code
       fend <- catr_atom_get_buildings("Melque", to = "Segovia", cache_dir = cdir)
     Message
       x HTTP error 404 (Not Found): <https://www.catastro.hacienda.gob.es/INSPIRE/Buildings/40/40146-MELQUE%20DE%20CERCOS/A.ES.SDGC.BU.40146.zip>.
-      ! If this looks like a package bug, please open an issue at <https://github.com/ropenspain/CatastRo/issues>
-      > Returning "NULL" because the download failed.
+      ! If this looks like a package bug, open an issue at <https://github.com/ropenspain/CatastRo/issues>.
+      Returning `NULL` because the download failed.
 

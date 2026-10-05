@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{catr_atom_get_buildings}
 \alias{catr_atom_get_buildings}
-\title{ATOM INSPIRE: download all buildings of a municipality}
+\title{ATOM INSPIRE: Download all buildings for a municipality}
 \usage{
 catr_atom_get_buildings(
   munic,
@@ -16,40 +16,39 @@ catr_atom_get_buildings(
 )
 }
 \arguments{
-\item{munic}{Municipality to extract, can be part of a string or a
-cadastral code. See \code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}} for getting the cadastral
-codes.}
+\item{munic}{Municipality name, partial name or cadastral code. Use
+\code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}} to find cadastral codes.}
 
-\item{to}{Optional argument for defining the territorial office to which
-\code{munic} belongs. This argument is a helper for narrowing the search.}
+\item{to}{Optional territorial office containing \code{munic}. Use this argument
+to narrow the search.}
 
-\item{what}{Information to load. Options are:
-\itemize{
-\item \code{"building"} for buildings.
-\item \code{"buildingpart"} for parts of a building.
-\item \code{"other"} for other elements such as swimming pools.
-}}
+\item{what}{Information to load, either \code{"building"} for buildings,
+\code{"buildingpart"} for parts of a building or \code{"other"} for other elements
+such as swimming pools.}
 
-\item{cache}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} \code{cache} is no longer
-supported, this function always caches results.}
+\item{cache}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is no longer
+supported because results are always cached.}
 
-\item{update_cache}{Logical. Should the cached file be refreshed? Defaults to
-\code{FALSE}. When set to \code{TRUE}, it forces a new download.}
+\item{update_cache}{Logical. Whether to refresh the cached file. Defaults to
+\code{FALSE}.}
 
-\item{cache_dir}{Path to a cache directory. On \code{NULL}, the function
-stores cached files in a temporary directory (see \code{\link[base:tempdir]{base::tempdir()}}).}
+\item{cache_dir}{Path to a cache directory. If \code{NULL} or \code{FALSE}, the
+function stores cached files in a temporary directory. See
+\code{\link[base:tempdir]{base::tempdir()}}.}
 
-\item{verbose}{Logical. If \code{TRUE}, displays informational messages.}
+\item{verbose}{Logical. Whether to display informational messages.}
 }
 \value{
-A \code{\link[sf:st_sf]{sf}} object.
+An \code{\link[sf:st_sf]{sf}} object. Returns \code{\link[base:NULL]{NULL}} if the
+data cannot be
+retrieved.
 }
 \description{
-Retrieve the spatial data of all buildings belonging to a single municipality
-using the ATOM INSPIRE service.
+Retrieve spatial data for all buildings in a municipality using the ATOM
+INSPIRE service.
 }
 \examples{
-\dontshow{if (run_example()) withAutoprint(\{ # examplesIf}
+\dontshow{if (run_example() && requireNamespace("ggplot2", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 \donttest{
 s <- catr_atom_get_buildings("Nava de la Asuncion", to = "Segovia")
 
@@ -73,39 +72,17 @@ ggplot(s) +
 \href{https://www.catastro.hacienda.gob.es/webinspire/index.html}{INSPIRE services for cadastral cartography}.
 }
 \seealso{
-Related INSPIRE API functions:
-\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
-\code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
+Work with cadastral buildings:
 \code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
-\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
-\code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
-\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
-\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
-\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
-\code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}},
-\code{\link[=inspire_wfs_get]{inspire_wfs_get()}}
+\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}}
 
-Related ATOM INSPIRE functions:
+Query ATOM INSPIRE services:
 \code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
 \code{\link[=catr_atom_get_address_db_all]{catr_atom_get_address_db_all()}},
 \code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
 \code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
 \code{\link[=catr_atom_get_parcels_db_all]{catr_atom_get_parcels_db_all()}},
 \code{\link[=catr_atom_search_munic]{catr_atom_search_munic()}}
-
-Other buildings:
-\code{\link[=catr_atom_get_buildings_db_all]{catr_atom_get_buildings_db_all()}},
-\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}}
-
-Other spatial:
-\code{\link[=catr_atom_get_address]{catr_atom_get_address()}},
-\code{\link[=catr_atom_get_parcels]{catr_atom_get_parcels()}},
-\code{\link[=catr_wfs_get_address_bbox]{catr_wfs_get_address_bbox()}},
-\code{\link[=catr_wfs_get_buildings_bbox]{catr_wfs_get_buildings_bbox()}},
-\code{\link[=catr_wfs_get_parcels_bbox]{catr_wfs_get_parcels_bbox()}},
-\code{\link[=catr_wms_get_layer]{catr_wms_get_layer()}}
 }
-\concept{ATOM}
-\concept{INSPIRE}
+\concept{atom_services}
 \concept{buildings}
-\concept{spatial}

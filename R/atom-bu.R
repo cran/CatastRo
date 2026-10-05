@@ -1,25 +1,24 @@
-#' ATOM INSPIRE: download all buildings of a municipality
+#' ATOM INSPIRE: Download all buildings for a municipality
 #'
 #' @description
-#' Retrieve the spatial data of all buildings belonging to a single municipality
-#' using the ATOM INSPIRE service.
+#' Retrieve spatial data for all buildings in a municipality using the ATOM
+#' INSPIRE service.
 #'
-#' @param what Information to load. Options are:
-#' - `"building"` for buildings.
-#' - `"buildingpart"` for parts of a building.
-#' - `"other"` for other elements such as swimming pools.
-#'
+#' @param what Information to load, either `"building"` for buildings,
+#'   `"buildingpart"` for parts of a building or `"other"` for other elements
+#'   such as swimming pools.
 #' @inheritParams catr_atom_get_address
-#' @inherit catr_atom_get_address references return
 #'
-#' @family INSPIRE
-#' @family ATOM
+#' @inherit catr_atom_get_address return
+#'
+#' @inherit catr_atom_get_address references
+#'
 #' @family buildings
-#' @family spatial
-#' @encoding UTF-8
+#' @family atom_services
 #' @export
+#' @encoding UTF-8
 #'
-#' @examplesIf run_example()
+#' @examplesIf run_example() && requireNamespace("ggplot2", quietly = TRUE)
 #' \donttest{
 #' s <- catr_atom_get_buildings("Nava de la Asuncion", to = "Segovia")
 #'
@@ -35,7 +34,6 @@
 #'     subtitle = "Nava de la Asuncion, Segovia"
 #'   )
 #' }
-#'
 catr_atom_get_buildings <- function(
   munic,
   to = NULL,
@@ -57,8 +55,11 @@ catr_atom_get_buildings <- function(
     "other" = "other"
   )
 
-  munic <- validate_non_empty_arg(munic)
+  munic <- validate_scalar_arg(munic)
   to <- ensure_null(to)
+  if (!is.null(to)) {
+    to <- validate_scalar_arg(to)
+  }
 
   all <- catr_atom_get_buildings_db_all(
     update_cache = update_cache,

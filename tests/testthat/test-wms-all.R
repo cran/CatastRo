@@ -1,18 +1,35 @@
-test_that("Check error", {
-  expect_error(catr_wms_get_layer(
-    c(760926, 4019259, 761155, 4019366),
-    srs = 25829,
-    what = "aa"
-  ))
+test_that("catr_wms_get_layer() rejects invalid layer types", {
+  expect_snapshot(
+    error = TRUE,
+    catr_wms_get_layer(
+      c(760926, 4019259, 761155, 4019366),
+      srs = 25829,
+      what = "aa"
+    )
+  )
 })
 
-test_that("Check tiles", {
-  skip_on_cran()
-  skip_if_offline()
-  cdir <- file.path(tempdir(), "testthat_ex")
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
+test_that("catr_wms_get_layer() returns map tiles for supported layers", {
+  calls <- list()
+  local_mocked_bindings(catr_esp_get_tiles = function(x, type, options, ...) {
+    calls[[length(calls) + 1]] <<- list(type = type, options = options)
+
+    bbox <- sf::st_bbox(x)
+    out <- terra::rast(
+      nrows = 10,
+      ncols = 10,
+      nlyrs = 3,
+      xmin = bbox[["xmin"]] - 100,
+      xmax = bbox[["xmax"]] + 100,
+      ymin = bbox[["ymin"]] - 100,
+      ymax = bbox[["ymax"]] + 100,
+      crs = sf::st_crs(x)$wkt
+    )
+    terra::values(out) <- seq_len(terra::ncell(out) * terra::nlyr(out))
+    out
+  })
+
+  cdir <- withr::local_tempdir(pattern = "testthat_ex")
   obj <- catr_wms_get_layer(
     c(760926, 4019259, 761155, 4019366),
     srs = 25829,
@@ -21,7 +38,7 @@ test_that("Check tiles", {
 
   expect_s4_class(obj, "SpatRaster")
 
-  # test crop
+  # Test cropping.
   objcrop <- catr_wms_get_layer(
     c(760926, 4019259, 761155, 4019366),
     srs = 25829,
@@ -29,9 +46,9 @@ test_that("Check tiles", {
     cache_dir = cdir
   )
 
-  expect_true(terra::nrow(obj) > terra::nrow(objcrop))
+  expect_gt(terra::nrow(obj), terra::nrow(objcrop))
 
-  # Convert to spatial object
+  # Convert to a spatial object.
   bbox <- get_sf_from_bbox(c(760926, 4019259, 761155, 4019366), 25829)
   expect_s3_class(bbox, "sfc")
 
@@ -50,5 +67,26 @@ test_that("Check tiles", {
   )
 
   expect_s4_class(obj3, "SpatRaster")
-  unlink(cdir, recursive = TRUE, force = TRUE)
+  expect_equal(calls[[1]]$type, "Catastro.Building")
+  expect_equal(calls[[4]]$type, "Catastro.Building")
+  expect_equal(calls[[4]]$options$styles, "ELFCadastre")
+  expect_equal(calls[[4]]$options$version, "1.3.0")
+  expect_equal(calls[[4]]$options$crs, "EPSG:25830")
+  expect_null(calls[[4]]$options$srs)
+})
+
+test_that("catr_wms_get_layer() can call the real API", {
+  skip_on_cran()
+  skip_if_offline()
+  skip_on_ci()
+
+  cdir <- withr::local_tempdir(pattern = "testthat_wms")
+  obj <- catr_wms_get_layer(
+    c(222500, 4019500, 222700, 4019700),
+    srs = 25830,
+    what = "building",
+    cache_dir = cdir
+  )
+
+  expect_s4_class(obj, "SpatRaster")
 })

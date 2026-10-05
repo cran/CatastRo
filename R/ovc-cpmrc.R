@@ -1,38 +1,43 @@
-#' OVCCoordenadas: geocode a cadastral reference
+#' OVCCoordenadas: Geocode a cadastral reference
 #'
 #' @description
-#' Implementation of the OVCCoordenadas service
-#' [Consulta CPMRC](`r ovcurl("CPMRC")`). Returns coordinates for a
-#' specific cadastral reference.
+#' Query the OVCCoordenadas
+#' [Consulta CPMRC](`r ovcurl("CPMRC")`) service to retrieve coordinates for a
+#' parcel reference. The returned coordinates locate the parcel centroid.
 #'
 #' @details
-#' When the API does not provide any result, this function returns a
-#' [tibble][tibble::tbl_df] with the input arguments only.
+#' If the API returns no results or reports an error, the result is a
+#' [tibble][tibble::tbl_df] containing only query information.
 #'
-#' On a successful query, this function returns a [tibble][tibble::tbl_df]
-#' with one row per cadastral reference, including the following columns:
+#' On a successful query, this function returns a tibble with one row per
+#' cadastral reference, including the following columns:
 #' - `xcoord`, `ycoord`: X and Y coordinates in the specified SRS.
 #' - `refcat`: Cadastral reference.
-#' - `address`: Address as recorded in the Cadastre.
-#' - Remaining fields: Check the API documentation.
+#' - `address`: Address as recorded in the Spanish Cadastre.
+#' - Remaining fields: See the API documentation.
 #'
-#' @param rc The cadastral reference to be geocoded.
-#' @param province,municipality Optional, used for narrowing the search.
+#' @param rc A 14-character cadastral parcel reference to geocode.
+#' @param province,municipality Optional character strings used to narrow the
+#'   search. `province` is required when `municipality` is provided.
 #' @param srs SRS/CRS to use in the query. To see allowed values, use
 #'   [catr_srs_values], specifically the `ovc_service` column.
-#'
 #' @inheritParams catr_set_cache_dir
-#' @return A [tibble][tibble::tbl_df]. See **Details**.
+#'
+#' @returns A [tibble][tibble::tbl_df] as described in **Details**. Returns
+#'   [`NULL`][base::NULL] if the request fails.
 #'
 #' @references
 #' [Consulta CPMRC](`r ovcurl("CPMRC")`).
 #'
-#' @seealso [catr_srs_values], `vignette("ovcservice", package = "CatastRo")`
+#' @seealso
+#' - [catr_srs_values] lists supported SRS values.
+#' - `vignette("ovcservice", package = "CatastRo")` describes the OVC services.
 #'
-#' @family OVCCoordenadas
-#' @family cadastral references
-#' @encoding UTF-8
+#' @family cadastral_references
+#' @family ovc_services
+#' @concept ovccoordenadas_services
 #' @export
+#' @encoding UTF-8
 #'
 #' @examplesIf run_example()
 #' \donttest{
@@ -47,7 +52,6 @@
 #' # Only the cadastral reference
 #' catr_ovc_get_cpmrc("9872023VH5797S")
 #' }
-#'
 catr_ovc_get_cpmrc <- function(
   rc,
   srs = 4326,
@@ -56,7 +60,7 @@ catr_ovc_get_cpmrc <- function(
   verbose = FALSE
 ) {
   # Validate arguments.
-  rc <- validate_non_empty_arg(rc)
+  rc <- validate_scalar_arg(rc)
 
   srs <- ovc_validate_srs(srs)
 
@@ -69,6 +73,12 @@ catr_ovc_get_cpmrc <- function(
   # Normalize missing optional parameters.
   province <- ensure_null(province)
   municipality <- ensure_null(municipality)
+  if (!is.null(province)) {
+    province <- validate_scalar_arg(province)
+  }
+  if (!is.null(municipality)) {
+    municipality <- validate_scalar_arg(municipality)
+  }
 
   api_entry <- httr2::url_modify_query(
     api_entry,
@@ -89,7 +99,7 @@ catr_ovc_get_cpmrc <- function(
 
   if (ovc_has_error(err)) {
     ovc_report_error(err)
-    empty <- tibble::tibble(r = rc, srs = srs)
+    empty <- dplyr::tibble(r = rc, srs = srs)
 
     names(empty) <- c("refcat", "geo.srs")
     return(empty)
@@ -102,7 +112,7 @@ catr_ovc_get_cpmrc <- function(
 
   # Build helper fields.
   rc_help <- dplyr::bind_cols(
-    tibble::tibble(
+    dplyr::tibble(
       xcoord = as.double(overall$geo.xcen),
       ycoord = as.double(overall$geo.ycen)
     ),
@@ -110,7 +120,6 @@ catr_ovc_get_cpmrc <- function(
   )
 
   # Join helper fields and the raw API response.
-
   out <- dplyr::bind_cols(rc_help, overall)
 
   out

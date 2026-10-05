@@ -1,8 +1,8 @@
 #' Reference SRS codes for \CRANpkg{CatastRo} services
 #'
 #' @description
-#' A [tibble][tibble::tbl_df] including the valid SRS (also known as CRS)
-#' values that may be used in each API service. Values are provided as
+#' A [tibble][tibble::tbl_df] containing valid SRS values, also known as CRS
+#' values, for each API service. Values are represented as
 #' [EPSG codes](https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset).
 #'
 #' @details
@@ -20,8 +20,8 @@
 #' A [tibble][tibble::tbl_df] with `r nrow(CatastRo::catr_srs_values)` rows
 #' and columns:
 #' \describe{
-#'   \item{SRS}{Spatial Reference System (CRS) value, identified by the
-#'     corresponding
+#'   \item{SRS}{Spatial reference system (SRS) value, also known as a
+#'     coordinate reference system (CRS), identified by the corresponding
 #'     [EPSG](https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset)
 #'     code.}
 #'   \item{Description}{Description of the SRS/EPSG code.}
@@ -29,6 +29,7 @@
 #'   \item{wfs_service}{Logical. Whether this code is valid for WFS INSPIRE
 #'     services.}
 #' }
+#'
 #' @references
 #' ```{r, echo=FALSE, results='asis'}
 #' cat(paste0("- [OVCCoordenadas](https://ovc.catastro.meh.es/",
@@ -37,17 +38,19 @@
 #' ```
 #'
 #' - [WFS INSPIRE
-#' Service](https://www.catastro.hacienda.gob.es/webinspire/index.html).
+#' service](https://www.catastro.hacienda.gob.es/webinspire/index.html).
 #'
-#' @seealso [sf::st_crs()].
+#' @seealso
+#' [catr_ovc_get_cpmrc()] and [catr_ovc_get_rccoor()] accept SRS codes
+#' listed in the `ovc_service` column. [catr_wfs_get_parcels_bbox()] accepts
+#' codes listed in the `wfs_service` column. [sf::st_crs()] inspects the
+#' corresponding coordinate reference system.
 #'
-#' @family databases
-#' @family WFS
-#' @family OVCCoordenadas
 #' @docType data
 #' @name catr_srs_values
-#'
+#' @keywords datasets
 #' @encoding UTF-8
+#'
 #' @examples
 #' data("catr_srs_values")
 #'

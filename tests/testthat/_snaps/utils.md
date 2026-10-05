@@ -1,4 +1,4 @@
-# Messages
+# make_msg() dispatches supported message types
 
     Code
       make_msg("generic", TRUE, "Hi", "I am a generic.", "See {.var avar}.")
@@ -11,6 +11,13 @@
       make_msg("info", TRUE, "Info here.", "See {.pkg igoR}.")
     Message
       i Info here. See igoR.
+
+---
+
+    Code
+      make_msg("info", TRUE, "Value: {.val {caller_value}}.", .envir = caller_env)
+    Message
+      i Value: "caller value".
 
 ---
 
@@ -33,12 +40,12 @@
     Message
       v Hooray! 5/5 ,)
 
-# Pretty match
+# match_arg_pretty() reports the closest valid choice
 
     Code
       my_fun("error here")
     Condition
-      Error:
+      Error in `my_fun()`:
       ! `arg_one` must be one of "10", "1000", "3000" or "5000", not "error here".
 
 ---
@@ -46,7 +53,7 @@
     Code
       my_fun(c("an", "error"))
     Condition
-      Error:
+      Error in `my_fun()`:
       ! `arg_one` must be one of "10", "1000", "3000" or "5000", not "an" or "error".
 
 ---
@@ -54,7 +61,7 @@
     Code
       my_fun("5")
     Condition
-      Error:
+      Error in `my_fun()`:
       ! `arg_one` must be one of "10", "1000", "3000" or "5000", not "5".
       i Did you mean "5000"?
 
@@ -63,7 +70,7 @@
     Code
       my_fun("00")
     Condition
-      Error:
+      Error in `my_fun()`:
       ! `arg_one` must be one of "10", "1000", "3000" or "5000", not "00".
 
 ---
@@ -71,7 +78,7 @@
     Code
       my_fun2(c(1, 2))
     Condition
-      Error:
+      Error in `my_fun2()`:
       ! `year` must be "20", not "1" or "2".
 
 ---
@@ -79,19 +86,11 @@
     Code
       my_fun3("3")
     Condition
-      Error:
+      Error in `my_fun3()`:
       ! `an_arg` must be one of "30" or "20", not "3".
       i Did you mean "30"?
 
----
-
-    Code
-      my_fun2(c(1, 2))
-    Condition
-      Error:
-      ! `year` must be "20", not "1" or "2".
-
-# Not empty
+# validate_non_empty_arg() rejects missing arguments
 
     Code
       a_fun()
@@ -106,4 +105,100 @@
     Condition
       Error in `a_fun()`:
       ! `b` cannot be missing.
+
+# cli_abort_if_not() validates scalar conditions and caller context
+
+    Code
+      cli_abort_if_not(`Message supports {.cls inline} {.str markup}.` = is.logical(1))
+    Condition
+      Error:
+      ! Message supports <inline> "markup".
+
+---
+
+    Code
+      cli_abort_if_not(`Missing conditions fail.` = NA)
+    Condition
+      Error:
+      ! Missing conditions fail.
+
+---
+
+    Code
+      cli_abort_if_not(`Empty conditions fail.` = logical())
+    Condition
+      Error:
+      ! Empty conditions fail.
+
+---
+
+    Code
+      cli_abort_if_not(FALSE)
+    Condition
+      Error:
+      ! All conditions supplied to `cli_abort_if_not()` must be named.
+
+---
+
+    Code
+      test_msg("Testing fun reference.", verbose = TRUE)
+    Message
+      x Testing fun reference.
+
+---
+
+    Code
+      test_msg("Testing fun reference with error.", verbose = 1)
+    Condition
+      Error in `test_msg()`:
+      ! `verbose` must be `TRUE` or `FALSE`.
+
+---
+
+    Code
+      test_msg("Testing missing verbose.", verbose = NA)
+    Condition
+      Error in `test_msg()`:
+      ! `verbose` must be `TRUE` or `FALSE`.
+
+---
+
+    Code
+      test_msg("Testing empty verbose.", verbose = logical())
+    Condition
+      Error in `test_msg()`:
+      ! `verbose` must be `TRUE` or `FALSE`.
+
+---
+
+    Code
+      test_msg("Testing vector verbose.", verbose = c(TRUE, FALSE))
+    Condition
+      Error in `test_msg()`:
+      ! `verbose` must be `TRUE` or `FALSE`.
+
+# match_arg_pretty() treats braces in values as literal text
+
+    Code
+      match_arg_pretty("{missing}", c("a", "b"))
+    Condition
+      Error:
+      ! `{missing}` must be one of "a" or "b", not "{missing}".
+
+---
+
+    Code
+      match_arg_pretty("x", c("{one}", "{two}"))
+    Condition
+      Error:
+      ! `x` must be one of "{one}" or "{two}", not "x".
+
+---
+
+    Code
+      match_arg_pretty("{on", c("{one}", "{two}"))
+    Condition
+      Error:
+      ! `{on` must be one of "{one}" or "{two}", not "{on".
+      i Did you mean "{one}"?
 

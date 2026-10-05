@@ -1,25 +1,23 @@
-#' Read geospatial file into sf object
+#' Read a geospatial file into an [`sf`][sf::st_sf] object
 #'
-#' @param file_local Character string. Local file path or URL to the
-#'   geospatial file.
-#' @param hint Character string. Hint for identifying files in zipped archives.
-#' @param layer_hint Character string. Optional hint for layer names.
+#' @param file_local Character string containing a local file path or URL.
+#' @param hint Character string used to identify files in ZIP archives.
+#' @param layer_hint Optional character string used to identify layer names.
 #' @param ... Additional arguments passed to `sf::read_sf()`.
 #'
-#' @return An `sf` object containing the geospatial data.
-#' @encoding UTF-8
+#' @returns An [`sf`][sf::st_sf] object containing the geospatial data.
 #'
 #' @noRd
+#' @encoding UTF-8
 read_geo_file_sf <- function(
   file_local,
   hint = basename(file_local),
   layer_hint = NULL,
   ...
 ) {
-  # Warn if the file is large and no query is available.
-
+  # Warn before reading a large local file.
   if (all(!grepl("^http", file_local), file.exists(file_local))) {
-    fsize <- file.size(file_local)
+    fsize <- catr_file_size(file_local)
     fsize_unit <- fsize
     class(fsize_unit) <- class(object.size("a"))
     thr <- 20 * (1024^2)
@@ -30,14 +28,14 @@ read_geo_file_sf <- function(
     }
   }
 
-  # Create and read the 'vsizip' construct for shp.zip.
+  # Create and read the `vsizip` path for the ZIP archive.
   if (grepl(".zip$", file_local, ignore.case = TRUE)) {
     shp_zip <- unzip(file_local, list = TRUE)
     shp_zip <- shp_zip$Name
     shp_zip <- shp_zip[grepl(hint, shp_zip)]
     shp_end <- shp_zip[1]
 
-    # Read with vsizip.
+    # Read the selected layer through `vsizip`.
     file_local <- file.path("/vsizip/", file_local, shp_end)
     file_local <- gsub("//", "/", file_local, fixed = TRUE)
   }
@@ -54,17 +52,26 @@ read_geo_file_sf <- function(
   data_sf
 }
 
-#' Convert sf object to UTF-8
+#' Wrap `file.size()` for testing
+#' @noRd
+# nocov start
+catr_file_size <- function(...) {
+  file.size(...)
+}
+# nocov end
+
+#' Convert an [`sf`][sf::st_sf] object to UTF-8
 #'
-#' @param data_sf An `sf` object to convert to UTF-8 encoding.
+#' @param data_sf An [`sf`][sf::st_sf] object to encode as UTF-8.
 #'
-#' @return An `sf` object with UTF-8 encoding applied.
+#' @returns An [`sf`][sf::st_sf] object encoded as UTF-8.
 #'
-#' @source Extracted from [`sf`][sf::st_sf] package.
+#' @source Adapted from \CRANpkg{sf}.
 #'
 #' @noRd
 sanitize_sf <- function(data_sf) {
-  # From sf/read.R - https://github.com/r-spatial/sf/blob/master/R/read.R
+  # Adapted from sf/read.R:
+  # https://github.com/r-spatial/sf/blob/master/R/read.R
   set_utf8 <- function(x) {
     n <- names(x)
     Encoding(n) <- "UTF-8"
@@ -76,7 +83,7 @@ sanitize_sf <- function(data_sf) {
     }
     structure(lapply(x, to_utf8), names = n)
   }
-  # end
+  # End of code adapted from sf.
 
   # Convert to UTF-8.
   names <- names(data_sf)
@@ -93,13 +100,13 @@ sanitize_sf <- function(data_sf) {
     data_utf8 <- set_utf8(data_sf)
   }
 
-  data_utf8 <- tibble::as_tibble(data_utf8)
+  data_utf8 <- dplyr::as_tibble(data_utf8)
 
   if (!inherits(data_sf, "sf")) {
     return(data_utf8)
   }
 
-  # Regenerate with the correct encoding.
+  # Recreate the object with the corrected encoding.
   data_sf <- sf::st_as_sf(data_utf8, g)
 
   # Restore the geometry column name.
@@ -108,8 +115,7 @@ sanitize_sf <- function(data_sf) {
   colnames(data_sf) <- newnames
   data_sf <- sf::st_set_geometry(data_sf, nm)
 
-  # Normalize CRS definitions with the EPSG number.
-
+  # Normalize the CRS definition using its EPSG number.
   epsg_num <- sf::st_crs(data_sf)$epsg
   if (!identical(sf::st_crs(data_sf), sf::st_crs(epsg_num))) {
     sf::st_crs(data_sf) <- sf::st_crs(epsg_num)
@@ -120,7 +126,7 @@ sanitize_sf <- function(data_sf) {
   data_sf
 }
 
-get_sf_from_bbox <- function(bbox, srs = NULL) {
+get_sf_from_bbox <- function(bbox, srs = NULL, call = parent.frame()) {
   if (inherits(bbox, "sf") || inherits(bbox, "sfc")) {
     return(bbox)
   }
@@ -128,16 +134,20 @@ get_sf_from_bbox <- function(bbox, srs = NULL) {
   # Validate arguments.
   if (!(is.numeric(bbox) && length(bbox) == 4)) {
     cli::cli_abort(
-      "{.arg bbox} must have length {.val {4L}}, not {.val {length(bbox)}}."
+      "{.arg bbox} must be a numeric vector of length {.val {4L}}.",
+      call = call
     )
   }
 
   srs <- ensure_null(srs)
   if (is.null(srs)) {
-    cli::cli_abort("Provide a valid non-empty value for {.arg srs}.")
+    cli::cli_abort(
+      "Provide a valid non-empty value for {.arg srs}.",
+      call = call
+    )
   }
 
-  # Create a template for a spatial bbox.
+  # Create a template for a spatial bounding box.
   template_sf <- sf::st_sfc(sf::st_point(c(0, 0)))
   template_bbox <- sf::st_bbox(template_sf)
 

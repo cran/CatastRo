@@ -1,19 +1,25 @@
-#' ATOM INSPIRE: search for municipality codes
+#' ATOM INSPIRE: Search for municipality codes
 #'
 #' @description
-#' Search for a municipality (as a string, part of a string, or code) and get
-#' the corresponding code according to the Cadastre.
+#' Search for a municipality by name or code and return matching Spanish
+#' Cadastre municipality codes.
+#'
 #' @inheritParams catr_atom_get_parcels
 #'
-#' @return A [tibble][tibble::tbl_df].
+#' @returns A [tibble][tibble::tbl_df] with the territorial office,
+#'   municipality name and cadastral code. Returns [`NULL`][base::NULL] if the
+#'   data cannot
+#'   be retrieved or no match is found.
 #'
-#' @family ATOM
-#' @family search
-#' @family databases
+#' @seealso
+#' [catr_atom_get_address()], [catr_atom_get_buildings()] and
+#' [catr_atom_get_parcels()] accept the returned cadastral municipality code
+#' as `munic`. [catr_get_code_from_coords()] finds that code from coordinates.
 #'
-#' @encoding UTF-8
-#'
+#' @family search_tools
+#' @family atom_services
 #' @export
+#' @encoding UTF-8
 #'
 #' @examplesIf run_example()
 #' \donttest{
@@ -29,8 +35,11 @@ catr_atom_search_munic <- function(
 ) {
   warn_deprecated_cache(cache, "CatastRo::catr_atom_search_munic(cache)")
 
-  munic <- validate_non_empty_arg(munic)
+  munic <- validate_scalar_arg(munic)
   to <- ensure_null(to)
+  if (!is.null(to)) {
+    to <- validate_scalar_arg(to)
+  }
 
   all <- catr_atom_get_address_db_all(
     update_cache = update_cache,
@@ -45,12 +54,12 @@ catr_atom_search_munic <- function(
     linesto <- grep(to, all$territorial_office, ignore.case = TRUE)
 
     # Filter by territorial office if matches are found.
-    if (length(linesto) > 1) {
+    if (length(linesto) > 0L) {
       all <- all[linesto, ]
     } else {
       if (verbose) {
         cli::cli_alert_warning(paste0(
-          "Ignoring {.arg to}, no territorial office ",
+          "Ignoring {.arg to} because no territorial office ",
           "matched {.str {to}}."
         ))
       }
@@ -61,9 +70,7 @@ catr_atom_search_munic <- function(
 
   if (is.null(to_loc)) {
     if (is.null(to)) {
-      cli::cli_alert_warning(
-        "No municipality matched pattern {.str {munic}}."
-      )
+      cli::cli_alert_warning("No municipality matched pattern {.str {munic}}.")
     } else {
       cli::cli_alert_warning(
         "No municipality matched pattern {.str {munic}} in {.str {to}}."
@@ -85,7 +92,6 @@ catr_atom_search_munic <- function(
   res <- with_d[, c("territorial_office", "munic")]
 
   # Split municipality labels to get the code.
-
   res$catrcode <- vapply(
     res$munic,
     function(x) {
@@ -94,5 +100,5 @@ catr_atom_search_munic <- function(
     FUN.VALUE = character(1)
   )
 
-  res
+  dplyr::as_tibble(res)
 }

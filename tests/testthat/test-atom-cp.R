@@ -1,63 +1,31 @@
-test_that("Test offline", {
-  skip_on_cran()
-  skip_if_offline()
-
+test_that("catr_atom_get_parcels() returns NULL when offline", {
   local_mocked_bindings(is_online_fun = function(...) {
     FALSE
   })
 
-  cdir <- file.path(tempdir(), "testthat_ex1")
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
+  cdir <- withr::local_tempdir(pattern = "testthat_ex1")
   expect_snapshot(fend <- catr_atom_get_parcels("LABAJOS", cache_dir = cdir))
   expect_null(fend)
-
-  local_mocked_bindings(is_online_fun = function(...) {
-    httr2::is_online()
-  })
-  expect_identical(is_online_fun(), httr2::is_online())
-  unlink(cdir, recursive = TRUE, force = TRUE)
 })
 
-test_that("Test 404 all", {
-  skip_on_cran()
-  skip_if_offline()
+test_that("catr_atom_get_parcels() handles a database HTTP 404", {
+  cdir <- withr::local_tempdir(pattern = "testthat_ex2")
 
-  cdir <- file.path(tempdir(), "testthat_ex2")
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
-
-  local_mocked_bindings(is_404 = function(...) {
-    TRUE
-  })
+  local_mocked_bindings(
+    is_online_fun = function(...) TRUE,
+    is_404 = function(...) TRUE
+  )
 
   expect_snapshot(
     fend <- catr_atom_get_parcels("MELQUE", to = "Segovia", cache_dir = cdir)
   )
   expect_null(fend)
-
-  local_mocked_bindings(is_404 = function(...) {
-    FALSE
-  })
-  unlink(cdir, recursive = TRUE, force = TRUE)
-  # Otherwise work
-  expect_silent(
-    fend <- catr_atom_get_parcels("MELQUE", to = "Segovia", cache_dir = cdir)
-  )
-  expect_gt(nrow(fend), 20)
-
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
 })
-test_that("ATOM parcels", {
+test_that("catr_atom_get_parcels() returns spatial data for a municipality", {
   skip_on_cran()
   skip_if_offline()
 
-  cdir <- file.path(tempdir(), "test_cp")
-  unlink(cdir, force = TRUE, recursive = TRUE)
+  cdir <- withr::local_tempdir(pattern = "test_cp")
   expect_snapshot(catr_atom_get_parcels("xyxghx", cache_dir = cdir))
 
   expect_message(
@@ -80,6 +48,8 @@ test_that("ATOM parcels", {
   )
 
   expect_s3_class(s, "sf")
+  expect_false(is.na(sf::st_crs(s)))
+  expect_false(any(sf::st_is_empty(s)))
   expect_message(
     catr_atom_get_parcels(
       "Melque",
@@ -87,7 +57,7 @@ test_that("ATOM parcels", {
       verbose = TRUE,
       cache_dir = cdir
     ),
-    'Ignoring `to`, no territorial office matched "XXX".'
+    "Ignoring `to` because no territorial office matched"
   )
   expect_s3_class(s, "sf")
 
@@ -105,38 +75,35 @@ test_that("ATOM parcels", {
   expect_s3_class(me_cpzone, "sf")
 
   expect_gt(nrow(me_cp), nrow(me_cpzone))
-
-  unlink(cdir, force = TRUE, recursive = TRUE)
 })
 
-test_that("ATOM Encoding issue", {
+test_that("catr_atom_get_parcels() reads accented source data", {
   skip_on_cran()
   skip_if_offline()
 
-  cdir <- file.path(tempdir(), "test_cp2")
-  unlink(cdir, force = TRUE, recursive = TRUE)
+  cdir <- withr::local_tempdir(pattern = "test_cp2")
 
-  expect_silent(catr_atom_get_parcels("23078", cache_dir = cdir))
-  expect_silent(catr_atom_get_parcels("03050", cache_dir = cdir))
-  expect_silent(catr_atom_get_parcels("23051", cache_dir = cdir))
-  unlink(cdir, force = TRUE, recursive = TRUE)
+  expect_silent(s1 <- catr_atom_get_parcels("23078", cache_dir = cdir))
+  expect_silent(s2 <- catr_atom_get_parcels("03050", cache_dir = cdir))
+  expect_silent(s3 <- catr_atom_get_parcels("23051", cache_dir = cdir))
+  expect_s3_class(s1, "sf")
+  expect_s3_class(s2, "sf")
+  expect_s3_class(s3, "sf")
 })
 
-test_that("Test 404 single", {
+test_that("catr_atom_get_parcels() handles a download HTTP 404", {
   skip_on_cran()
   skip_if_offline()
 
-  cdir <- file.path(tempdir(), "testthat_ex2to2bu")
-  if (dir.exists(cdir)) {
-    unlink(cdir, recursive = TRUE, force = TRUE)
-  }
+  cdir <- withr::local_tempdir(pattern = "testthat_ex2to2bu")
 
-  all <- catr_atom_get_parcels_db_all(cache_dir = cdir)
-  all <- catr_atom_get_parcels_db_to("Segovia", cache_dir = cdir)
+  invisible(catr_atom_get_parcels_db_all(cache_dir = cdir))
+  invisible(catr_atom_get_parcels_db_to("Segovia", cache_dir = cdir))
 
-  local_mocked_bindings(is_404 = function(...) {
-    TRUE
-  })
+  local_mocked_bindings(
+    is_online_fun = function(...) TRUE,
+    is_404 = function(...) TRUE
+  )
 
   expect_snapshot(
     fend <- catr_atom_get_parcels("Melque", to = "Segovia", cache_dir = cdir)
@@ -145,5 +112,4 @@ test_that("Test 404 single", {
   local_mocked_bindings(is_404 = function(...) {
     FALSE
   })
-  unlink(cdir, recursive = TRUE, force = TRUE)
 })

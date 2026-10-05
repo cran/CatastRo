@@ -5,22 +5,23 @@
 #' network availability.
 #'
 #' @details
-#' Returns `FALSE` on CRAN, macOS, or when offline.
+#' Returns `FALSE` on CRAN, macOS or when offline.
 #'
-#' @return Logical. `TRUE` if examples should run, `FALSE` otherwise.
-#' @encoding UTF-8
+#' @returns A [logical][base::logical] value, `TRUE` if examples should run,
+#'   `FALSE` otherwise.
 #'
 #' @keywords internal
 #' @export
+#' @encoding UTF-8
+#'
 #' @examples
 #' run_example()
-#'
 run_example <- function() {
   if (on_mac()) {
     return(FALSE)
   }
-  if (!httr2::is_online()) {
-    return(FALSE) # nocov
+  if (!is_online_fun()) {
+    return(FALSE)
   }
   if (on_cran()) {
     return(FALSE)
@@ -29,23 +30,25 @@ run_example <- function() {
   TRUE
 }
 
-#' Check if running on CRAN
+#' Check whether code is running on CRAN
 #'
-#' @return Logical. `TRUE` if running on CRAN, `FALSE` otherwise.
+#' @returns A [logical][base::logical] value, `TRUE` if running on CRAN, `FALSE`
+#'   otherwise.
 #'
 #' @noRd
 on_cran <- function() {
   env <- Sys.getenv("NOT_CRAN")
   if (identical(env, "")) {
-    !interactive() # nocov
+    !interactive()
   } else {
     !isTRUE(as.logical(env))
   }
 }
 
-#' Check if running on macOS
+#' Check whether code is running on macOS
 #'
-#' @return Logical. `TRUE` if running on macOS, `FALSE` otherwise.
+#' @returns A [logical][base::logical] value, `TRUE` if running on macOS,
+#'   `FALSE` otherwise.
 #'
 #' @noRd
 on_mac <- function() {
